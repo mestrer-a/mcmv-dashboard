@@ -1,0 +1,35 @@
+{
+  "id": "grafico_1_financiamento_fonte_ano",
+  "titulo": "Financiamento do MCMV por fonte e por ano",
+  "organizacao": "Ministério das Cidades — Secretaria Nacional de Habitação (SNH)",
+  "organizacao_descricao": "Órgão federal responsável por manter e publicar as bases oficiais de contratos e empreendimentos do Programa Minha Casa, Minha Vida no Portal de Dados Abertos.",
+  "portal_catalogo": "https://dadosabertos.cidades.gov.br/dataset/dados-do-programa-minha-casa-minha-vida-pmcmv",
+  "data_acesso": "2026-09-10",
+  "bases": [
+    {
+      "nome": "MCMV Financiado com FGTS/FS — dados analíticos",
+      "nivel": "contrato individual (~7,85 milhões de linhas)",
+      "url": "https://www.cidades.gov.br/images/stories/ArquivosSNH/ArquivosZIP/mcmv_financ_analitico_20260724.zip",
+      "tamanho": "200.671.574 bytes (~191 MB) comprimido / ~1,24 GB descompactado",
+      "usada_para": "séries FGTS e Fundo Social (única base com granularidade de programa por contrato)"
+    },
+    {
+      "nome": "MCMV Subsidiado — Empreendimentos",
+      "nivel": "empreendimento/projeto (~58 mil)",
+      "url": "https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/habitacao/programa-minha-casa-minha-vida/arquivos/mcmv_subsidiado_202606302.zip",
+      "tamanho": "1.177.997 bytes (~1,1 MB) comprimido",
+      "usada_para": "série OGU (proxy: universo de empreendimentos subsidiados fora do financiamento direto com FGTS)"
+    }
+  ],
+  "por_que_essa_versao": "O catálogo do Portal de Dados Abertos (dadosabertos.cidades.gov.br) não hospeda os arquivos diretamente — os 3 recursos do dataset PMCMV apontam para uma página oficial em gov.br que lista os arquivos correntes. Os nomes dos arquivos trazem a data da última atualização (mcmv_subsidiado_202606302.zip = atualizado 30/06/2026; mcmv_financ_analitico_20260724.zip e mcmv_financ_sintetico_20260724_v2.zip = atualizados 24/07/2026). O sufixo \"_v2\" no arquivo sintético indica que a página já substituiu uma versão anterior — só a v2 estava publicamente linkada na data de acesso (10/09/2026); não comparamos contra a v1 por não estar mais disponível. Não usamos a base 'dados sintéticos' para este gráfico porque ela agrega subsídio de FGTS e OGU em uma única coluna (vlr_subsidio), sem separar por fonte nem identificar o programa 'Fundo Social' — só a base analítica tem essa granularidade.",
+  "script": "scripts/process_financiamento_fonte_ano.py",
+  "tabela": "data/processed/financiamento_por_fonte_ano.csv",
+  "metrica": "Valor total financiado/contratado (fluxo bruto de recursos aplicados), não o valor de subsídio.",
+  "premissas": [
+    "Normalização de grafias duplicadas do mesmo programa em txt_programa_fgts (dado original do governo, ex.: \"Apoio à producao\"/\"Apoio à Produção\").",
+    "Exclusão de contratos não-MCMV pelo nome do programa: Pró-Cotista (e variantes) e Faixa Estendida.",
+    "Sem filtro adicional por txt_compatibilidade_faixa_renda — essa coluna vem como código numérico sem tabela de correspondência confirmada em fonte oficial (decisão do autor em 10/09/2026, a revisitar).",
+    "2026 é ano em curso — dado parcial até a data de acesso.",
+    "Valores em R$ correntes (nominais), sem deflacionar."
+  ]
+}

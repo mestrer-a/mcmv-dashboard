@@ -1,0 +1,42 @@
+{
+  "id": "grafico_6_arrecadacao_saques",
+  "titulo": "Arrecadação x saques do FGTS",
+  "organizacao": "Conselho Curador do FGTS (CCFGTS) e Agente Operador (Caixa Econômica Federal)",
+  "organizacao_descricao": "Demonstrações Contábeis/Financeiras oficiais do FGTS, publicadas anualmente em fgts.gov.br (2024-2025) e caixa.gov.br (anos anteriores).",
+  "portal_catalogo": "https://www.fgts.gov.br/Paginas/subpaginas/demonstracoes-financeiras.aspx",
+  "data_acesso": "2026-09-11",
+  "bases": [
+    {
+      "nome": "Demonstração Financeira FGTS 2025 (dá 2025 e 2024)",
+      "nivel": "PDF oficial, ~30 páginas",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2025.pdf",
+      "tamanho": "944.524 bytes",
+      "usada_para": "arrecadação e saques de 2025 e 2024"
+    },
+    {
+      "nome": "Demonstração Financeira FGTS 2023-v6 (dá 2023 e 2022)",
+      "nivel": "PDF oficial, 29 páginas",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2023-v6.pdf",
+      "tamanho": "964.382 bytes",
+      "usada_para": "arrecadação e saques de 2023 e 2022, e saques por modalidade 2023/2022"
+    },
+    {
+      "nome": "Demonstração Financeira FGTS 2021 (dá 2021 e 2020)",
+      "nivel": "PDF oficial",
+      "url": "https://www.caixa.gov.br/Downloads/fgts-demonstracao-financeira/DEMONSTRACAO_FINANCEIRA_FGTS_2021.pdf",
+      "tamanho": "518.388 bytes",
+      "usada_para": "arrecadação e saques de 2021 e 2020, e saques por modalidade 2021/2020"
+    }
+  ],
+  "por_que_essa_versao": "Cada Demonstração Financeira/Contábil anual do FGTS traz o ano corrente e o anterior lado a lado na Demonstração dos Fluxos de Caixa — por isso 3 PDFs cobrem os 6 anos (2020-2025). Os anos 2024/2025 são hospedados em fgts.gov.br (site atual do fundo); os anos anteriores só encontrei em caixa.gov.br (arquivo do agente operador). Não existe uma versão tabular/CSV oficial desses dados — são PDFs de demonstrações contábeis, transcritos manualmente linha a linha (ver premissas).",
+  "script": "scripts/process_arrecadacao_saques.py",
+  "tabela": "data/processed/arrecadacao_saques_fgts.csv",
+  "metrica": "Arrecadação recebida e saques pagos em depósitos vinculados do FGTS, por ano, em R$ milhares (valores correntes).",
+  "premissas": [
+    "DIFERENTE dos demais gráficos: não há download automatizado — os números foram transcritos manualmente da seção \"Demonstração dos Fluxos de Caixa\" (Fluxo de Caixa das Atividades de Financiamento) de cada PDF oficial. Cada valor no CSV tem o arquivo e a página de origem citados nas colunas arquivo_fonte/pagina_fonte, para conferência.",
+    "Usada a linha recorrente \"Arrecadação Recebida em depósitos vinculados do FGTS\" / \"Pagamento de Saques de depósitos vinculados do FGTS\" — não o \"Caixa Líquido Gerado pelas Atividades de Financiamento\" (que é um total líquido, não decompõe em arrecadação x saques).",
+    "2020 não é diretamente comparável aos demais anos: a MP 946/2020 incorporou o patrimônio do PIS/PASEP ao FGTS, somando R$ 22.597.458 mil à arrecadação daquele ano. Optou-se por EXCLUIR essa transferência extraordinária do valor de \"arrecadação\" de 2020 para manter a série comparável — por isso a arrecadação líquida de 2020 aqui (-13.054.237) não fecha com o resultado líquido oficial do balanço daquele ano (+9.543.221, que inclui a transferência).",
+    "Bônus: saques por modalidade (%) disponível só para 2020-2023 nos PDFs lidos (2024/2025 não traziam essa tabela nas páginas consultadas) — inclui a fatia de \"Aposentadoria\", relevante para o risco de saques estruturais do FGTS.",
+    "Controladora e Consolidado têm o mesmo valor para essas duas linhas em todos os anos verificados — não há ambiguidade de escopo aqui."
+  ]
+}

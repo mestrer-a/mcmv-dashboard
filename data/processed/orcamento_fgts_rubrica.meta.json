@@ -1,0 +1,42 @@
+{
+  "id": "grafico_2_orcamento_fgts_rubrica",
+  "titulo": "Composição das despesas do FGTS por rubrica",
+  "organizacao": "Conselho Curador do FGTS (CCFGTS) e Agente Operador (Caixa Econômica Federal)",
+  "organizacao_descricao": "Mesmos PDFs já usados no Gráfico 6 — nenhum download novo.",
+  "portal_catalogo": "https://www.fgts.gov.br/Paginas/subpaginas/demonstracoes-financeiras.aspx",
+  "data_acesso": "2026-09-11",
+  "bases": [
+    {
+      "nome": "Demonstração Financeira FGTS 2025 (dá 2025 e 2024)",
+      "nivel": "PDF oficial — Demonstração do Resultado do Exercício",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2025.pdf",
+      "tamanho": "944.524 bytes",
+      "usada_para": "despesas por rubrica de 2025 e 2024"
+    },
+    {
+      "nome": "Demonstração Financeira FGTS 2023-v6 (dá 2023 e 2022)",
+      "nivel": "PDF oficial — Demonstração do Resultado do Exercício",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2023-v6.pdf",
+      "tamanho": "964.382 bytes",
+      "usada_para": "despesas por rubrica de 2023 e 2022"
+    },
+    {
+      "nome": "Demonstração Financeira FGTS 2021 (dá 2021 e 2020)",
+      "nivel": "PDF oficial — Demonstração do Resultado do Exercício",
+      "url": "https://www.caixa.gov.br/Downloads/fgts-demonstracao-financeira/DEMONSTRACAO_FINANCEIRA_FGTS_2021.pdf",
+      "tamanho": "518.388 bytes",
+      "usada_para": "despesas por rubrica de 2021 e 2020"
+    }
+  ],
+  "por_que_essa_versao": "IMPORTANTE: este NÃO é o orçamento aprovado pelo CCFGTS para o exercício (uma peça orçamentária publicada separadamente, ainda não localizada), e sim a composição REALIZADA — a Demonstração do Resultado do Exercício das próprias Demonstrações Financeiras/Contábeis do FGTS, coluna Controladora. Optou-se por essa fonte por já estar em mãos (mesmos PDFs do Gráfico 6, sem pesquisa nova) e por refletir o custo efetivamente incorrido, não uma previsão — mais direto para o argumento de sustentabilidade da dissertação. Se o orientador preferir o orçamento aprovado, este gráfico precisará ser refeito com outra fonte.",
+  "script": "scripts/process_orcamento_fgts_rubrica.py",
+  "tabela": "data/processed/orcamento_fgts_rubrica.csv",
+  "metrica": "Despesas operacionais do FGTS por rubrica, por ano, em R$ milhares (valores correntes, coluna Controladora).",
+  "premissas": [
+    "Transcrição manual (mesma limitação do Gráfico 6) — cada valor tem arquivo_fonte e pagina_fonte no CSV para conferência, tirados da seção \"Demonstração do Resultado do Exercício\".",
+    "\"Descontos concedidos\" é a rubrica que corresponde ao subsídio explícito de taxa de juros (desconto na taxa concedido pelo FGTS) — a mais diretamente relevante para o argumento da dissertação. R$ 11,4 bi em 2024 confere com a nota já registrada na pesquisa anterior sobre as Demonstrações Financeiras de 2024.",
+    "\"Despesas de depósitos vinculados\" é a remuneração paga aos titulares das contas (TR + 3% a.a.) — não é subsídio, é o custo de carregar o passivo.",
+    "Soma das 5 rubricas fecha exatamente com \"Despesas Operacionais Líquidas\" reportada em cada balanço — validação cruzada feita.",
+    "Valores em R$ correntes (nominais), sem deflacionar."
+  ]
+}

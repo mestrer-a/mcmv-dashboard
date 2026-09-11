@@ -53,10 +53,8 @@ ABAS = [
             "receitas financeiras. Complementado pelo Acórdão TCU 270/2026."
         ),
         "portal": None,
-        "graficos": ["arrecadacao_saques_fgts"],
-        "pendente": [
-            "Gráfico 2 — Composição do orçamento do FGTS por rubrica, últimos 5 anos",
-        ],
+        "graficos": ["arrecadacao_saques_fgts", "orcamento_fgts_rubrica"],
+        "pendente": [],
     },
     {
         "label": "Emprego formal — PNAD / Caged",
@@ -316,12 +314,67 @@ def grafico_arrecadacao_saques() -> None:
     st.altair_chart(chart_mod, use_container_width=True)
 
 
+def grafico_orcamento_fgts_rubrica() -> None:
+    nome = "orcamento_fgts_rubrica"
+    meta = carregar_meta(nome)
+    df = carregar_tabela(nome)
+
+    st.subheader(meta["titulo"])
+    render_ficha_proveniencia(meta)
+
+    df = df.copy()
+    df["valor_bi"] = df["valor_rs_milhares"] / 1e6
+
+    ordem_rubrica = [
+        "Despesas de depósitos vinculados",
+        "Descontos concedidos",
+        "Taxa de administração",
+        "Outras despesas operacionais e administrativas",
+        "Despesas administrativas",
+    ]
+    cores_rubrica = [COR_FGTS, COR_OGU, COR_FUNDO_SOCIAL, "#eda100", "#e87ba4"]
+
+    chart = (
+        alt.Chart(df)
+        .mark_bar()
+        .encode(
+            x=alt.X("ano:O", title=None),
+            y=alt.Y("valor_bi:Q", title="R$ bilhões (valores correntes)", stack="zero"),
+            color=alt.Color(
+                "rubrica:N",
+                scale=alt.Scale(domain=ordem_rubrica, range=cores_rubrica),
+                sort=ordem_rubrica,
+                title="Rubrica",
+            ),
+            order=alt.Order("rubrica:N", sort="ascending"),
+            tooltip=[
+                alt.Tooltip("ano:O", title="Ano"),
+                alt.Tooltip("rubrica:N", title="Rubrica"),
+                alt.Tooltip("valor_bi:Q", title="R$ bilhões", format=",.1f"),
+            ],
+        )
+        .properties(height=420)
+        .configure_axis(gridColor="#e1e0d9", domainColor="#c3c2b7")
+        .configure_view(strokeWidth=0)
+    )
+    st.altair_chart(chart, use_container_width=True)
+    st.caption(
+        "\"Descontos concedidos\" = subsídio explícito de taxa de juros. Composição "
+        "REALIZADA, não o orçamento aprovado pelo CCFGTS — ver premissas acima."
+    )
+
+    with st.expander("Ver tabela tidy"):
+        tabela_wide = df.pivot(index="ano", columns="rubrica", values="valor_bi")[ordem_rubrica]
+        st.dataframe(tabela_wide.round(1), use_container_width=True)
+
+
 # Registro de renderers de gráfico por id — só precisa crescer conforme
-# gráficos 2, 4 e 5 forem processados.
+# gráficos 4 e 5 forem processados.
 RENDERERS = {
     "financiamento_por_fonte_ano": grafico_financiamento_fonte_ano,
     "subsidio_medio_faixa": grafico_subsidio_medio_faixa,
     "arrecadacao_saques_fgts": grafico_arrecadacao_saques,
+    "orcamento_fgts_rubrica": grafico_orcamento_fgts_rubrica,
 }
 
 
@@ -345,8 +398,8 @@ ETAPAS = [
     },
     {
         "titulo": "Reconstruir a evolução recente das entradas, saídas e aplicações do FGTS",
-        "grafico": "Gráfico 6 pronto · Gráfico 2 (orçamento por rubrica) pendente",
-        "pronto": "parcial",
+        "grafico": "Gráfico 2 (despesas por rubrica) e Gráfico 6 (arrecadação x saques)",
+        "pronto": True,
     },
     {
         "titulo": "Simular a trajetória do Fundo sob hipóteses de formalização do mercado de trabalho e de saques",

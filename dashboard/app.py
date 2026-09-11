@@ -110,12 +110,11 @@ def carregar_tabela(nome: str) -> pd.DataFrame:
 
 
 def render_ficha_proveniencia(meta: dict) -> None:
-    """Bloco de transparência exibido antes de qualquer gráfico: fonte, link,
-    organização responsável e por que esta é a versão/base correta."""
-    with st.container(border=True):
-        st.markdown(f"**Fonte:** {meta['organizacao']}")
-        st.markdown(f"**Data de acesso:** {meta['data_acesso']}")
+    """Linha resumo (fonte + data) sempre visível; tudo o mais — bases, links,
+    justificativa da versão, premissas — recolhido num único expansor."""
+    st.caption(f"📊 Fonte: {meta['organizacao']} · dados de {meta['data_acesso']}")
 
+    with st.expander("Ver bases, links e premissas"):
         st.markdown("**Bases utilizadas:**")
         for base in meta["bases"]:
             st.markdown(
@@ -124,13 +123,13 @@ def render_ficha_proveniencia(meta: dict) -> None:
                 f"  · [{base['url']}]({base['url']})"
             )
 
-        with st.expander("Por que esta é a base correta (frente a outras versões/níveis)"):
-            st.write(meta["por_que_essa_versao"])
+        st.markdown("**Por que esta é a base correta (frente a outras versões/níveis):**")
+        st.write(meta["por_que_essa_versao"])
 
-        with st.expander("Métrica e premissas de limpeza aplicadas"):
-            st.markdown(f"**Métrica:** {meta['metrica']}")
-            for p in meta["premissas"]:
-                st.markdown(f"- {p}")
+        st.markdown(f"**Métrica:** {meta['metrica']}")
+        st.markdown("**Premissas de limpeza aplicadas:**")
+        for p in meta["premissas"]:
+            st.markdown(f"- {p}")
 
         st.caption(
             f"Script de processamento: `{meta['script']}` · "

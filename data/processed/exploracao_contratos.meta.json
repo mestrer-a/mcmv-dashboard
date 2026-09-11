@@ -1,0 +1,31 @@
+{
+  "id": "exploracao_contratos",
+  "titulo": "Perfil e subsídios dos contratos financiados",
+  "organizacao": "Ministério das Cidades — Secretaria Nacional de Habitação (SNH)",
+  "organizacao_descricao": "Órgão federal responsável por manter e publicar as bases oficiais de contratos e empreendimentos do Programa Minha Casa, Minha Vida no Portal de Dados Abertos.",
+  "portal_catalogo": "https://dadosabertos.cidades.gov.br/dataset/dados-do-programa-minha-casa-minha-vida-pmcmv",
+  "data_acesso": "2026-09-11",
+  "bases": [
+    {
+      "nome": "MCMV Financiado com FGTS/FS — dados analíticos",
+      "nivel": "contrato individual (~7,85 milhões de linhas)",
+      "url": "https://www.cidades.gov.br/images/stories/ArquivosSNH/ArquivosZIP/mcmv_financ_analitico_20260724.zip",
+      "tamanho": "200.671.574 bytes (~191 MB) comprimido / ~1,24 GB descompactado",
+      "usada_para": "séries FGTS e Fundo Social (única base com granularidade de programa por contrato)"
+    }
+  ],
+  "por_que_essa_versao": "O catálogo do Portal de Dados Abertos (dadosabertos.cidades.gov.br) não hospeda os arquivos diretamente — os 3 recursos do dataset PMCMV apontam para uma página oficial em gov.br que lista os arquivos correntes. Os nomes dos arquivos trazem a data da última atualização (mcmv_subsidiado_202606302.zip = atualizado 30/06/2026; mcmv_financ_analitico_20260724.zip e mcmv_financ_sintetico_20260724_v2.zip = atualizados 24/07/2026). O sufixo \"_v2\" no arquivo sintético indica que a página já substituiu uma versão anterior — só a v2 estava publicamente linkada na data de acesso (10/09/2026); não comparamos contra a v1 por não estar mais disponível. Não usamos a base 'dados sintéticos' para este gráfico porque ela agrega subsídio de FGTS e OGU em uma única coluna (vlr_subsidio), sem separar por fonte nem identificar o programa 'Fundo Social' — só a base analítica tem essa granularidade.",
+  "script": "scripts/process_exploracao_contratos.py",
+  "tabela": "data/processed/exploracao_contratos.csv",
+  "metrica": "Contagem de operações e somas nominais por ano, fonte de crédito e código de faixa.",
+  "premissas": [
+    "Mesma versão analítica de 24/07/2026; sem novas bases. 2026 parcial e excluído por padrão das comparações anuais.",
+    "Exclui Pró-Cotista e Faixa Estendida com a mesma normalização do script original. Códigos de faixa ausentes ou desconhecidos permanecem em Sem classificação.",
+    "Faixas 1 a 4 são rótulos exploratórios dos códigos: correspondência inferida no projeto, ainda sem confirmação no dicionário. Não demonstram migração de renda por si só; regras e tetos variam no tempo.",
+    "Subsídio registrado = desconto FGTS + equilíbrio FGTS + desconto OGU + equilíbrio OGU. A fonte de subsídio é distinta da fonte do crédito.",
+    "Médias usam apenas operações com as quatro rubricas de subsídio preenchidas; ausente não é zero. Contagem total e cobertura são disponibilizadas.",
+    "Cada linha representa uma operação, não necessariamente uma pessoa ou unidade única. Apenas contratos financiados; FAR e demais empreendimentos subsidiados ficam fora.",
+    "Médias ponderadas: soma dos valores / número de operações observadas, nunca média simples de médias. Valores nominais, sem inferir crescimento real ou causalidade.",
+    "Subsídio registrado não mensura o custo econômico completo nem um subsídio implícito estimado contra taxa de mercado."
+  ]
+}

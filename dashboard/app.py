@@ -16,6 +16,7 @@ from pathlib import Path
 import altair as alt
 import pandas as pd
 import streamlit as st
+from exploracao import render_exploracao
 
 ROOT = Path(__file__).resolve().parent.parent
 PROCESSED_DIR = ROOT / "data" / "processed"
@@ -388,8 +389,9 @@ def grafico_orcamento_fgts_rubrica() -> None:
     )
     st.altair_chart(estilizar(chart, legend_bottom=True, legend_columns=2), use_container_width=True)
     st.caption(
-        "\"Descontos concedidos\" = subsídio explícito de taxa de juros. Composição "
-        "REALIZADA, não o orçamento aprovado pelo CCFGTS — ver premissas acima."
+        "Descontos concedidos = rubrica contábil de apoio habitacional; não é uma "
+        "estimativa do subsídio implícito contra taxas de mercado. Despesas realizadas "
+        "da DRE, não orçamento de aplicações por setor."
     )
 
     with st.expander("Ver tabela tidy"):
@@ -468,18 +470,18 @@ ETAPAS = [
     },
     {
         "titulo": "Separar financiamento, subsídios explícitos e subsídios implícitos",
-        "grafico": "Base conceitual do Gráfico 3",
-        "pronto": True,
+        "grafico": "Subsídios registrados disponíveis · benchmark e subsídio implícito pendentes",
+        "pronto": "parcial",
     },
     {
         "titulo": "Estimar o subsídio médio por unidade e por faixa de renda",
-        "grafico": "Gráfico 3 — Subsídio médio por faixa",
-        "pronto": True,
+        "grafico": "Médias exploratórias disponíveis · validação das faixas e proxy FAR pendentes",
+        "pronto": "parcial",
     },
     {
         "titulo": "Reconstruir a evolução recente das entradas, saídas e aplicações do FGTS",
-        "grafico": "Gráfico 2 (despesas por rubrica) e Gráfico 6 (arrecadação x saques)",
-        "pronto": True,
+        "grafico": "Arrecadação, saques e DRE disponíveis · aplicações setoriais e demais fluxos pendentes",
+        "pronto": "parcial",
     },
     {
         "titulo": "Simular a trajetória do Fundo sob hipóteses de formalização do mercado de trabalho e de saques",
@@ -593,6 +595,15 @@ def render_aba(aba: dict) -> None:
     if aba["portal"]:
         st.markdown(f"**Catálogo:** [{aba['portal']}]({aba['portal']})")
     st.divider()
+
+    index = ABAS.index(aba)
+    if index < 3:
+        view = st.radio("Escolha a leitura", ["Gráficos essenciais", "Explorações e hipóteses"],
+                        horizontal=True, key=f"leitura_{index}")
+        st.caption("Novos gráficos nas mesmas bases, com filtros, perguntas de pesquisa e download das tabelas.")
+        if view == "Explorações e hipóteses":
+            render_exploracao(index)
+            return
 
     for grafico_id in aba["graficos"]:
         RENDERERS[grafico_id]()

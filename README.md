@@ -10,6 +10,12 @@ Excel). Ver [SOURCES.md](SOURCES.md) para as bases usadas (URL + data de
 acesso) e [data_dictionary.md](data_dictionary.md) para as colunas e premissas
 de limpeza aplicadas.
 
+As abas Ministério das Cidades, FGTS e Emprego formal incluem **Explorações e
+hipóteses**: 18 gráficos adicionais, com filtros, fontes e download das tabelas.
+Veja [EXPLORACOES.md](EXPLORACOES.md) para o roteiro de análise, limitações e
+reprodução. Os novos gráficos são exibidos no dashboard; o workbook original
+continua cobrindo suas figuras originais.
+
 ## Estrutura
 
 ```

@@ -41,7 +41,7 @@ ABAS = [
             "contratos e empreendimentos do Programa Minha Casa, Minha Vida."
         ),
         "portal": "https://dadosabertos.cidades.gov.br/dataset/dados-do-programa-minha-casa-minha-vida-pmcmv",
-        "graficos": ["financiamento_por_fonte_ano"],
+        "graficos": ["financiamento_por_fonte_ano", "subsidio_medio_faixa"],
         "pendente": [],
     },
     {
@@ -93,7 +93,8 @@ ABAS = [
         "portal": None,
         "graficos": [],
         "pendente": [
-            "Gráfico 3 — Subsídio médio por unidade e por faixa (tabela + gráfico)",
+            "Referência para o Gráfico 5 — custo de construção por m² usado na "
+            "estimativa do custo de novas unidades no cálculo do déficit",
         ],
     },
 ]
@@ -187,10 +188,59 @@ def grafico_financiamento_fonte_ano() -> None:
         st.dataframe(tabela_wide.astype(object).where(tabela_wide.notna(), "–"), use_container_width=True)
 
 
+def grafico_subsidio_medio_faixa() -> None:
+    nome = "subsidio_medio_faixa"
+    meta = carregar_meta(nome)
+    df = carregar_tabela(nome)
+
+    st.subheader(meta["titulo"])
+    render_ficha_proveniencia(meta)
+
+    ordem_faixa = [
+        "Faixa 1 (FAR/OGU)",
+        "Faixa 1 (contratos FGTS)",
+        "Faixa 2",
+        "Faixa 3",
+        "Faixa 4 / Classe Média",
+    ]
+    df = df.copy()
+    df["faixa"] = pd.Categorical(df["faixa"], categories=ordem_faixa, ordered=True)
+    df = df.sort_values("faixa")
+
+    chart = (
+        alt.Chart(df)
+        .mark_bar(color=COR_FGTS)
+        .encode(
+            x=alt.X("faixa:N", title=None, sort=ordem_faixa, axis=alt.Axis(labelAngle=-20)),
+            y=alt.Y("subsidio_medio_por_unidade:Q", title="R$ por unidade (valores correntes)"),
+            tooltip=[
+                alt.Tooltip("faixa:N", title="Faixa"),
+                alt.Tooltip("subsidio_medio_por_unidade:Q", title="Subsídio médio (R$)", format=",.0f"),
+                alt.Tooltip("qtd_contratos:Q", title="Nº de contratos/unidades", format=",.0f"),
+            ],
+        )
+        .properties(height=380)
+        .configure_axis(gridColor="#e1e0d9", domainColor="#c3c2b7")
+        .configure_view(strokeWidth=0)
+    )
+
+    st.altair_chart(chart, use_container_width=True)
+    st.caption(
+        "As duas barras de 'Faixa 1' usam definições diferentes de subsídio — ver "
+        "premissas acima. Não devem ser somadas."
+    )
+
+    with st.expander("Ver tabela tidy"):
+        tabela = df.set_index("faixa")[["subsidio_medio_por_unidade", "qtd_contratos"]]
+        tabela.columns = ["Subsídio médio (R$)", "Nº contratos/unidades"]
+        st.dataframe(tabela.round(0), use_container_width=True)
+
+
 # Registro de renderers de gráfico por id — só precisa crescer conforme
-# gráficos 2-6 forem processados.
+# gráficos 2, 4, 5, 6 forem processados.
 RENDERERS = {
     "financiamento_por_fonte_ano": grafico_financiamento_fonte_ano,
+    "subsidio_medio_faixa": grafico_subsidio_medio_faixa,
 }
 
 
@@ -216,10 +266,18 @@ def main():
     st.title("Custo do déficit habitacional: MCMV e a sustentabilidade do FGTS")
     st.caption("Dissertação — Mestrado Profissional em Economia e Finanças, FGV EPGE")
 
-    tabs = st.tabs([aba["label"] for aba in ABAS])
-    for tab, aba in zip(tabs, ABAS):
-        with tab:
-            render_aba(aba)
+    with st.sidebar:
+        st.markdown("### 📂 Bases de dados")
+        labels = [aba["label"] for aba in ABAS]
+        status = [" ✅" if aba["graficos"] else " 🚧" for aba in ABAS]
+        escolha = st.radio(
+            "Escolha uma base para explorar",
+            options=range(len(ABAS)),
+            format_func=lambda i: labels[i] + status[i],
+            label_visibility="collapsed",
+        )
+
+    render_aba(ABAS[escolha])
 
 
 if __name__ == "__main__":

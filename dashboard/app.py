@@ -61,13 +61,11 @@ ABAS = [
         "organizacao": "IBGE (PNAD Contínua) e Ministério do Trabalho e Emprego (Novo Caged)",
         "organizacao_descricao": (
             "Taxa de formalização do emprego (% de ocupados com carteira assinada) — "
-            "âncora da sustentabilidade do FGTS no longo prazo, hoje ausente do dashboard."
+            "âncora da sustentabilidade do FGTS no longo prazo."
         ),
-        "portal": None,
-        "graficos": [],
-        "pendente": [
-            "Gráfico 4 — Taxa de formalização (% com carteira) ao longo do tempo",
-        ],
+        "portal": "https://sidra.ibge.gov.br/tabela/4097",
+        "graficos": ["formalizacao_pnad"],
+        "pendente": [],
     },
     {
         "label": "Déficit habitacional — FJP",
@@ -368,13 +366,69 @@ def grafico_orcamento_fgts_rubrica() -> None:
         st.dataframe(tabela_wide.round(1), use_container_width=True)
 
 
-# Registro de renderers de gráfico por id — só precisa crescer conforme
-# gráficos 4 e 5 forem processados.
+def grafico_formalizacao() -> None:
+    nome = "formalizacao_pnad"
+    meta = carregar_meta(nome)
+    df = carregar_tabela(nome)
+
+    st.subheader(meta["titulo"])
+    render_ficha_proveniencia(meta)
+
+    df = df.copy()
+    df["periodo"] = df["ano"].astype(str) + "T" + df["trimestre"].astype(str)
+    long = df.melt(
+        id_vars="periodo",
+        value_vars=["taxa_formalizacao_fgts", "taxa_formalizacao_privado_only"],
+        var_name="serie",
+        value_name="taxa",
+    )
+    long["serie"] = long["serie"].map({
+        "taxa_formalizacao_fgts": "Relevante ao FGTS (privado+doméstico+público c/ carteira ÷ total ocupados)",
+        "taxa_formalizacao_privado_only": "Referência de mercado (só privado c/ carteira ÷ empregados privados)",
+    })
+    ordem_serie = [
+        "Relevante ao FGTS (privado+doméstico+público c/ carteira ÷ total ocupados)",
+        "Referência de mercado (só privado c/ carteira ÷ empregados privados)",
+    ]
+    escala_cor = alt.Scale(domain=ordem_serie, range=[COR_FGTS, COR_OGU])
+
+    chart = (
+        alt.Chart(long)
+        .mark_line(strokeWidth=2)
+        .encode(
+            x=alt.X("periodo:O", title=None, axis=alt.Axis(labelAngle=-45, labelOverlap=True)),
+            y=alt.Y("taxa:Q", title="% dos ocupados", axis=alt.Axis(format=".0%")),
+            color=alt.Color("serie:N", scale=escala_cor, sort=ordem_serie, title=None),
+            tooltip=[
+                alt.Tooltip("periodo:O", title="Trimestre"),
+                alt.Tooltip("serie:N", title="Série"),
+                alt.Tooltip("taxa:Q", title="Taxa", format=".1%"),
+            ],
+        )
+        .properties(height=420)
+        .configure_axis(gridColor="#e1e0d9", domainColor="#c3c2b7")
+        .configure_view(strokeWidth=0)
+        .configure_legend(orient="bottom", columns=1)
+    )
+    st.altair_chart(chart, use_container_width=True)
+    st.caption(
+        "A série \"relevante ao FGTS\" usa o total de ocupados como denominador "
+        "(não só os empregados do setor privado) — ver premissas acima."
+    )
+
+    with st.expander("Ver tabela tidy"):
+        tabela = df.set_index("periodo")[["taxa_formalizacao_fgts", "taxa_formalizacao_privado_only"]]
+        tabela.columns = ["Relevante ao FGTS", "Referência de mercado"]
+        st.dataframe((tabela * 100).round(1), use_container_width=True)
+
+
+# Registro de renderers de gráfico por id — só falta o gráfico 5.
 RENDERERS = {
     "financiamento_por_fonte_ano": grafico_financiamento_fonte_ano,
     "subsidio_medio_faixa": grafico_subsidio_medio_faixa,
     "arrecadacao_saques_fgts": grafico_arrecadacao_saques,
     "orcamento_fgts_rubrica": grafico_orcamento_fgts_rubrica,
+    "formalizacao_pnad": grafico_formalizacao,
 }
 
 
@@ -403,8 +457,8 @@ ETAPAS = [
     },
     {
         "titulo": "Simular a trajetória do Fundo sob hipóteses de formalização do mercado de trabalho e de saques",
-        "grafico": "Gráfico 4 (PNAD/Caged) + simulação — pendente",
-        "pronto": False,
+        "grafico": "Gráfico 4 (formalização) pronto · simulação de cenários ainda pendente",
+        "pronto": "parcial",
     },
     {
         "titulo": "Estimar a ordem de grandeza do custo de enfrentar o estoque atual do déficit habitacional",

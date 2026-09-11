@@ -1,0 +1,27 @@
+{
+  "id": "grafico_4_formalizacao",
+  "titulo": "Taxa de formalização do emprego ao longo do tempo",
+  "organizacao": "IBGE — Pesquisa Nacional por Amostra de Domicílios Contínua (PNAD Contínua)",
+  "organizacao_descricao": "Instituto Brasileiro de Geografia e Estatística. Série trimestral de ocupação disponibilizada no Sistema IBGE de Recuperação Automática (SIDRA) desde novembro/2021.",
+  "portal_catalogo": "https://sidra.ibge.gov.br/tabela/4097",
+  "data_acesso": "2026-09-11",
+  "bases": [
+    {
+      "nome": "Tabela SIDRA 4097 — Pessoas ocupadas por posição na ocupação e categoria do emprego",
+      "nivel": "série trimestral, Brasil, 1º tri/2012 em diante",
+      "url": "https://apisidra.ibge.gov.br/values/t/4097/n1/1/v/4090/p/all/c11913/96165,31721,31722,31723,31724,31725,31726,31727,31728,31729,31730",
+      "tamanho": "264.787 bytes (JSON)",
+      "usada_para": "todas as séries do gráfico — total de ocupados e ocupados com/sem carteira por categoria"
+    }
+  ],
+  "por_que_essa_versao": "Tabela oficial do IBGE, acessada via API pública do SIDRA (apisidra.ibge.gov.br), que devolve a série completa em JSON estruturado — sem necessidade de raspagem de PDF ou planilha. É a tabela padrão do IBGE para 'posição na ocupação e categoria do emprego', com histórico trimestral completo desde 2012.",
+  "script": "scripts/process_formalizacao.py",
+  "tabela": "data/processed/formalizacao_pnad.csv",
+  "metrica": "Taxa de formalização relevante ao FGTS: (empregado setor privado com carteira + trabalhador doméstico com carteira + empregado setor público com carteira, excl. militar/estatutário) / total de pessoas ocupadas.",
+  "premissas": [
+    "Essa métrica NÃO é o indicador mais comumente citado na imprensa (% apenas do setor privado com carteira, sobre o total de empregados privados — ~74% em 2025). Optou-se por uma definição mais ampla e específica ao FGTS: o denominador é o TOTAL DE OCUPADOS (toda a força de trabalho, incluindo autônomos, empregadores etc.), não só os empregados do setor privado — porque o que importa para a arrecadação do FGTS é quanto da força de trabalho total está gerando contribuição, não apenas a taxa de informalidade dentro do emprego privado.",
+    "O numerador soma privado com carteira + doméstico com carteira + público com carteira (excl. estatutário/militar) porque são esses os 3 grupos que geram recolhimento de FGTS quando com carteira assinada. Trabalhador doméstico só passou a ter FGTS obrigatório em 2015 (Emenda Constitucional das Domésticas) — a série anterior a 2015 já soma essa categoria por simplicidade, mas o FGTS sobre domésticos antes de 2015 era facultativo.",
+    "A série de referência 'taxa_formalizacao_privado_only' (% do setor privado com carteira sobre total de empregados privados) é mantida na tabela para comparação com o indicador de mercado mais usual — validada contra o dado oficial divulgado pelo IBGE para o 3º tri/2025 (74,4%), bateu exatamente.",
+    "Valores em % (proporção 0-1 na tabela bruta)."
+  ]
+}

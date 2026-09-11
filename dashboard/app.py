@@ -27,6 +27,47 @@ COR_FUNDO_SOCIAL = "#1baf7a"  # slot 3 água
 
 st.set_page_config(page_title="MCMV x FGTS — Dissertação", layout="wide")
 
+
+def inject_css() -> None:
+    st.markdown(
+        """
+        <style>
+        .block-container { padding-top: 2.5rem; max-width: 1200px; }
+        h1, h2, h3 { letter-spacing: -0.01em; }
+        h3 { margin-top: 0.2rem; }
+        [data-testid="stCaptionContainer"] { color: #52514e; }
+        div[data-testid="stExpander"] {
+            border: 1px solid #e1e0d9;
+            border-radius: 10px;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"] > div {
+            border-radius: 12px;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(div[style]) {
+            box-shadow: 0 1px 3px rgba(11,11,11,0.05);
+        }
+        section[data-testid="stSidebar"] {
+            border-right: 1px solid #e1e0d9;
+        }
+        hr { margin: 1.6rem 0; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def estilizar(chart, legend_bottom: bool = False, legend_columns: int = 1):
+    """Config visual consistente: eixos recessivos, sem borda no view, e
+    legenda com espaço suficiente pra não cortar nomes longos de categoria."""
+    legend_kwargs = dict(labelLimit=320, titleLimit=320, symbolSize=110)
+    if legend_bottom:
+        legend_kwargs.update(orient="bottom", columns=legend_columns, direction="horizontal")
+    return (
+        chart.configure_axis(gridColor="#e1e0d9", domainColor="#c3c2b7", labelColor="#52514e", titleColor="#0b0b0b")
+        .configure_view(strokeWidth=0)
+        .configure_legend(**legend_kwargs)
+    )
+
 # ---------------------------------------------------------------------------
 # Registro de abas = bases de dados (agrupamento do item 5 do plano original).
 # Cada aba lista os ids dos gráficos (em data/processed/<id>.csv/.meta.json)
@@ -167,11 +208,9 @@ def grafico_financiamento_fonte_ano() -> None:
             ],
         )
         .properties(height=420)
-        .configure_axis(gridColor="#e1e0d9", domainColor="#c3c2b7")
-        .configure_view(strokeWidth=0)
     )
 
-    st.altair_chart(chart, use_container_width=True)
+    st.altair_chart(estilizar(chart), use_container_width=True)
     st.caption(
         f"Barra mais clara = {int(df['ano'].max())}, ano em curso (dado parcial até a data de acesso)."
     )
@@ -203,7 +242,7 @@ def grafico_subsidio_medio_faixa() -> None:
 
     chart = (
         alt.Chart(df)
-        .mark_bar(color=COR_FGTS)
+        .mark_bar(color=COR_FGTS, cornerRadiusTopLeft=4, cornerRadiusTopRight=4)
         .encode(
             x=alt.X("faixa:N", title=None, sort=ordem_faixa, axis=alt.Axis(labelAngle=-20)),
             y=alt.Y("subsidio_medio_por_unidade:Q", title="R$ por unidade (valores correntes)"),
@@ -214,11 +253,9 @@ def grafico_subsidio_medio_faixa() -> None:
             ],
         )
         .properties(height=380)
-        .configure_axis(gridColor="#e1e0d9", domainColor="#c3c2b7")
-        .configure_view(strokeWidth=0)
     )
 
-    st.altair_chart(chart, use_container_width=True)
+    st.altair_chart(estilizar(chart), use_container_width=True)
     st.caption(
         "As duas barras de 'Faixa 1' usam definições diferentes de subsídio — ver "
         "premissas acima. Não devem ser somadas."
@@ -253,7 +290,7 @@ def grafico_arrecadacao_saques() -> None:
 
     chart = (
         alt.Chart(long)
-        .mark_line(point=True, strokeWidth=2)
+        .mark_line(point=alt.OverlayMarkDef(size=70, filled=True), strokeWidth=2.5)
         .encode(
             x=alt.X("ano:O", title=None),
             y=alt.Y("valor_bi:Q", title="R$ bilhões (valores correntes)"),
@@ -265,10 +302,8 @@ def grafico_arrecadacao_saques() -> None:
             ],
         )
         .properties(height=380)
-        .configure_axis(gridColor="#e1e0d9", domainColor="#c3c2b7")
-        .configure_view(strokeWidth=0)
     )
-    st.altair_chart(chart, use_container_width=True)
+    st.altair_chart(estilizar(chart), use_container_width=True)
     st.caption(
         "2020 não é comparável aos demais anos: exclui a incorporação extraordinária "
         "do PIS/PASEP (MP 946/2020) — ver premissas acima."
@@ -305,11 +340,9 @@ def grafico_arrecadacao_saques() -> None:
                 alt.Tooltip("percentual:Q", title="%", format=".1f"),
             ],
         )
-        .properties(height=340)
-        .configure_axis(gridColor="#e1e0d9", domainColor="#c3c2b7")
-        .configure_view(strokeWidth=0)
+        .properties(height=380)
     )
-    st.altair_chart(chart_mod, use_container_width=True)
+    st.altair_chart(estilizar(chart_mod, legend_bottom=True, legend_columns=3), use_container_width=True)
 
 
 def grafico_orcamento_fgts_rubrica() -> None:
@@ -351,11 +384,9 @@ def grafico_orcamento_fgts_rubrica() -> None:
                 alt.Tooltip("valor_bi:Q", title="R$ bilhões", format=",.1f"),
             ],
         )
-        .properties(height=420)
-        .configure_axis(gridColor="#e1e0d9", domainColor="#c3c2b7")
-        .configure_view(strokeWidth=0)
+        .properties(height=440)
     )
-    st.altair_chart(chart, use_container_width=True)
+    st.altair_chart(estilizar(chart, legend_bottom=True, legend_columns=2), use_container_width=True)
     st.caption(
         "\"Descontos concedidos\" = subsídio explícito de taxa de juros. Composição "
         "REALIZADA, não o orçamento aprovado pelo CCFGTS — ver premissas acima."
@@ -383,18 +414,15 @@ def grafico_formalizacao() -> None:
         value_name="taxa",
     )
     long["serie"] = long["serie"].map({
-        "taxa_formalizacao_fgts": "Relevante ao FGTS (privado+doméstico+público c/ carteira ÷ total ocupados)",
-        "taxa_formalizacao_privado_only": "Referência de mercado (só privado c/ carteira ÷ empregados privados)",
+        "taxa_formalizacao_fgts": "Relevante ao FGTS",
+        "taxa_formalizacao_privado_only": "Referência de mercado",
     })
-    ordem_serie = [
-        "Relevante ao FGTS (privado+doméstico+público c/ carteira ÷ total ocupados)",
-        "Referência de mercado (só privado c/ carteira ÷ empregados privados)",
-    ]
+    ordem_serie = ["Relevante ao FGTS", "Referência de mercado"]
     escala_cor = alt.Scale(domain=ordem_serie, range=[COR_FGTS, COR_OGU])
 
     chart = (
         alt.Chart(long)
-        .mark_line(strokeWidth=2)
+        .mark_line(strokeWidth=2.5)
         .encode(
             x=alt.X("periodo:O", title=None, axis=alt.Axis(labelAngle=-45, labelOverlap=True)),
             y=alt.Y("taxa:Q", title="% dos ocupados", axis=alt.Axis(format=".0%")),
@@ -406,14 +434,12 @@ def grafico_formalizacao() -> None:
             ],
         )
         .properties(height=420)
-        .configure_axis(gridColor="#e1e0d9", domainColor="#c3c2b7")
-        .configure_view(strokeWidth=0)
-        .configure_legend(orient="bottom", columns=1)
     )
-    st.altair_chart(chart, use_container_width=True)
+    st.altair_chart(estilizar(chart, legend_bottom=True, legend_columns=1), use_container_width=True)
     st.caption(
-        "A série \"relevante ao FGTS\" usa o total de ocupados como denominador "
-        "(não só os empregados do setor privado) — ver premissas acima."
+        "\"Relevante ao FGTS\" usa o total de ocupados como denominador (privado + "
+        "doméstico + público com carteira ÷ total ocupados); \"Referência de mercado\" "
+        "é o indicador mais citado na imprensa (só privado) — detalhes nas premissas acima."
     )
 
     with st.expander("Ver tabela tidy"):
@@ -580,6 +606,7 @@ def render_aba(aba: dict) -> None:
 
 
 def main():
+    inject_css()
     with st.sidebar:
         st.markdown("### 🧭 Navegação")
         labels = ["📖 Capa"] + [aba["label"] for aba in ABAS]

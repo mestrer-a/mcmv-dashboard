@@ -3,3 +3,5 @@ openpyxl
 pandas
 requests
 streamlit
+
+plotly>=6.0,<8

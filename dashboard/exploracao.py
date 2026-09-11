@@ -5,6 +5,8 @@ from pathlib import Path
 import altair as alt
 import pandas as pd
 import streamlit as st
+import plotly.express as px
+from ui import plot, table
 
 DATA = Path(__file__).resolve().parents[1] / "data/processed"
 BLUE, ORANGE, GREEN = "#2a78d6", "#eb6834", "#1baf7a"
@@ -26,48 +28,40 @@ def read(name):
 def period(df, key, partial=False):
     years = sorted(df.ano.unique().tolist())
     if partial:
-        include = st.checkbox("Incluir 2026 (parcial; não comparar com anos completos)", key=key+"_parcial")
+        include = st.sidebar.checkbox("Incluir 2026 (parcial; não comparar com anos completos)", key=key+"_parcial")
         if not include:
             df = df[df.ano != 2026]
             years = sorted(df.ano.unique().tolist())
-    lo, hi = st.select_slider("Período de contratação" if partial else "Período", options=years,
+    lo, hi = st.sidebar.select_slider("Período de contratação" if partial else "Período", options=years,
                               value=(years[0], years[-1]), key=key+"_periodo")
     return df[df.ano.between(lo, hi)].copy()
 
 
 def show(title, question, df, chart, sources, method, key, interpretation):
+    selected = st.session_state.get("explore_chart", "Todos")
+    if selected != "Todos" and selected != title:
+        return
     st.subheader(title)
     st.write(question)
-    metas = [json.loads((DATA / f"{s}.meta.json").read_text(encoding="utf-8")) for s in sources]
-    st.caption("Exploratório · " + " | ".join(f"{m['organizacao']} · acesso {m['data_acesso']}" for m in metas))
-    with st.expander("Fontes e cálculo", expanded=False):
-        seen = set()
-        for m in metas:
-            for b in m["bases"]:
-                if b["url"] not in seen:
-                    st.markdown(f"- [{b['nome']}]({b['url']})")
-                    seen.add(b["url"])
-            for p in m["premissas"]:
-                st.write(p)
-        st.markdown("**Cálculo deste gráfico:** " + method)
-    st.altair_chart(chart.configure_view(strokeWidth=0).configure_axis(gridColor="#e1e0d9")
-                    .configure_legend(orient="bottom", labelLimit=350, columns=2), use_container_width=True)
+    if hasattr(chart, "update_layout"):
+        plot(chart, key)
+    else:
+        st.altair_chart(chart.configure_view(strokeWidth=0).configure_axis(gridColor="#e1e0d9")
+            .configure_legend(orient="bottom", labelLimit=350, columns=2), width="stretch")
     st.caption(interpretation)
-    with st.expander("Tabela e download"):
-        st.dataframe(df, use_container_width=True, hide_index=True)
-        st.download_button("Baixar dados deste gráfico (CSV)", df.to_csv(index=False).encode("utf-8-sig"),
-                           file_name=f"{key}.csv", mime="text/csv", key=key+"_download")
-    st.divider()
+    with st.expander("Como ler e calcular este gráfico"):
+        st.write(method)
+    table(df, key)
+
 
 
 def lines(df, x, y, title, color=None, pct=False):
-    enc = dict(x=alt.X(x, title=None, axis=alt.Axis(labelAngle=-35, labelOverlap=True)),
-               y=alt.Y(y, title=title, axis=alt.Axis(format=".1%") if pct else alt.Axis()),
-               tooltip=[alt.Tooltip(x, title="Período"), alt.Tooltip(y, title=title, format=".1%" if pct else ",.2f")])
-    if color:
-        enc["color"] = alt.Color(color, title=None, scale=color_scale(df, color))
-        enc["tooltip"].append(alt.Tooltip(color, title="Série"))
-    return alt.Chart(df).mark_line(point=True, color=BLUE).encode(**enc).properties(height=330)
+    xf, yf = x.split(":")[0], y.split(":")[0]
+    cf = color.split(":")[0] if color else None
+    fig = px.line(df, x=xf, y=yf, color=cf, markers=True,
+        labels={xf:"Período", yf:title}, color_discrete_sequence=COLORS)
+    if pct: fig.update_yaxes(tickformat=".0%")
+    return fig
 
 
 def bars(df, x, y, title, color=None, pct=False, horizontal=False):
@@ -94,7 +88,7 @@ def render_cidades():
          "composicao_fontes", "O denominador combina crédito e valor contratado de empreendimentos; não é composição do custo fiscal. Ausência de linha não comprova gasto zero. Valores de 2026 têm cortes distintos entre bases.")
 
     c = period(read("exploracao_contratos"), "contratos", partial=True)
-    source = st.multiselect("Fonte do crédito", ["FGTS", "Fundo Social"], default=["FGTS", "Fundo Social"], key="credito_fontes")
+    source = st.sidebar.multiselect("Fonte do crédito", ["FGTS", "Fundo Social"], default=["FGTS", "Fundo Social"], key="credito_fontes")
     c = c[c.fonte.isin(source)]
     if c.empty:
         st.info("Selecione uma fonte com contratos no período para explorar o perfil.")
@@ -162,8 +156,8 @@ def render_fgts():
          ["arrecadacao_saques_fgts"], "Arrecadação recebida menos saques pagos, dividido por 1 milhão (origem em R$ mil).", "saldo_arrecadacao",
          "Este saldo não é caixa livre, lucro ou medida de solvência: faltam os demais fluxos. 2020 exclui a transferência extraordinária do PIS/PASEP conforme a base original.")
     ch = lines(a, "ano:O", "saques_arrecadacao:Q", "Saques / arrecadação", pct=True)
-    rule = alt.Chart(pd.DataFrame({"limite":[1]})).mark_rule(strokeDash=[4,4], color=ORANGE).encode(y="limite:Q")
-    show("Quanto da arrecadação é absorvido pelos saques?", "A pressão aumenta mesmo quando a arrecadação cresce?", a, ch+rule,
+    ch.add_hline(y=1, line_dash="dash", line_color=ORANGE)
+    show("Quanto da arrecadação é absorvido pelos saques?", "A pressão aumenta mesmo quando a arrecadação cresce?", a, ch,
          ["arrecadacao_saques_fgts"], "Saques / arrecadação. Linha de referência = 100%.", "pressao_saques",
          "Acima de 100%, saques superam arrecadação; isso isoladamente não demonstra insolvência.")
     r = read("orcamento_fgts_rubrica")
@@ -180,6 +174,8 @@ def render_fgts():
          "A rubrica de descontos não é uma estimativa de todo o subsídio implícito de juros. Crescimento nominal não mede crescimento real.")
     m = read("saques_por_modalidade_fgts")
     m = m[m.ano.isin(a.ano)]
+    if m.empty and st.session_state.get("explore_chart") == "Quais modalidades ganham peso nos saques?":
+        st.info("A abertura por modalidade cobre 2020–2023. Amplie o período para consultar esse gráfico.")
     if not m.empty:
         m = m.copy()
         m["participacao"] = m.percentual/100
@@ -188,7 +184,7 @@ def render_fgts():
              "Percentuais originais / 100; não extrapola além de 2020–2023 nem preenche modalidades ausentes.", "modalidades_trajetoria",
              "Participação pode crescer sem aumento do valor absoluto. Não se multiplica pela DFC sem conciliar os universos das tabelas.")
     st.markdown("#### Sensibilidade estática de arrecadação e saques")
-    yr = st.selectbox("Ano de referência do exercício", sorted(a.ano.tolist()), index=len(a)-1, key="stress_ano")
+    yr = st.sidebar.selectbox("Ano de referência do exercício", sorted(a.ano.tolist()), index=len(a)-1, key="stress_ano")
     b = a[a.ano == yr].iloc[0]
     grid = stress_grid(b.arrecadacao_rs_milhares, b.saques_rs_milhares)
     grid["queda_rotulo"] = grid.queda_arrecadacao.map(lambda x: f"{x:.0%}")
@@ -236,8 +232,8 @@ def render_emprego():
              ["formalizacao_pnad"], "100 × (taxa no trimestre − taxa quatro trimestres antes). Referência usa a série completa, mesmo fora do filtro.",
              "formalizacao_variacao", "Variação em pontos percentuais, não em %. Sem intervalos de confiança, não se afirma significância estatística nem causalidade de pejotização.")
     last = d.iloc[-1]
-    pp = st.slider("Mudança hipotética na participação com carteira (p.p.)", -10.0, 10.0, -2.0, 0.5, key="choque_formalizacao")
-    wage = st.slider("Mudança hipotética no salário médio nominal (%)", -10, 20, 0, key="choque_salario")
+    pp = st.sidebar.slider("Mudança hipotética na participação com carteira (p.p.)", -10.0, 10.0, -2.0, 0.5, key="choque_formalizacao")
+    wage = st.sidebar.slider("Mudança hipotética no salário médio nominal (%)", -10, 20, 0, key="choque_salario")
     base_rate = last.taxa_formalizacao_fgts
     scenario_rate = base_rate+pp/100
     scenario = pd.DataFrame({"cenario":["Referência", "Hipótese selecionada"],

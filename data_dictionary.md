@@ -42,3 +42,28 @@ Conforme observação prévia do usuário (contratos Pró-Cotista, Faixa Estendi
 ## Convenção geral
 - Ano de referência: extraído da data de assinatura/contratação de cada base (não da `data_referencia`, que é a data de geração do arquivo, não do contrato).
 - Valores em R$ correntes (nominais), sem deflacionar — deflacionar é decisão para uma etapa posterior, a combinar.
+
+
+## balanco_fgts.csv
+
+- `ano`: encerramento em 31/12. A coluna 01/01/2022 reapresentada representa 2021.
+- `rubrica`: conta patrimonial; inclui totais e componentes. Não somar indiscriminadamente.
+- `valor_rs_milhares`: R$ milhares correntes, Controladora.
+- `arquivo_fonte`: documento oficial transcrito.
+- `pagina_fonte`: página física do PDF, base 1; vazia para o DOCX 2021.
+- `localizador_fonte`: tabela/seção da fonte; tabelas 1–2 do DOCX para 2020.
+- `tratamento`: publicado, reapresentado ou residual do ativo.
+
+## ponte_caixa_fgts.csv
+
+`ano`, `rubrica`, `valor_rs_milhares`, `arquivo_fonte`, `pagina_fonte`: mesmas definições de unidade e localização. Rubricas inicial/final são estoques; três atividades são fluxos mutuamente exclusivos. Inicial + atividades = final.
+
+## deficit_fjp_total.csv
+
+- `ano`: referência da pesquisa (2024), não ano de divulgação nem déficit de 2026.
+- `territorio`: Brasil.
+- `deficit_domicilios`: estoque estimado de domicílios em déficit (5.773.983).
+- `percentual_domicilios`: percentual dos domicílios particulares ocupados (7,4; escala 0–100).
+- `fonte_url`: divulgação oficial do Ministério das Cidades na Agência Gov.
+
+As tabelas por renda e componente não foram recuperadas. Não há imputação, nem uso de percentuais de outra edição para repartir o total.

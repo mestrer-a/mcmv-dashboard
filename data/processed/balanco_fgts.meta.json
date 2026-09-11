@@ -1,0 +1,36 @@
+{
+  "id": "balanco_fgts",
+  "titulo": "Balanço patrimonial do FGTS",
+  "organizacao": "FGTS / Caixa Econômica Federal",
+  "portal_catalogo": "https://www.fgts.gov.br/Paginas/subpaginas/demonstracoes-financeiras.aspx",
+  "data_acesso": "2026-09-11",
+  "bases": [
+    {
+      "nome": "Demonstracao_Financeira_FGTS_2021.docx",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2021.docx",
+      "sha256": "51736a22f8aa75085f6090a27b61281a1df5c931c660bece2b1293cfcd3e61e4"
+    },
+    {
+      "nome": "Demonstracao_Financeira_FGTS_2023-v6.pdf",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2023-v6.pdf",
+      "sha256": "b086c12fc884d022168a44371a93c9e375a78cb7b339cc3d894ab8602d334e6f"
+    },
+    {
+      "nome": "Demonstracao_Financeira_FGTS_2025.pdf",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2025.pdf",
+      "sha256": "b5e2ee361701ea9cdc08d6011bc6454b39f83405c0a8907d846e509753be554e"
+    }
+  ],
+  "por_que_essa_versao": "DF 2025 para 2024–2025; DF 2023 para 2021–2023, incluindo reapresentação; versão editável oficial de 2021 para 2020, pois o link PDF redirecionava em ciclo.",
+  "script": "scripts/process_balanco_fgts.py",
+  "tabela": "data/processed/balanco_fgts.csv",
+  "metrica": "Saldos em 31/12, R$ milhares correntes, Controladora.",
+  "premissas": [
+    "2021 usa a coluna 01/01/2022 reapresentada. O PL originalmente publicado era 118.341.277 e o caixa 29.087.878; os saldos reapresentados são 117.071.571 e 29.137.964. Não confundir revisão contábil com fluxo.",
+    "2020 usa documento editável oficial: o localizador é a tabela, não uma página PDF inventada. Os demais localizadores são páginas físicas do PDF, contadas a partir de 1.",
+    "TVM circulante e não circulante são saldos contábeis ao custo amortizado. Não constituem automaticamente liquidez livre; vencimentos, restrições e perdas de venda precisam ser modelados.",
+    "Patrimônio líquido é residual contábil; não é caixa nem verba orçamentária disponível. Ativo total inclui carteira de financiamentos.",
+    "Financiamentos = setor público e privado, circulante + não circulante. Outros recebíveis ficam separados. Demais ativos é residual reconciliado.",
+    "A soma de ativo e PL, ou de depósitos vinculados e passivo total, produz dupla contagem. As rubricas incluem subtotais e não devem ser somadas indiscriminadamente."
+  ]
+}

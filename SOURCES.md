@@ -50,3 +50,35 @@ https://dadosabertos.cidades.gov.br/dataset/execucao-orcamentario-financeira-da-
 - Novo Caged (pdet.mte.gov.br)
 - Déficit habitacional — Fundação João Pinheiro (fjp.mg.gov.br/deficit-habitacional-no-brasil)
 - SINAPI (IBGE) e INCC (FGV/IBRE)
+
+
+## Balanço patrimonial do FGTS
+
+Acesso: 2026-09-11. Processamento: `scripts/process_balanco_fgts.py`.
+
+- Demonstracao_Financeira_FGTS_2021.docx: https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2021.docx
+- Demonstracao_Financeira_FGTS_2023-v6.pdf: https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2023-v6.pdf
+- Demonstracao_Financeira_FGTS_2025.pdf: https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2025.pdf
+
+DF 2025 para 2024–2025; DF 2023 para 2021–2023, incluindo reapresentação; versão editável oficial de 2021 para 2020, pois o link PDF redirecionava em ciclo.
+
+
+## Ponte do caixa do FGTS
+
+Acesso: 2026-09-11. Processamento: `scripts/process_balanco_fgts.py`.
+
+- Demonstracao_Financeira_FGTS_2021.docx: https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2021.docx
+- Demonstracao_Financeira_FGTS_2023-v6.pdf: https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2023-v6.pdf
+- Demonstracao_Financeira_FGTS_2025.pdf: https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2025.pdf
+
+DF 2025 para 2024–2025; DF 2023 para 2021–2023, incluindo reapresentação; versão editável oficial de 2021 para 2020, pois o link PDF redirecionava em ciclo.
+
+
+## Déficit habitacional total, referência 2024
+
+Acesso: 2026-09-11. Processamento: `scripts/process_deficit_fjp.py`.
+
+- Ministério das Cidades na Agência Gov, 29/04/2026: https://agenciagov.ebc.com.br/noticias/202604/minha-casa-minha-vida-contribui-para-o-menor-deficit-habitacional-da-historia-do-pais-afirma-ministro
+- Cartilha metodológica FJP: https://drive.google.com/file/d/1ITXVvGuAs43gyQAVcwb_Z-P6XKGjtL1o/view
+
+2024 é a referência mais recente identificada; total confirmado na divulgação oficial do Ministério. Não substitui as tabelas originais por renda e componente, ainda indisponíveis nos endereços consultados.

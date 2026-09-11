@@ -1,0 +1,33 @@
+{
+  "id": "ponte_caixa_fgts",
+  "titulo": "Ponte do caixa do FGTS",
+  "organizacao": "FGTS / Caixa Econômica Federal",
+  "portal_catalogo": "https://www.fgts.gov.br/Paginas/subpaginas/demonstracoes-financeiras.aspx",
+  "data_acesso": "2026-09-11",
+  "bases": [
+    {
+      "nome": "Demonstracao_Financeira_FGTS_2021.docx",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2021.docx",
+      "sha256": "51736a22f8aa75085f6090a27b61281a1df5c931c660bece2b1293cfcd3e61e4"
+    },
+    {
+      "nome": "Demonstracao_Financeira_FGTS_2023-v6.pdf",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2023-v6.pdf",
+      "sha256": "b086c12fc884d022168a44371a93c9e375a78cb7b339cc3d894ab8602d334e6f"
+    },
+    {
+      "nome": "Demonstracao_Financeira_FGTS_2025.pdf",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2025.pdf",
+      "sha256": "b5e2ee361701ea9cdc08d6011bc6454b39f83405c0a8907d846e509753be554e"
+    }
+  ],
+  "por_que_essa_versao": "DF 2025 para 2024–2025; DF 2023 para 2021–2023, incluindo reapresentação; versão editável oficial de 2021 para 2020, pois o link PDF redirecionava em ciclo.",
+  "script": "scripts/process_balanco_fgts.py",
+  "tabela": "data/processed/ponte_caixa_fgts.csv",
+  "metrica": "Fluxos DFC Controladora e saldos de caixa, R$ milhares.",
+  "premissas": [
+    "Fluxos operacionais, de investimento e de financiamento reconciliam a variação do caixa. Arrecadação menos saques é apenas parte da DFC.",
+    "2024: fluxo de financiamento 31.602.250 difere em R$ 425 mil da subtração simples arrecadação–saques (31.602.675). Usar a linha DFC para reconciliar o caixa.",
+    "Não somar novamente os descontos ou liberações de crédito aos totais da DFC. DRE segue competência e não deve ser somada a fluxos de caixa."
+  ]
+}

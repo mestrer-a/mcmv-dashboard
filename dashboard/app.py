@@ -1,639 +1,158 @@
-"""
-Dashboard da dissertação — MCMV x FGTS.
-
-Navegação por ABA = 1 base de dados oficial (não por gráfico — um gráfico
-pode consumir mais de uma base, mas cada aba concentra as bases de uma
-mesma organização/fonte, seguindo o levantamento original do projeto).
-
-Dentro de cada aba: contexto da organização responsável, depois cada
-gráfico daquela aba com sua própria ficha de proveniência (fonte, link,
-data de acesso, por que é a versão correta, premissas de limpeza) ANTES do
-gráfico. Nenhum gráfico aparece sem essa ficha.
-"""
-import json
+"""Laboratório de pesquisa: fontes agrupadas e controles persistentes."""
+import ast
 from pathlib import Path
-
-import altair as alt
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
+st.set_page_config(page_title='MCMV · Laboratório de pesquisa',page_icon='🏘️',layout='wide')
 from exploracao import render_exploracao
-
-ROOT = Path(__file__).resolve().parent.parent
-PROCESSED_DIR = ROOT / "data" / "processed"
-
-# Paleta categórica validada (dataviz skill) — ordem fixa, nunca ciclada.
-COR_FGTS = "#2a78d6"          # slot 1 azul
-COR_OGU = "#eb6834"           # slot 2 laranja
-COR_FUNDO_SOCIAL = "#1baf7a"  # slot 3 água
-
-st.set_page_config(page_title="MCMV x FGTS — Dissertação", layout="wide")
-
-
-def inject_css() -> None:
-    st.markdown(
-        """
-        <style>
-        .block-container { padding-top: 2.5rem; max-width: 1200px; }
-        h1, h2, h3 { letter-spacing: -0.01em; }
-        h3 { margin-top: 0.2rem; }
-        [data-testid="stCaptionContainer"] { color: #52514e; }
-        div[data-testid="stExpander"] {
-            border: 1px solid #e1e0d9;
-            border-radius: 10px;
-        }
-        div[data-testid="stVerticalBlockBorderWrapper"] > div {
-            border-radius: 12px;
-        }
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(div[style]) {
-            box-shadow: 0 1px 3px rgba(11,11,11,0.05);
-        }
-        section[data-testid="stSidebar"] {
-            border-right: 1px solid #e1e0d9;
-        }
-        hr { margin: 1.6rem 0; }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def estilizar(chart, legend_bottom: bool = False, legend_columns: int = 1):
-    """Config visual consistente: eixos recessivos, sem borda no view, e
-    legenda com espaço suficiente pra não cortar nomes longos de categoria."""
-    legend_kwargs = dict(labelLimit=320, titleLimit=320, symbolSize=110)
-    if legend_bottom:
-        legend_kwargs.update(orient="bottom", columns=legend_columns, direction="horizontal")
-    return (
-        chart.configure_axis(gridColor="#e1e0d9", domainColor="#c3c2b7", labelColor="#52514e", titleColor="#0b0b0b")
-        .configure_view(strokeWidth=0)
-        .configure_legend(**legend_kwargs)
-    )
-
-# ---------------------------------------------------------------------------
-# Registro de abas = bases de dados (agrupamento do item 5 do plano original).
-# Cada aba lista os ids dos gráficos (em data/processed/<id>.csv/.meta.json)
-# que pertencem a ela. Aba sem gráfico pronto mostra um card "em construção".
-# ---------------------------------------------------------------------------
-ABAS = [
-    {
-        "label": "Ministério das Cidades — PMCMV",
-        "organizacao": "Ministério das Cidades — Secretaria Nacional de Habitação (SNH)",
-        "organizacao_descricao": (
-            "Órgão federal responsável por manter e publicar as bases oficiais de "
-            "contratos e empreendimentos do Programa Minha Casa, Minha Vida."
-        ),
-        "portal": "https://dadosabertos.cidades.gov.br/dataset/dados-do-programa-minha-casa-minha-vida-pmcmv",
-        "graficos": ["financiamento_por_fonte_ano", "subsidio_medio_faixa"],
-        "pendente": [],
-    },
-    {
-        "label": "FGTS — CCFGTS / Demonstrações Financeiras",
-        "organizacao": "Conselho Curador do FGTS (CCFGTS) e Agente Operador (Caixa Econômica Federal)",
-        "organizacao_descricao": (
-            "Orçamento do FGTS por rubrica e as Demonstrações Financeiras/Contábeis "
-            "do fundo — arrecadação, saques, remuneração das contas, amortizações e "
-            "receitas financeiras. Complementado pelo Acórdão TCU 270/2026."
-        ),
-        "portal": None,
-        "graficos": ["arrecadacao_saques_fgts", "orcamento_fgts_rubrica"],
-        "pendente": [],
-    },
-    {
-        "label": "Emprego formal — PNAD / Caged",
-        "organizacao": "IBGE (PNAD Contínua) e Ministério do Trabalho e Emprego (Novo Caged)",
-        "organizacao_descricao": (
-            "Taxa de formalização do emprego (% de ocupados com carteira assinada) — "
-            "âncora da sustentabilidade do FGTS no longo prazo."
-        ),
-        "portal": "https://sidra.ibge.gov.br/tabela/4097",
-        "graficos": ["formalizacao_pnad"],
-        "pendente": [],
-    },
-    {
-        "label": "Déficit habitacional — FJP",
-        "organizacao": "Fundação João Pinheiro (FJP)",
-        "organizacao_descricao": (
-            "Déficit habitacional total, por componente e por faixa (onde houver). "
-            "Usado como dado de entrada — não recalculado."
-        ),
-        "portal": None,
-        "graficos": [],
-        "pendente": [
-            "Gráfico 5 — Custo de acabar com o déficit hoje, por componente/faixa "
-            "(com e sem ônus de aluguel)",
-        ],
-    },
-    {
-        "label": "Custo de construção — SINAPI / INCC",
-        "organizacao": "IBGE (SINAPI) e FGV/IBRE (INCC)",
-        "organizacao_descricao": "Índices de custo de construção civil, usados como referência complementar.",
-        "portal": None,
-        "graficos": [],
-        "pendente": [
-            "Referência para o Gráfico 5 — custo de construção por m² usado na "
-            "estimativa do custo de novas unidades no cálculo do déficit",
-        ],
-    },
-]
-
-
-def carregar_meta(nome: str) -> dict:
-    with open(PROCESSED_DIR / f"{nome}.meta.json", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def carregar_tabela(nome: str) -> pd.DataFrame:
-    return pd.read_csv(PROCESSED_DIR / f"{nome}.csv")
-
-
-def render_ficha_proveniencia(meta: dict) -> None:
-    """Linha resumo (fonte + data) sempre visível; tudo o mais — bases, links,
-    justificativa da versão, premissas — recolhido num único expansor."""
-    st.caption(f"📊 Fonte: {meta['organizacao']} · dados de {meta['data_acesso']}")
-
-    with st.expander("Ver bases, links e premissas"):
-        st.markdown("**Bases utilizadas:**")
-        for base in meta["bases"]:
-            st.markdown(
-                f"- *{base['nome']}* — nível: {base['nivel']}, {base['tamanho']}\n"
-                f"  · usada para: {base['usada_para']}\n"
-                f"  · [{base['url']}]({base['url']})"
-            )
-
-        st.markdown("**Por que esta é a base correta (frente a outras versões/níveis):**")
-        st.write(meta["por_que_essa_versao"])
-
-        st.markdown(f"**Métrica:** {meta['metrica']}")
-        st.markdown("**Premissas de limpeza aplicadas:**")
-        for p in meta["premissas"]:
-            st.markdown(f"- {p}")
-
-        st.caption(
-            f"Script de processamento: `{meta['script']}` · "
-            f"Tabela: `{meta['tabela']}`"
-        )
-
-
-def grafico_financiamento_fonte_ano() -> None:
-    nome = "financiamento_por_fonte_ano"
-    meta = carregar_meta(nome)
-    df = carregar_tabela(nome)
-
-    st.subheader(meta["titulo"])
-    render_ficha_proveniencia(meta)
-
-    df = df.copy()
-    df["valor_bi"] = df["valor_total_financiado"] / 1e9
-    df["ano_em_curso"] = df["ano"] == df["ano"].max()
-
-    ordem_fonte = ["FGTS", "OGU", "Fundo Social"]
-    escala_cor = alt.Scale(domain=ordem_fonte, range=[COR_FGTS, COR_OGU, COR_FUNDO_SOCIAL])
-
-    chart = (
-        alt.Chart(df)
-        .mark_bar()
-        .encode(
-            x=alt.X("ano:O", title=None, axis=alt.Axis(labelAngle=0)),
-            y=alt.Y(
-                "valor_bi:Q",
-                title="R$ bilhões (valores correntes)",
-                stack="zero",
-            ),
-            color=alt.Color("fonte:N", scale=escala_cor, sort=ordem_fonte, title="Fonte"),
-            opacity=alt.condition(alt.datum.ano_em_curso, alt.value(0.55), alt.value(1.0)),
-            order=alt.Order("fonte:N", sort="ascending"),
-            tooltip=[
-                alt.Tooltip("ano:O", title="Ano"),
-                alt.Tooltip("fonte:N", title="Fonte"),
-                alt.Tooltip("valor_bi:Q", title="R$ bilhões", format=",.1f"),
-            ],
-        )
-        .properties(height=420)
-    )
-
-    st.altair_chart(estilizar(chart), use_container_width=True)
-    st.caption(
-        f"Barra mais clara = {int(df['ano'].max())}, ano em curso (dado parcial até a data de acesso)."
-    )
-
-    with st.expander("Ver tabela tidy"):
-        tabela_wide = df.pivot(index="ano", columns="fonte", values="valor_total_financiado")
-        tabela_wide = (tabela_wide / 1e9).round(1)[ordem_fonte]
-        st.dataframe(tabela_wide.astype(object).where(tabela_wide.notna(), "–"), use_container_width=True)
-
-
-def grafico_subsidio_medio_faixa() -> None:
-    nome = "subsidio_medio_faixa"
-    meta = carregar_meta(nome)
-    df = carregar_tabela(nome)
-
-    st.subheader(meta["titulo"])
-    render_ficha_proveniencia(meta)
-
-    ordem_faixa = [
-        "Faixa 1 (FAR/OGU)",
-        "Faixa 1 (contratos FGTS)",
-        "Faixa 2",
-        "Faixa 3",
-        "Faixa 4 / Classe Média",
-    ]
-    df = df.copy()
-    df["faixa"] = pd.Categorical(df["faixa"], categories=ordem_faixa, ordered=True)
-    df = df.sort_values("faixa")
-
-    chart = (
-        alt.Chart(df)
-        .mark_bar(color=COR_FGTS, cornerRadiusTopLeft=4, cornerRadiusTopRight=4)
-        .encode(
-            x=alt.X("faixa:N", title=None, sort=ordem_faixa, axis=alt.Axis(labelAngle=-20)),
-            y=alt.Y("subsidio_medio_por_unidade:Q", title="R$ por unidade (valores correntes)"),
-            tooltip=[
-                alt.Tooltip("faixa:N", title="Faixa"),
-                alt.Tooltip("subsidio_medio_por_unidade:Q", title="Subsídio médio (R$)", format=",.0f"),
-                alt.Tooltip("qtd_contratos:Q", title="Nº de contratos/unidades", format=",.0f"),
-            ],
-        )
-        .properties(height=380)
-    )
-
-    st.altair_chart(estilizar(chart), use_container_width=True)
-    st.caption(
-        "As duas barras de 'Faixa 1' usam definições diferentes de subsídio — ver "
-        "premissas acima. Não devem ser somadas."
-    )
-
-    with st.expander("Ver tabela tidy"):
-        tabela = df.set_index("faixa")[["subsidio_medio_por_unidade", "qtd_contratos"]]
-        tabela.columns = ["Subsídio médio (R$)", "Nº contratos/unidades"]
-        st.dataframe(tabela.round(0), use_container_width=True)
-
-
-def grafico_arrecadacao_saques() -> None:
-    nome = "arrecadacao_saques_fgts"
-    meta = carregar_meta(nome)
-    df = carregar_tabela(nome)
-
-    st.subheader(meta["titulo"])
-    render_ficha_proveniencia(meta)
-
-    df = df.copy()
-    df["arrecadacao_bi"] = df["arrecadacao_rs_milhares"] / 1e6
-    df["saques_bi"] = df["saques_rs_milhares"] / 1e6
-    long = df.melt(
-        id_vars="ano",
-        value_vars=["arrecadacao_bi", "saques_bi"],
-        var_name="serie",
-        value_name="valor_bi",
-    )
-    long["serie"] = long["serie"].map({"arrecadacao_bi": "Arrecadação", "saques_bi": "Saques"})
-    ordem_serie = ["Arrecadação", "Saques"]
-    escala_cor = alt.Scale(domain=ordem_serie, range=[COR_FGTS, COR_OGU])
-
-    chart = (
-        alt.Chart(long)
-        .mark_line(point=alt.OverlayMarkDef(size=70, filled=True), strokeWidth=2.5)
-        .encode(
-            x=alt.X("ano:O", title=None),
-            y=alt.Y("valor_bi:Q", title="R$ bilhões (valores correntes)"),
-            color=alt.Color("serie:N", scale=escala_cor, sort=ordem_serie, title=None),
-            tooltip=[
-                alt.Tooltip("ano:O", title="Ano"),
-                alt.Tooltip("serie:N", title="Série"),
-                alt.Tooltip("valor_bi:Q", title="R$ bilhões", format=",.1f"),
-            ],
-        )
-        .properties(height=380)
-    )
-    st.altair_chart(estilizar(chart), use_container_width=True)
-    st.caption(
-        "2020 não é comparável aos demais anos: exclui a incorporação extraordinária "
-        "do PIS/PASEP (MP 946/2020) — ver premissas acima."
-    )
-
-    with st.expander("Ver tabela tidy"):
-        tabela = df.set_index("ano")[["arrecadacao_rs_milhares", "saques_rs_milhares", "arrecadacao_liquida_rs_milhares"]]
-        tabela.columns = ["Arrecadação (R$ mil)", "Saques (R$ mil)", "Arrecadação líquida (R$ mil)"]
-        st.dataframe(tabela, use_container_width=True)
-
-    nome_mod = "saques_por_modalidade_fgts"
-    df_mod = carregar_tabela(nome_mod)
-    st.markdown("**Bônus — saques por modalidade (% do total), 2020-2023**")
-    st.caption(
-        "Só disponível para esses 4 anos nos PDFs consultados. Inclui a fatia de "
-        "\"Aposentadoria\" — um dos dois riscos estruturais do FGTS discutidos na dissertação."
-    )
-    ordem_mod = [
-        "Demissão sem Justa Causa", "Habitação", "Aposentadoria",
-        "Saque-aniversário", "Saque extraordinário", "Outras modalidades",
-    ]
-    cores_mod = [COR_FGTS, COR_OGU, COR_FUNDO_SOCIAL, "#eda100", "#e87ba4", "#008300"]
-    chart_mod = (
-        alt.Chart(df_mod)
-        .mark_bar()
-        .encode(
-            x=alt.X("ano:O", title=None),
-            y=alt.Y("percentual:Q", title="% dos saques", stack="zero"),
-            color=alt.Color("modalidade:N", scale=alt.Scale(domain=ordem_mod, range=cores_mod), sort=ordem_mod, title="Modalidade"),
-            order=alt.Order("modalidade:N", sort="ascending"),
-            tooltip=[
-                alt.Tooltip("ano:O", title="Ano"),
-                alt.Tooltip("modalidade:N", title="Modalidade"),
-                alt.Tooltip("percentual:Q", title="%", format=".1f"),
-            ],
-        )
-        .properties(height=380)
-    )
-    st.altair_chart(estilizar(chart_mod, legend_bottom=True, legend_columns=3), use_container_width=True)
-
-
-def grafico_orcamento_fgts_rubrica() -> None:
-    nome = "orcamento_fgts_rubrica"
-    meta = carregar_meta(nome)
-    df = carregar_tabela(nome)
-
-    st.subheader(meta["titulo"])
-    render_ficha_proveniencia(meta)
-
-    df = df.copy()
-    df["valor_bi"] = df["valor_rs_milhares"] / 1e6
-
-    ordem_rubrica = [
-        "Despesas de depósitos vinculados",
-        "Descontos concedidos",
-        "Taxa de administração",
-        "Outras despesas operacionais e administrativas",
-        "Despesas administrativas",
-    ]
-    cores_rubrica = [COR_FGTS, COR_OGU, COR_FUNDO_SOCIAL, "#eda100", "#e87ba4"]
-
-    chart = (
-        alt.Chart(df)
-        .mark_bar()
-        .encode(
-            x=alt.X("ano:O", title=None),
-            y=alt.Y("valor_bi:Q", title="R$ bilhões (valores correntes)", stack="zero"),
-            color=alt.Color(
-                "rubrica:N",
-                scale=alt.Scale(domain=ordem_rubrica, range=cores_rubrica),
-                sort=ordem_rubrica,
-                title="Rubrica",
-            ),
-            order=alt.Order("rubrica:N", sort="ascending"),
-            tooltip=[
-                alt.Tooltip("ano:O", title="Ano"),
-                alt.Tooltip("rubrica:N", title="Rubrica"),
-                alt.Tooltip("valor_bi:Q", title="R$ bilhões", format=",.1f"),
-            ],
-        )
-        .properties(height=440)
-    )
-    st.altair_chart(estilizar(chart, legend_bottom=True, legend_columns=2), use_container_width=True)
-    st.caption(
-        "Descontos concedidos = rubrica contábil de apoio habitacional; não é uma "
-        "estimativa do subsídio implícito contra taxas de mercado. Despesas realizadas "
-        "da DRE, não orçamento de aplicações por setor."
-    )
-
-    with st.expander("Ver tabela tidy"):
-        tabela_wide = df.pivot(index="ano", columns="rubrica", values="valor_bi")[ordem_rubrica]
-        st.dataframe(tabela_wide.round(1), use_container_width=True)
-
-
-def grafico_formalizacao() -> None:
-    nome = "formalizacao_pnad"
-    meta = carregar_meta(nome)
-    df = carregar_tabela(nome)
-
-    st.subheader(meta["titulo"])
-    render_ficha_proveniencia(meta)
-
-    df = df.copy()
-    df["periodo"] = df["ano"].astype(str) + "T" + df["trimestre"].astype(str)
-    long = df.melt(
-        id_vars="periodo",
-        value_vars=["taxa_formalizacao_fgts", "taxa_formalizacao_privado_only"],
-        var_name="serie",
-        value_name="taxa",
-    )
-    long["serie"] = long["serie"].map({
-        "taxa_formalizacao_fgts": "Relevante ao FGTS",
-        "taxa_formalizacao_privado_only": "Referência de mercado",
-    })
-    ordem_serie = ["Relevante ao FGTS", "Referência de mercado"]
-    escala_cor = alt.Scale(domain=ordem_serie, range=[COR_FGTS, COR_OGU])
-
-    chart = (
-        alt.Chart(long)
-        .mark_line(strokeWidth=2.5)
-        .encode(
-            x=alt.X("periodo:O", title=None, axis=alt.Axis(labelAngle=-45, labelOverlap=True)),
-            y=alt.Y("taxa:Q", title="% dos ocupados", axis=alt.Axis(format=".0%")),
-            color=alt.Color("serie:N", scale=escala_cor, sort=ordem_serie, title=None),
-            tooltip=[
-                alt.Tooltip("periodo:O", title="Trimestre"),
-                alt.Tooltip("serie:N", title="Série"),
-                alt.Tooltip("taxa:Q", title="Taxa", format=".1%"),
-            ],
-        )
-        .properties(height=420)
-    )
-    st.altair_chart(estilizar(chart, legend_bottom=True, legend_columns=1), use_container_width=True)
-    st.caption(
-        "\"Relevante ao FGTS\" usa o total de ocupados como denominador (privado + "
-        "doméstico + público com carteira ÷ total ocupados); \"Referência de mercado\" "
-        "é o indicador mais citado na imprensa (só privado) — detalhes nas premissas acima."
-    )
-
-    with st.expander("Ver tabela tidy"):
-        tabela = df.set_index("periodo")[["taxa_formalizacao_fgts", "taxa_formalizacao_privado_only"]]
-        tabela.columns = ["Relevante ao FGTS", "Referência de mercado"]
-        st.dataframe((tabela * 100).round(1), use_container_width=True)
-
-
-# Registro de renderers de gráfico por id — só falta o gráfico 5.
-RENDERERS = {
-    "financiamento_por_fonte_ano": grafico_financiamento_fonte_ano,
-    "subsidio_medio_faixa": grafico_subsidio_medio_faixa,
-    "arrecadacao_saques_fgts": grafico_arrecadacao_saques,
-    "orcamento_fgts_rubrica": grafico_orcamento_fgts_rubrica,
-    "formalizacao_pnad": grafico_formalizacao,
-}
-
-
-# Etapas do objetivo geral da dissertação (Introdução, linha do "objetivo geral"),
-# mapeadas ao que já está pronto no dashboard.
-ETAPAS = [
-    {
-        "titulo": "Caracterizar a evolução histórica das fontes de recursos do MCMV",
-        "grafico": "Gráfico 1 — Financiamento por fonte e ano",
-        "pronto": True,
-    },
-    {
-        "titulo": "Separar financiamento, subsídios explícitos e subsídios implícitos",
-        "grafico": "Subsídios registrados disponíveis · benchmark e subsídio implícito pendentes",
-        "pronto": "parcial",
-    },
-    {
-        "titulo": "Estimar o subsídio médio por unidade e por faixa de renda",
-        "grafico": "Médias exploratórias disponíveis · validação das faixas e proxy FAR pendentes",
-        "pronto": "parcial",
-    },
-    {
-        "titulo": "Reconstruir a evolução recente das entradas, saídas e aplicações do FGTS",
-        "grafico": "Arrecadação, saques e DRE disponíveis · aplicações setoriais e demais fluxos pendentes",
-        "pronto": "parcial",
-    },
-    {
-        "titulo": "Simular a trajetória do Fundo sob hipóteses de formalização do mercado de trabalho e de saques",
-        "grafico": "Gráfico 4 (formalização) pronto · simulação de cenários ainda pendente",
-        "pronto": "parcial",
-    },
-    {
-        "titulo": "Estimar a ordem de grandeza do custo de enfrentar o estoque atual do déficit habitacional",
-        "grafico": "Gráfico 5 (FJP) — pendente",
-        "pronto": False,
-    },
-]
-
-
-def render_organograma() -> None:
-    cor_pronto = "#1baf7a"
-    cor_parcial = "#eda100"
-    cor_pendente = "#c3c2b7"
-
-    boxes_html = []
-    for i, etapa in enumerate(ETAPAS, start=1):
-        if etapa["pronto"] is True:
-            cor, selo = cor_pronto, "✅ pronto"
-        elif etapa["pronto"] == "parcial":
-            cor, selo = cor_parcial, "🟡 parcial"
-        else:
-            cor, selo = cor_pendente, "🚧 pendente"
-
-        boxes_html.append(
-            f'<div style="border:2px solid {cor}; border-radius:10px; padding:14px 18px; '
-            f'background:rgba(0,0,0,0.015); max-width:640px; margin:0 auto;">'
-            f'<div style="font-size:0.78rem; color:#898781; font-weight:600;">ETAPA {i}</div>'
-            f'<div style="font-size:0.95rem; font-weight:600; margin:2px 0 4px 0;">{etapa["titulo"]}</div>'
-            f'<div style="font-size:0.85rem; color:#52514e;">{etapa["grafico"]}</div>'
-            f'<div style="font-size:0.78rem; color:{cor}; font-weight:700; margin-top:4px;">{selo}</div>'
-            f'</div>'
-        )
-        if i < len(ETAPAS):
-            boxes_html.append(
-                '<div style="text-align:center; font-size:1.4rem; color:#898781; '
-                'line-height:1.2; margin: 2px 0;">↓</div>'
-            )
-
-    st.markdown("\n".join(boxes_html), unsafe_allow_html=True)
-
-
-def render_capa() -> None:
-    st.title("Minha Casa Minha Vida, FGTS e Déficit Habitacional")
-    st.markdown(
-        "##### Uma análise da sustentabilidade financeira do modelo brasileiro "
-        "de financiamento habitacional"
-    )
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("**Autor:** Arthur Messer")
-        st.markdown("**Orientador:** Fernando de Holanda Barbosa Filho")
-    with col2:
-        st.markdown("**Instituição:** FGV EPGE — Mestrado Profissional em Economia e Finanças")
-        st.markdown("**Área de concentração:** Finanças Públicas, Política Habitacional e Sustentabilidade Fiscal")
-
-    st.divider()
-
-    st.markdown("#### Objetivo geral")
-    st.write(
-        "Avaliar a sustentabilidade financeira do MCMV a partir da estrutura de "
-        "financiamento do programa, com ênfase no FGTS, e entender como o programa "
-        "reduz o déficit habitacional."
-    )
-
-    with st.expander("Ver resumo completo da dissertação"):
-        st.write(
-            "Esta dissertação avalia a sustentabilidade financeira do Programa "
-            "Minha Casa, Minha Vida, principal instrumento federal de provisão e "
-            "financiamento habitacional do Brasil, com ênfase no papel do Fundo de "
-            "Garantia do Tempo de Serviço como fonte de recursos. O trabalho parte "
-            "da distinção entre o volume de crédito aplicado no financiamento "
-            "habitacional e o custo econômico efetivo do programa, separando "
-            "financiamento, subsídios explícitos e subsídios implícitos decorrentes "
-            "de taxas de juros inferiores às praticadas pelo mercado. A partir de "
-            "bases administrativas e contábeis oficiais, estima-se o subsídio médio "
-            "por unidade e por faixa de renda e reconstrói-se a evolução recente das "
-            "entradas, saídas e aplicações do Fundo. Em seguida, projeta-se a "
-            "trajetória financeira do Fundo sob diferentes hipóteses de formalização "
-            "do mercado de trabalho e de saques, e dimensiona-se a ordem de "
-            "grandeza do custo de enfrentar o estoque atual do déficit habitacional. "
-            "A hipótese de que a disponibilidade de recursos do Fundo constitui a "
-            "principal restrição à expansão do modelo é tratada como questão "
-            "empírica, e não como resultado previamente estabelecido."
-        )
-
-    st.divider()
-
-    st.markdown("#### Abordagem — do objetivo geral aos gráficos")
-    st.caption(
-        "Cada etapa abaixo corresponde a uma frase do objetivo geral da introdução, "
-        "ligada ao(s) gráfico(s) deste dashboard que a implementam."
-    )
-    render_organograma()
-
-    st.divider()
-    st.caption(
-        "Use o menu à esquerda para explorar cada base de dados. Cada gráfico traz "
-        "sua própria ficha de proveniência (fonte, link, premissas) antes da figura."
-    )
-
-
-def render_aba(aba: dict) -> None:
-    st.markdown(f"**Organização responsável:** {aba['organizacao']}")
-    st.caption(aba["organizacao_descricao"])
-    if aba["portal"]:
-        st.markdown(f"**Catálogo:** [{aba['portal']}]({aba['portal']})")
-    st.divider()
-
-    index = ABAS.index(aba)
-    if index < 3:
-        view = st.radio("Escolha a leitura", ["Gráficos essenciais", "Explorações e hipóteses"],
-                        horizontal=True, key=f"leitura_{index}")
-        st.caption("Novos gráficos nas mesmas bases, com filtros, perguntas de pesquisa e download das tabelas.")
-        if view == "Explorações e hipóteses":
-            render_exploracao(index)
-            return
-
-    for grafico_id in aba["graficos"]:
-        RENDERERS[grafico_id]()
-        st.divider()
-
-    if aba["pendente"]:
-        with st.container(border=True):
-            st.markdown("🚧 **Em construção — gráficos planejados para esta base:**")
-            for item in aba["pendente"]:
-                st.markdown(f"- {item}")
-
-
-def main():
-    inject_css()
-    with st.sidebar:
-        st.markdown("### 🧭 Navegação")
-        labels = ["📖 Capa"] + [aba["label"] for aba in ABAS]
-        status = [""] + [" ✅" if aba["graficos"] else " 🚧" for aba in ABAS]
-        escolha = st.radio(
-            "Navegação",
-            options=range(len(labels)),
-            format_func=lambda i: labels[i] + status[i],
-            label_visibility="collapsed",
-        )
-
-    if escolha == 0:
-        render_capa()
+from ui import DATA, COLORS, sources, plot, table, line
+
+st.markdown("""<style>
+.stApp {background:#F5F7FA;color:#25364B}
+.block-container {max-width:1320px;padding-top:4rem;padding-bottom:3rem}
+h1 {font-size:2.6rem!important;letter-spacing:-.04em;color:#153149}
+h2,h3 {letter-spacing:-.025em}
+section[data-testid="stSidebar"] {background:#EAF0F5;border-right:1px solid #D6E1EB}
+div[data-testid="stMetric"] {background:white;border:1px solid #E0E7EF;padding:18px;border-radius:14px}
+div[data-testid="stExpander"] {background:white;border-radius:12px}
+div[data-testid="stPlotlyChart"],div[data-testid="stVegaLiteChart"] {background:white;border-radius:16px;padding:10px}
+</style>""",unsafe_allow_html=True)
+
+@st.cache_data
+def read(name):return pd.read_csv(DATA/f'{name}.csv')
+
+def br(v):return f'{v:,.2f}'.replace(',','X').replace('.',',').replace('X','.')
+
+def period(d,key,partial=False):
+    if partial and not st.sidebar.checkbox('Incluir 2026 (parcial)',key=key+'_partial'):
+        d=d[d.ano!=2026]
+    years=sorted(d.ano.unique())
+    if len(years)>1:
+        lo,hi=st.sidebar.select_slider('Período',years,value=(years[0],years[-1]),key=key+'_period')
+        d=d[d.ano.between(lo,hi)]
+    return d.copy()
+
+SOURCES={1:['financiamento_por_fonte_ano','subsidio_medio_faixa','exploracao_contratos'],
+ 2:['arrecadacao_saques_fgts','orcamento_fgts_rubrica','balanco_fgts','ponte_caixa_fgts'],3:['formalizacao_pnad']}
+
+def explore(index):
+    tree=ast.parse((Path(__file__).parent/'exploracao.py').read_text(encoding='utf-8'))
+    fn=next(x for x in tree.body if isinstance(x,ast.FunctionDef) and x.name==['render_cidades','render_fgts','render_emprego'][index])
+    titles=[n.args[0].value for n in ast.walk(fn) if isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id=='show' and isinstance(n.args[0],ast.Constant)]
+    st.sidebar.selectbox('Pergunta de pesquisa',titles+['Todos'],key='explore_chart')
+    render_exploracao(index)
+
+def stocks():
+    d=period(read('balanco_fgts'),'stocks');latest=d[d.ano==d.ano.max()].set_index('rubrica').valor_rs_milhares
+    for col,rub in zip(st.columns(3),['Caixa e equivalentes','Patrimônio líquido','Ativo total']):
+        col.metric(f'{rub} · {d.ano.max()}','R$ '+br(latest[rub]/1e6)+' bi')
+    topic=st.sidebar.radio('Gráfico',['Caixa e patrimônio','Composição do ativo','Ponte do caixa'],key='stocks_topic')
+    if topic=='Caixa e patrimônio':
+        st.subheader('Quanto o Fundo tem — e de que tipo?')
+        selected=st.sidebar.multiselect('Saldos',['Caixa e equivalentes','Patrimônio líquido','Ativo total','TVM circulante','TVM não circulante'],default=['Caixa e equivalentes','Patrimônio líquido'])
+        t=d[d.rubrica.isin(selected)].copy();t['R$ bilhões']=t.valor_rs_milhares/1e6
+        if not t.empty:plot(line(t,'ano','R$ bilhões','rubrica'),'stocks')
+        else:st.info('Selecione um saldo.')
+        table(t,'stocks')
+        st.caption('2021 e 2022 reapresentados nas DF 2023. Patrimônio não é caixa; títulos não significam disponibilidade imediata. O ativo inclui a carteira de crédito.')
+    elif topic=='Composição do ativo':
+        parts=['Caixa e equivalentes','TVM circulante','TVM não circulante','Financiamentos circulantes','Financiamentos não circulantes','Outros empréstimos e recebíveis','Demais ativos']
+        t=d[d.rubrica.isin(parts)].copy();t['R$ bilhões']=t.valor_rs_milhares/1e6
+        st.subheader('A carteira de crédito domina o ativo')
+        plot(px.bar(t,x='ano',y='R$ bilhões',color='rubrica',color_discrete_sequence=COLORS),'asset');table(t,'asset')
+        st.caption('Componentes exclusivos, reconciliados ao ativo total. A carteira representa recebimentos futuros, sujeitos a prazo e risco.')
     else:
-        render_aba(ABAS[escolha - 1])
+        year=st.sidebar.selectbox('Ano da ponte',[2024,2025],index=1)
+        p=read('ponte_caixa_fgts');p=p[p.ano==year]
+        st.subheader('Como o caixa mudou durante o ano?')
+        fig=go.Figure(go.Waterfall(x=p.rubrica,y=p.valor_rs_milhares/1e6,measure=['absolute','relative','relative','relative','total'],increasing=dict(marker_color=COLORS[2]),decreasing=dict(marker_color=COLORS[1]),totals=dict(marker_color=COLORS[0])))
+        fig.update_yaxes(title='R$ bilhões');plot(fig,'bridge');table(p,'bridge')
+        st.caption('Arrecadação líquida positiva pode coexistir com queda do caixa, como em 2025. Os três fluxos da DFC reconciliam os saldos; não somar novamente descontos e empréstimos aos totais.')
+    with st.expander('Como usar o estoque inicial na sustentabilidade'):
+        st.write('R₀ pode partir de caixa e equivalentes. Incluir títulos exige cronograma de vencimentos ou hipótese explícita de venda. Ativo e patrimônio avaliam a estrutura patrimonial, sem substituir a restrição de caixa.')
+        st.code('Caixa final = caixa inicial + fluxo operacional + fluxo de investimento + fluxo de financiamento',language=None)
+        st.write('Modelar arrecadação, saques, recebimentos da carteira, novas concessões, descontos pagos e despesas. Remuneração creditada nas contas não é automaticamente saída de caixa; evitar dupla contagem quando os recursos forem sacados.')
 
+def essentials(page):
+    if page==1:
+        topic=st.sidebar.radio('Gráfico',['História por fonte','Subsídio por faixa'])
+        if topic=='História por fonte':
+            d=period(read('financiamento_por_fonte_ano'),'sources',True)
+            d['fonte']=d.fonte.replace({'OGU':'Empreendimentos subsidiados (proxy OGU)'})
+            selected=st.sidebar.multiselect('Fontes',sorted(d.fonte.unique()),default=sorted(d.fonte.unique()))
+            d=d[d.fonte.isin(selected)];d['R$ bilhões']=d.valor_total_financiado/1e9
+            st.subheader('A história do programa pelas fontes de recursos')
+            if d.empty:return st.info('Selecione uma fonte.')
+            fig=px.bar(d,x='ano',y='R$ bilhões',color='fonte',color_discrete_sequence=COLORS)
+            fig.update_xaxes(dtick=1)
+            for i,(year,label) in enumerate([(2009,'Criação'),(2011,'Fase 2'),(2016,'Fase 3'),(2020,'CVA'),(2023,'Retomada'),(2025,'Fundo Social')]):
+                if d.ano.min()<=year<=d.ano.max():
+                    fig.add_vline(x=year,line_width=1,line_dash='dot',line_color='#8F9DAD')
+                    fig.add_annotation(x=year,y=1.03+(i%2)*.09,yref='paper',text=label,showarrow=False,font=dict(size=10),xanchor='right' if year==d.ano.max() else 'center')
+            plot(fig,'history');table(d,'history')
+            st.caption('OGU é uma proxy pelo valor de empreendimentos subsidiados, não execução orçamentária anual. Ausência de registro não comprova gasto zero. Crédito contratado não é subsídio.')
+            with st.expander('Marcos históricos',expanded=True):
+                st.write('2009 · criação → 2011 · fase 2 → 2016 · fase 3 → 2020–2022 · Casa Verde e Amarela → 2023 · retomada → 2025 · Fundo Social aparece no crédito da base.')
+                st.caption('Contexto temporal, sem identificação causal. A EC 95 é de dezembro de 2016 e não explica isoladamente movimentos anteriores. Tetos de renda e códigos de faixa mudam no tempo.')
+        else:
+            d=read('subsidio_medio_faixa');st.subheader('Valor registrado por unidade e faixa')
+            plot(px.bar(d,x='subsidio_medio_por_unidade',y='faixa',orientation='h',labels={'subsidio_medio_por_unidade':'R$ correntes por unidade','faixa':''}),'subsidy');table(d,'subsidy')
+            st.caption('FAR: valor contratado por unidade. Financiadas: subsídio registrado. São conceitos distintos e médias de diferentes anos; não representam todo benefício implícito de juros.')
+    elif page==2:
+        topic=st.sidebar.radio('Gráfico',['Arrecadação e saques','Despesas reconhecidas'])
+        if topic=='Arrecadação e saques':
+            d=period(read('arrecadacao_saques_fgts'),'flow');t=d.melt(id_vars='ano',value_vars=['arrecadacao_rs_milhares','saques_rs_milhares'],var_name='Série',value_name='valor')
+            t['Série']=t['Série'].map({'arrecadacao_rs_milhares':'Arrecadação','saques_rs_milhares':'Saques'});t['R$ bilhões']=t.valor/1e6
+            plot(line(t,'ano','R$ bilhões','Série'),'flows');table(d,'flows')
+            st.caption('A diferença não é lucro nem variação do caixa. Em 2020, a transferência PIS/PASEP está excluída da arrecadação apresentada.')
+        else:
+            d=period(read('orcamento_fgts_rubrica'),'dre');d['R$ bilhões']=d.valor_rs_milhares/1e6
+            st.subheader('Despesas reconhecidas na DRE')
+            st.write('Esta tabela contábil não é a distribuição do orçamento de aplicações entre habitação, saneamento e infraestrutura.')
+            plot(px.bar(d,x='ano',y='R$ bilhões',color='rubrica',color_discrete_sequence=COLORS),'dre');table(d,'dre')
+    else:
+        d=period(read('formalizacao_pnad'),'employment');d['Período']=d.ano.astype(str)+'T'+d.trimestre.astype(str);d['Com carteira (%)']=d.taxa_formalizacao_fgts*100
+        plot(line(d,'Período','Com carteira (%)'),'employment');table(d,'employment')
+        st.caption('Proxy de pessoas ocupadas com carteira, não vínculos ou depósitos efetivos. Não identifica pejotização nem a massa salarial sujeita ao FGTS.')
 
-if __name__ == "__main__":
-    main()
+def housing():
+    sources(['deficit_fjp_total','exploracao_contratos'])
+    total=read('deficit_fjp_total').iloc[0]
+    st.metric('Domicílios em déficit · 2024',f'{int(total.deficit_domicilios):,}'.replace(',','.'))
+    st.info('Referência mais recente identificada: 2024. As tabelas completas por renda e componente ainda não foram recuperadas do portal da FJP. Nenhum desdobramento foi inventado.')
+    st.markdown('[Cartilha metodológica da FJP](https://drive.google.com/file/d/1ITXVvGuAs43gyQAVcwb_Z-P6XKGjtL1o/view)')
+    st.write('Três componentes: habitação precária, coabitação e ônus excessivo com aluguel urbano. O último considera famílias com renda de até três salários mínimos que gastam mais de 30% com aluguel. Não acrescentar adensamento como quarta parcela independente.')
+    st.subheader('Contratos e subsídios registrados se concentram nas mesmas faixas?')
+    d=read('exploracao_contratos');d=d[d.ano!=2026]
+    years=sorted(d.ano.unique());year=st.sidebar.selectbox('Ano dos contratos',years,index=len(years)-1)
+    t=d[d.ano==year].groupby('faixa_codigo',as_index=False)[['contratos','financiamento','subsidio_total']].sum()
+    t['Contratos (%)']=100*t.contratos/t.contratos.sum();t['Subsídio registrado (%)']=100*t.subsidio_total/t.subsidio_total.sum()
+    m=t.melt(id_vars='faixa_codigo',value_vars=['Contratos (%)','Subsídio registrado (%)'],var_name='Medida',value_name='%')
+    plot(px.bar(m,x='faixa_codigo',y='%',color='Medida',barmode='group',color_discrete_sequence=COLORS),'targeting');table(t,'targeting')
+    st.caption('Somente universo financiado, sem FAR. Crédito favorecido pode existir sem subsídio explícito registrado. Contratos não informam déficit anterior da família; a figura não mede déficit eliminado. Bandas FJP e tetos MCMV não coincidem automaticamente.')
+
+with st.sidebar:
+    st.markdown('## MCMV / FGTS');st.caption('LABORATÓRIO DA DISSERTAÇÃO')
+    page=st.radio('Navegação',range(6),format_func=lambda x:['Visão geral','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção'][x]);st.divider()
+if page==0:
+    st.caption('FGV EPGE · ARTHUR MESSER · ORIENTADOR: FERNANDO DE HOLANDA BARBOSA FILHO')
+    st.title('Minha Casa Minha Vida e sustentabilidade do FGTS')
+    st.write('Investigar de onde vêm os recursos, quem recebe os subsídios e quais limites condicionam a expansão do programa.')
+    for c,label,value in zip(st.columns(3),['Contratações','Balanços do FGTS','Fontes principais'],['2009–2026*','2020–2025','3']):c.metric(label,value)
+    st.caption('*2026 parcial. Resultados descritivos e exercícios hipotéticos são apresentados separadamente.')
+    for title,text in [('Programa e subsídios','Fontes, escala, faixas e benefícios registrados.'),('FGTS','Caixa, carteira, patrimônio e os fluxos que explicam sua evolução.'),('Emprego formal','A base potencial de contribuição no mercado de trabalho.'),('Déficit habitacional','Renda, componentes e diferentes instrumentos de política habitacional.')]:
+        with st.container(border=True):st.subheader(title);st.write(text)
+    st.caption('Use a navegação e os filtros à esquerda. A hipótese de restrição financeira do FGTS será testada, não presumida.')
+else:
+    st.title(['','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção'][page])
+    if page in SOURCES:
+        sources(SOURCES[page]);st.caption('Passe o mouse pela área das séries temporais para consultar o período. Clique na legenda para ocultar séries; use a barra do gráfico para ampliar ou exportar.')
+        modes=['Panorama','Explorações'] if page!=2 else ['Estoques e caixa','Fluxos e despesas','Explorações']
+        mode=st.sidebar.radio('Leitura',modes,key=f'mode_{page}')
+        if mode=='Explorações':explore(page-1)
+        elif mode=='Estoques e caixa':stocks()
+        else:essentials(page)
+    elif page==4:housing()
+    else:st.info('Integração SINAPI/INCC pendente. Não se infere custo de construção a partir do valor de financiamento.')

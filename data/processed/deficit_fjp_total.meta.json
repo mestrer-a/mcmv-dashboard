@@ -1,0 +1,28 @@
+{
+  "id": "deficit_fjp_total",
+  "titulo": "Déficit habitacional total, referência 2024",
+  "organizacao": "Fundação João Pinheiro; divulgação Ministério das Cidades / Agência Gov",
+  "portal_catalogo": "https://fjp.mg.gov.br/deficit-habitacional-no-brasil/",
+  "data_acesso": "2026-09-11",
+  "bases": [
+    {
+      "nome": "Ministério das Cidades na Agência Gov, 29/04/2026",
+      "url": "https://agenciagov.ebc.com.br/noticias/202604/minha-casa-minha-vida-contribui-para-o-menor-deficit-habitacional-da-historia-do-pais-afirma-ministro"
+    },
+    {
+      "nome": "Cartilha metodológica FJP",
+      "url": "https://drive.google.com/file/d/1ITXVvGuAs43gyQAVcwb_Z-P6XKGjtL1o/view"
+    }
+  ],
+  "por_que_essa_versao": "2024 é a referência mais recente identificada; total confirmado na divulgação oficial do Ministério. Não substitui as tabelas originais por renda e componente, ainda indisponíveis nos endereços consultados.",
+  "script": "scripts/process_deficit_fjp.py",
+  "tabela": "data/processed/deficit_fjp_total.csv",
+  "metrica": "Domicílios em déficit e percentual do total de domicílios particulares ocupados.",
+  "premissas": [
+    "Estoque de referência 2024, não contagem em setembro de 2026.",
+    "Não inferir queda causal devida ao MCMV a partir da série agregada.",
+    "Bandas de renda em SM não são automaticamente faixas do programa.",
+    "Não há abertura numérica por renda ou componente nesta tabela. Não multiplicar percentuais de outra edição pelo total 2024.",
+    "A metodologia atual tem três componentes; ver cartilha FJP páginas físicas 4–6."
+  ]
+}

@@ -28,19 +28,16 @@ def read(name):
 def period(df, key, partial=False):
     years = sorted(df.ano.unique().tolist())
     if partial:
-        include = st.sidebar.checkbox("Incluir 2026 (parcial; não comparar com anos completos)", key=key+"_parcial")
+        include = st.checkbox("Incluir 2026 (parcial; não comparar com anos completos)", key=key+"_parcial")
         if not include:
             df = df[df.ano != 2026]
             years = sorted(df.ano.unique().tolist())
-    lo, hi = st.sidebar.select_slider("Período de contratação" if partial else "Período", options=years,
+    lo, hi = st.select_slider("Período de contratação" if partial else "Período", options=years,
                               value=(years[0], years[-1]), key=key+"_periodo")
     return df[df.ano.between(lo, hi)].copy()
 
 
 def show(title, question, df, chart, sources, method, key, interpretation):
-    selected = st.session_state.get("explore_chart", "Todos")
-    if selected != "Todos" and selected != title:
-        return
     st.subheader(title)
     st.write(question)
     if hasattr(chart, "update_layout"):
@@ -88,7 +85,7 @@ def render_cidades():
          "composicao_fontes", "O denominador combina crédito e valor contratado de empreendimentos; não é composição do custo fiscal. Ausência de linha não comprova gasto zero. Valores de 2026 têm cortes distintos entre bases.")
 
     c = period(read("exploracao_contratos"), "contratos", partial=True)
-    source = st.sidebar.multiselect("Fonte do crédito", ["FGTS", "Fundo Social"], default=["FGTS", "Fundo Social"], key="credito_fontes")
+    source = st.multiselect("Fonte do crédito", ["FGTS", "Fundo Social"], default=["FGTS", "Fundo Social"], key="credito_fontes")
     c = c[c.fonte.isin(source)]
     if c.empty:
         st.info("Selecione uma fonte com contratos no período para explorar o perfil.")
@@ -174,7 +171,7 @@ def render_fgts():
          "A rubrica de descontos não é uma estimativa de todo o subsídio implícito de juros. Crescimento nominal não mede crescimento real.")
     m = read("saques_por_modalidade_fgts")
     m = m[m.ano.isin(a.ano)]
-    if m.empty and st.session_state.get("explore_chart") == "Quais modalidades ganham peso nos saques?":
+    if m.empty:
         st.info("A abertura por modalidade cobre 2020–2023. Amplie o período para consultar esse gráfico.")
     if not m.empty:
         m = m.copy()
@@ -184,7 +181,7 @@ def render_fgts():
              "Percentuais originais / 100; não extrapola além de 2020–2023 nem preenche modalidades ausentes.", "modalidades_trajetoria",
              "Participação pode crescer sem aumento do valor absoluto. Não se multiplica pela DFC sem conciliar os universos das tabelas.")
     st.markdown("#### Sensibilidade estática de arrecadação e saques")
-    yr = st.sidebar.selectbox("Ano de referência do exercício", sorted(a.ano.tolist()), index=len(a)-1, key="stress_ano")
+    yr = st.selectbox("Ano de referência do exercício", sorted(a.ano.tolist()), index=len(a)-1, key="stress_ano")
     b = a[a.ano == yr].iloc[0]
     grid = stress_grid(b.arrecadacao_rs_milhares, b.saques_rs_milhares)
     grid["queda_rotulo"] = grid.queda_arrecadacao.map(lambda x: f"{x:.0%}")
@@ -232,8 +229,8 @@ def render_emprego():
              ["formalizacao_pnad"], "100 × (taxa no trimestre − taxa quatro trimestres antes). Referência usa a série completa, mesmo fora do filtro.",
              "formalizacao_variacao", "Variação em pontos percentuais, não em %. Sem intervalos de confiança, não se afirma significância estatística nem causalidade de pejotização.")
     last = d.iloc[-1]
-    pp = st.sidebar.slider("Mudança hipotética na participação com carteira (p.p.)", -10.0, 10.0, -2.0, 0.5, key="choque_formalizacao")
-    wage = st.sidebar.slider("Mudança hipotética no salário médio nominal (%)", -10, 20, 0, key="choque_salario")
+    pp = st.slider("Mudança hipotética na participação com carteira (p.p.)", -10.0, 10.0, -2.0, 0.5, key="choque_formalizacao")
+    wage = st.slider("Mudança hipotética no salário médio nominal (%)", -10, 20, 0, key="choque_salario")
     base_rate = last.taxa_formalizacao_fgts
     scenario_rate = base_rate+pp/100
     scenario = pd.DataFrame({"cenario":["Referência", "Hipótese selecionada"],

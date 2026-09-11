@@ -26,22 +26,18 @@ def main():
     ok()
     for page in [1,2,3]:
         a.sidebar.radio[0].set_value(page).run();ok()
-        modes=a.radio(key=f'mode_{page}').options
-        for mode in modes:
-            a.radio(key=f'mode_{page}').set_value(mode).run();ok()
-            if mode=='Explorações':
-                for title in a.selectbox(key='explore_chart').options:
-                    a.selectbox(key='explore_chart').set_value(title).run();ok()
-                # Year singleton must not cause invalid scales or division errors.
-                key=['contratos_periodo','fgts_periodo','pnad_periodo'][page-1]
-                slider=a.select_slider(key=key)
-                last=slider.options[-1]
-                slider.set_value((int(last),int(last))).run();ok()
-            else:
-                radios=[r for r in a.sidebar.radio if r.label=='Gráfico']
-                if radios:
-                    for topic in radios[0].options:
-                        next(r for r in a.sidebar.radio if r.label=='Gráfico').set_value(topic).run();ok()
+        assert len(a.sidebar.radio)==1
+        assert not any(w.label in ['Gráfico','Leitura','Pergunta de pesquisa'] for w in list(a.radio)+list(a.selectbox))
+        # All charts are present at once, without choosing a topic.
+        count=len(a.get('plotly_chart'))+len(a.get('vega_lite_chart'))
+        assert count >= {1:10,2:11,3:5}[page], (page,count)
+        key=['contratos_periodo','fgts_periodo','pnad_periodo'][page-1]
+        slider=a.select_slider(key=key)
+        last=int(slider.options[-1])
+        slider.set_value((last,last)).run();ok()
+    a.sidebar.radio[0].set_value(1).run();ok()
+    next(w for w in a.multiselect if w.label=='Fontes').set_value([]).run();ok()
+    assert any(w.value=='Valor registrado por unidade e faixa' for w in a.subheader)
     for page in [4,5,0]:a.sidebar.radio[0].set_value(page).run();ok()
     print('OK: balanços e DFC reconciliados; crédito e subsídio conferidos; páginas, gráficos e anos únicos sem exceções.')
 

@@ -1,0 +1,21 @@
+{
+  "id": "orcamento_operacional_2026",
+  "titulo": "Orçamento operacional inicial do FGTS em 2026",
+  "data_acesso": "2026-09-13",
+  "bases": [
+    {
+      "nome": "CCFGTS Resolução 1.133/2025, anexo IV, página 5 do PDF",
+      "url": "https://www.gov.br/cidades/pt-br/acesso-a-informacao/institucional/base-juridica/resolucoes/fgts/Res_CCFGTS_2025_1133.pdf"
+    },
+    {
+      "nome": "MTE: suplementação dos descontos em 10/09/2026",
+      "url": "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/setembro/conselho-suplementa-r-500-milhoes-no-orcamento-do-fgts-para-subsidio-habitacional"
+    }
+  ],
+  "premissas": [
+    "Orçamento inicial aprovado em 2025, não consolidação de reprogramações posteriores de 2026.",
+    "Contratação planejada, não execução, caixa disponível ou custo econômico.",
+    "Anexo IV, unidade R$ mil: 144.500.000 + 8.000.000 + 8.000.000 = 160.500.000.",
+    "Descontos separados do total de contratações; 12,5 bi iniciais e 13,0 bi após suplementação divulgada em setembro."
+  ]
+}

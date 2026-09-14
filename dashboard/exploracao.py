@@ -7,16 +7,17 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 from ui import plot, table
+from periods import period
 
 DATA = Path(__file__).resolve().parents[1] / "data/processed"
-BLUE, ORANGE, GREEN = "#2a78d6", "#eb6834", "#1baf7a"
-COLORS = [BLUE, ORANGE, GREEN, "#eda100", "#8c6bb1", "#64748b"]
+BLUE, ORANGE, GREEN = "#1f77b4", "#ff7f0e", "#2ca02c"
+COLORS = [BLUE, ORANGE, GREEN, "#d62728", "#8c6bb1", "#64748b"]
 
 
 def color_scale(df, field):
     known = {"FGTS": BLUE, "OGU": ORANGE, "Empreendimentos subsidiados (proxy OGU)": ORANGE,
              "Fundo Social": GREEN, "Faixa 1*": BLUE, "Faixa 2*": ORANGE, "Faixa 3*": GREEN,
-             "Faixa 4*": "#eda100", "Sem classificação": "#64748b"}
+             "Faixa 4*": "#d62728", "Sem classificação": "#64748b"}
     domain = sorted(df[field.split(":")[0]].dropna().unique().tolist())
     return alt.Scale(domain=domain, range=[known.get(v, COLORS[i % len(COLORS)]) for i,v in enumerate(domain)])
 
@@ -25,26 +26,14 @@ def read(name):
     return pd.read_csv(DATA / f"{name}.csv")
 
 
-def period(df, key, partial=False):
-    years = sorted(df.ano.unique().tolist())
-    if partial:
-        include = st.checkbox("Incluir 2026 (parcial; não comparar com anos completos)", key=key+"_parcial")
-        if not include:
-            df = df[df.ano != 2026]
-            years = sorted(df.ano.unique().tolist())
-    lo, hi = st.select_slider("Período de contratação" if partial else "Período", options=years,
-                              value=(years[0], years[-1]), key=key+"_periodo")
-    return df[df.ano.between(lo, hi)].copy()
-
-
 def show(title, question, df, chart, sources, method, key, interpretation):
     st.subheader(title)
     st.write(question)
     if hasattr(chart, "update_layout"):
         plot(chart, key)
     else:
-        st.altair_chart(chart.configure_view(strokeWidth=0).configure_axis(gridColor="#e1e0d9")
-            .configure_legend(orient="bottom", labelLimit=350, columns=2), width="stretch")
+        st.altair_chart(chart.configure_view(strokeWidth=0).configure_axis(gridColor="#e1e0d9",labelFontSize=16,titleFontSize=17)
+            .configure_legend(orient="bottom", labelLimit=500, columns=2,labelFontSize=16), width="stretch")
     st.caption(interpretation)
     with st.expander("Como ler e calcular este gráfico"):
         st.write(method)
@@ -70,7 +59,7 @@ def bars(df, x, y, title, color=None, pct=False, horizontal=False):
         enc["tooltip"].append(alt.Tooltip(color))
     if horizontal:
         enc["y"], enc["x"] = alt.Y(x, title=None, axis=alt.Axis(labelLimit=300)), alt.X(y, title=title)
-    return alt.Chart(df).mark_bar(color=BLUE).encode(**enc).properties(height=340)
+    return alt.Chart(df).mark_bar(color=BLUE).encode(**enc).properties(height=430)
 
 
 def render_cidades():
@@ -144,8 +133,9 @@ def stress_grid(arrecadacao, saques):
 
 def render_fgts():
     st.header("Explorar pressão sobre os recursos do FGTS")
-    st.info("A base de despesas é uma DRE. Ela não responde quanto das aplicações vai para habitação, saneamento ou infraestrutura; esse orçamento setorial permanece pendente.")
+    st.info("A base de despesas é uma DRE. Ela não responde quanto das aplicações vai para habitação, saneamento ou infraestrutura; o orçamento inicial de 2026 está no bloco acima; a série de execução setorial permanece pendente.")
     a = period(read("arrecadacao_saques_fgts"), "fgts")
+    if a.empty:return
     a["saldo_bi"] = (a.arrecadacao_rs_milhares-a.saques_rs_milhares)/1e6
     a["saques_arrecadacao"] = a.saques_rs_milhares/a.arrecadacao_rs_milhares
     show("Quanto sobra entre arrecadação e saques?", "Em quais anos a contribuição líquida dos trabalhadores foi menor?", a,
@@ -200,6 +190,7 @@ def render_fgts():
 def render_emprego():
     st.header("Explorar a base potencial de contribuição")
     d = period(read("formalizacao_pnad"), "pnad")
+    if d.empty:return
     d["periodo"] = d.ano.astype(str)+"T"+d.trimestre.astype(str)
     d["outros_ocupados"] = d.total_ocupados-d.com_carteira_fgts
     t = d.melt(id_vars="periodo", value_vars=["com_carteira_fgts", "outros_ocupados"], var_name="grupo", value_name="mil_pessoas")

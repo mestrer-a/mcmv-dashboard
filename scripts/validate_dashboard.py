@@ -24,21 +24,21 @@ def main():
     a=AppTest.from_file(str(ROOT/'dashboard/app.py'),default_timeout=40).run()
     def ok():assert not a.exception,a.exception
     ok()
-    for page in [1,2,3]:
+    from periods import OPTIONS
+    for page in [1,2,3,4]:
         a.sidebar.radio[0].set_value(page).run();ok()
         assert len(a.sidebar.radio)==1
-        assert not any(w.label in ['Gráfico','Leitura','Pergunta de pesquisa'] for w in list(a.radio)+list(a.selectbox))
-        # All charts are present at once, without choosing a topic.
         count=len(a.get('plotly_chart'))+len(a.get('vega_lite_chart'))
-        assert count >= {1:10,2:11,3:5}[page], (page,count)
-        key=['contratos_periodo','fgts_periodo','pnad_periodo'][page-1]
-        slider=a.select_slider(key=key)
-        last=int(slider.options[-1])
-        slider.set_value((last,last)).run();ok()
-    a.sidebar.radio[0].set_value(1).run();ok()
-    next(w for w in a.multiselect if w.label=='Fontes').set_value([]).run();ok()
-    assert any(w.value=='Valor registrado por unidade e faixa' for w in a.subheader)
-    for page in [4,5,0]:a.sidebar.radio[0].set_value(page).run();ok()
+        assert count >= {1:15,2:12,3:5,4:5}[page],(page,count)
+        for preset in OPTIONS:
+            a.radio(key='analysis_preset').set_value(preset).run();ok()
+            if preset=='Personalizado':
+                for yr in [2009,2022,2025,2026]:
+                    a.slider(key='analysis_years').set_value((yr,yr)).run();ok()
+        a.radio(key='analysis_preset').set_value(OPTIONS[0]).run();ok()
+    for territory in a.selectbox[1].options:
+        a.selectbox[1].set_value(territory).run();ok()
+    for page in [5,0]:a.sidebar.radio[0].set_value(page).run();ok()
     print('OK: balanços e DFC reconciliados; crédito e subsídio conferidos; páginas, gráficos e anos únicos sem exceções.')
 
 if __name__=='__main__':main()

@@ -6,6 +6,8 @@ import streamlit as st
 st.set_page_config(page_title='MCMV · Laboratório de pesquisa',page_icon='🏘️',layout='wide')
 from exploracao import render_exploracao
 from ui import DATA, COLORS, sources, plot, table, line
+from periods import period, controls
+from additions import dissertation_charts, far_comparison, deficit_charts, budget_chart, legacy_subsidy
 
 st.markdown("""<style>
 .stApp {background:#F5F7FA;color:#25364B}
@@ -23,24 +25,17 @@ def read(name):return pd.read_csv(DATA/f'{name}.csv')
 
 def br(v):return f'{v:,.2f}'.replace(',','X').replace('.',',').replace('X','.')
 
-def period(d,key,partial=False):
-    if partial and not st.checkbox('Incluir 2026 (parcial)',key=key+'_partial'):
-        d=d[d.ano!=2026]
-    years=sorted(d.ano.unique())
-    if len(years)>1:
-        lo,hi=st.select_slider('Período',years,value=(years[0],years[-1]),key=key+'_period')
-        d=d[d.ano.between(lo,hi)]
-    return d.copy()
-
-SOURCES={1:['financiamento_por_fonte_ano','subsidio_medio_faixa','exploracao_contratos'],
- 2:['arrecadacao_saques_fgts','orcamento_fgts_rubrica','balanco_fgts','ponte_caixa_fgts'],3:['formalizacao_pnad']}
+SOURCES={1:['financiamento_por_fonte_ano','subsidio_medio_faixa','exploracao_contratos','faixa1_modalidade','far_anual','subsidio_rubricas_ano'],
+ 2:['arrecadacao_saques_fgts','orcamento_fgts_rubrica','balanco_fgts','ponte_caixa_fgts','orcamento_operacional_2026'],3:['formalizacao_pnad']}
 
 def explore(index):
     render_exploracao(index)
 
 
 def stocks():
-    d=period(read('balanco_fgts'),'stocks');latest=d[d.ano==d.ano.max()].set_index('rubrica').valor_rs_milhares
+    d=period(read('balanco_fgts'),'stocks')
+    if d.empty:return
+    latest=d[d.ano==d.ano.max()].set_index('rubrica').valor_rs_milhares
     for col,rub in zip(st.columns(3),['Caixa e equivalentes','Patrimônio líquido','Ativo total']):
         col.metric(f'{rub} · {d.ano.max()}','R$ '+br(latest[rub]/1e6)+' bi')
     st.subheader('Quanto o Fundo tem — e de que tipo?')
@@ -55,12 +50,15 @@ def stocks():
     st.subheader('A carteira de crédito domina o ativo')
     plot(px.bar(t,x='ano',y='R$ bilhões',color='rubrica',color_discrete_sequence=COLORS),'asset');table(t,'asset')
     st.caption('Componentes exclusivos, reconciliados ao ativo total. A carteira representa recebimentos futuros, sujeitos a prazo e risco.')
-    year=st.selectbox('Ano da ponte',[2024,2025],index=1)
-    p=read('ponte_caixa_fgts');p=p[p.ano==year]
-    st.subheader('Como o caixa mudou durante o ano?')
-    fig=go.Figure(go.Waterfall(x=p.rubrica,y=p.valor_rs_milhares/1e6,measure=['absolute','relative','relative','relative','total'],increasing=dict(marker_color=COLORS[2]),decreasing=dict(marker_color=COLORS[1]),totals=dict(marker_color=COLORS[0])))
-    fig.update_yaxes(title='R$ bilhões');plot(fig,'bridge');table(p,'bridge')
-    st.caption('Arrecadação líquida positiva pode coexistir com queda do caixa, como em 2025. Os três fluxos da DFC reconciliam os saldos; não somar novamente descontos e empréstimos aos totais.')
+    bridge=period(read('ponte_caixa_fgts'),'bridge')
+    if not bridge.empty:
+        years=sorted(bridge.ano.unique())
+        year=st.selectbox('Ano da ponte',years,index=len(years)-1,key='bridge_year_'+str(years))
+        p=bridge[bridge.ano==year]
+        st.subheader('Como o caixa mudou durante o ano?')
+        fig=go.Figure(go.Waterfall(x=p.rubrica,y=p.valor_rs_milhares/1e6,measure=['absolute','relative','relative','relative','total'],increasing=dict(marker_color=COLORS[2]),decreasing=dict(marker_color=COLORS[1]),totals=dict(marker_color=COLORS[0])))
+        fig.update_yaxes(title='R$ bilhões');plot(fig,'bridge');table(p,'bridge')
+        st.caption('Arrecadação líquida positiva pode coexistir com queda do caixa, como em 2025. Os três fluxos da DFC reconciliam os saldos; não somar novamente descontos e empréstimos aos totais.')
     with st.expander('Como usar o estoque inicial na sustentabilidade'):
         st.write('R₀ pode partir de caixa e equivalentes. Incluir títulos exige cronograma de vencimentos ou hipótese explícita de venda. Ativo e patrimônio avaliam a estrutura patrimonial, sem substituir a restrição de caixa.')
         st.code('Caixa final = caixa inicial + fluxo operacional + fluxo de investimento + fluxo de financiamento',language=None)
@@ -68,7 +66,10 @@ def stocks():
 
 def essentials(page):
     if page==1:
-        d=period(read('financiamento_por_fonte_ano'),'sources',True)
+        dissertation_charts()
+        far_comparison()
+        st.header('Histórico do programa')
+        d=period(read('financiamento_por_fonte_ano'),'sources',True,default=(2009,2026))
         d['fonte']=d.fonte.replace({'OGU':'Empreendimentos subsidiados (proxy OGU)'})
         selected=st.multiselect('Fontes',sorted(d.fonte.unique()),default=sorted(d.fonte.unique()))
         d=d[d.fonte.isin(selected)];d['R$ bilhões']=d.valor_total_financiado/1e9
@@ -85,14 +86,12 @@ def essentials(page):
         with st.expander('Marcos históricos',expanded=True):
             st.write('2009 · criação → 2011 · fase 2 → 2016 · fase 3 → 2020–2022 · Casa Verde e Amarela → 2023 · retomada → 2025 · Fundo Social aparece no crédito da base.')
             st.caption('Contexto temporal, sem identificação causal. A EC 95 é de dezembro de 2016 e não explica isoladamente movimentos anteriores. Tetos de renda e códigos de faixa mudam no tempo.')
-        d=read('subsidio_medio_faixa');st.subheader('Valor registrado por unidade e faixa')
-        plot(px.bar(d,x='subsidio_medio_por_unidade',y='faixa',orientation='h',labels={'subsidio_medio_por_unidade':'R$ correntes por unidade','faixa':''}),'subsidy');table(d,'subsidy')
-        st.caption('FAR: valor contratado por unidade. Financiadas: subsídio registrado. São conceitos distintos e médias de diferentes anos; não representam todo benefício implícito de juros.')
+        legacy_subsidy()
     elif page==2:
         st.subheader('Arrecadação e saques')
         d=period(read('arrecadacao_saques_fgts'),'flow');t=d.melt(id_vars='ano',value_vars=['arrecadacao_rs_milhares','saques_rs_milhares'],var_name='Série',value_name='valor')
         t['Série']=t['Série'].map({'arrecadacao_rs_milhares':'Arrecadação','saques_rs_milhares':'Saques'});t['R$ bilhões']=t.valor/1e6
-        plot(line(t,'ano','R$ bilhões','Série'),'flows');table(d,'flows')
+        plot(px.bar(t,x='ano',y='R$ bilhões',color='Série',barmode='group',color_discrete_map={'Arrecadação':'#4c9c70','Saques':'#df8a34'}),'flows');table(d,'flows')
         st.caption('A diferença não é lucro nem variação do caixa. Em 2020, a transferência PIS/PASEP está excluída da arrecadação apresentada.')
         d=period(read('orcamento_fgts_rubrica'),'dre');d['R$ bilhões']=d.valor_rs_milhares/1e6
         st.subheader('Despesas reconhecidas na DRE')
@@ -101,24 +100,15 @@ def essentials(page):
     else:
         st.subheader('Participação dos ocupados com carteira')
         d=period(read('formalizacao_pnad'),'employment');d['Período']=d.ano.astype(str)+'T'+d.trimestre.astype(str);d['Com carteira (%)']=d.taxa_formalizacao_fgts*100
+        if d.empty:return
         plot(line(d,'Período','Com carteira (%)'),'employment');table(d,'employment')
         st.caption('Proxy de pessoas ocupadas com carteira, não vínculos ou depósitos efetivos. Não identifica pejotização nem a massa salarial sujeita ao FGTS.')
 
 def housing():
-    sources(['deficit_fjp_total','exploracao_contratos'])
-    total=read('deficit_fjp_total').iloc[0]
-    st.metric('Domicílios em déficit · 2024',f'{int(total.deficit_domicilios):,}'.replace(',','.'))
-    st.info('Referência mais recente identificada: 2024. As tabelas completas por renda e componente ainda não foram recuperadas do portal da FJP. Nenhum desdobramento foi inventado.')
-    st.markdown('[Cartilha metodológica da FJP](https://drive.google.com/file/d/1ITXVvGuAs43gyQAVcwb_Z-P6XKGjtL1o/view)')
-    st.write('Três componentes: habitação precária, coabitação e ônus excessivo com aluguel urbano. O último considera famílias com renda de até três salários mínimos que gastam mais de 30% com aluguel. Não acrescentar adensamento como quarta parcela independente.')
-    st.subheader('Contratos e subsídios registrados se concentram nas mesmas faixas?')
-    d=read('exploracao_contratos');d=d[d.ano!=2026]
-    years=sorted(d.ano.unique());year=st.selectbox('Ano dos contratos',years,index=len(years)-1)
-    t=d[d.ano==year].groupby('faixa_codigo',as_index=False)[['contratos','financiamento','subsidio_total']].sum()
-    t['Contratos (%)']=100*t.contratos/t.contratos.sum();t['Subsídio registrado (%)']=100*t.subsidio_total/t.subsidio_total.sum()
-    m=t.melt(id_vars='faixa_codigo',value_vars=['Contratos (%)','Subsídio registrado (%)'],var_name='Medida',value_name='%')
-    plot(px.bar(m,x='faixa_codigo',y='%',color='Medida',barmode='group',color_discrete_sequence=COLORS),'targeting');table(t,'targeting')
-    st.caption('Somente universo financiado, sem FAR. Crédito favorecido pode existir sem subsídio explícito registrado. Contratos não informam déficit anterior da família; a figura não mede déficit eliminado. Bandas FJP e tetos MCMV não coincidem automaticamente.')
+    sources(['deficit_fjp_total','deficit_fjp_faixa_componente','exploracao_contratos'])
+    controls(4)
+    deficit_charts()
+
 
 with st.sidebar:
     st.markdown('## MCMV / FGTS');st.caption('LABORATÓRIO DA DISSERTAÇÃO')
@@ -127,7 +117,7 @@ if page==0:
     st.caption('FGV EPGE · ARTHUR MESSER · ORIENTADOR: FERNANDO DE HOLANDA BARBOSA FILHO')
     st.title('Minha Casa Minha Vida e sustentabilidade do FGTS')
     st.write('Investigar de onde vêm os recursos, quem recebe os subsídios e quais limites condicionam a expansão do programa.')
-    for c,label,value in zip(st.columns(3),['Contratações','Balanços do FGTS','Fontes principais'],['2009–2026*','2020–2025','3']):c.metric(label,value)
+    for c,label,value in zip(st.columns(3),['Contratações','Balanços do FGTS','Fontes principais'],['2009–2026*','2020–2025','4']):c.metric(label,value)
     st.caption('*2026 parcial. Resultados descritivos e exercícios hipotéticos são apresentados separadamente.')
     for title,text in [('Programa e subsídios','Fontes, escala, faixas e benefícios registrados.'),('FGTS','Caixa, carteira, patrimônio e os fluxos que explicam sua evolução.'),('Emprego formal','A base potencial de contribuição no mercado de trabalho.'),('Déficit habitacional','Renda, componentes e diferentes instrumentos de política habitacional.')]:
         with st.container(border=True):st.subheader(title);st.write(text)
@@ -136,7 +126,10 @@ else:
     st.title(['','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção'][page])
     if page in SOURCES:
         sources(SOURCES[page]);st.caption('Passe o mouse pela área das séries temporais para consultar o período. Clique na legenda para ocultar séries; use a barra do gráfico para ampliar ou exportar.')
-        if page==2:stocks()
+        controls(page)
+        if page==2:
+            stocks()
+            budget_chart()
         essentials(page)
         st.divider()
         explore(page-1)

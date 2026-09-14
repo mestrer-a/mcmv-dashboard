@@ -1,0 +1,161 @@
+ano_referencia,territorio,componente,faixa,deficit_domicilios
+2022,Norte,precaria,faixa_1,295896
+2022,Norte,precaria,faixa_2,23781
+2022,Norte,precaria,faixa_3,9153
+2022,Norte,precaria,acima_faixa_3,2432
+2022,Norte,precaria,total,331262
+2022,Norte,coabitacao,faixa_1,97562
+2022,Norte,coabitacao,faixa_2,72160
+2022,Norte,coabitacao,faixa_3,58706
+2022,Norte,coabitacao,acima_faixa_3,28973
+2022,Norte,coabitacao,total,257402
+2022,Norte,onus_aluguel,faixa_1,167438
+2022,Norte,onus_aluguel,faixa_2,17227
+2022,Norte,onus_aluguel,faixa_3,0
+2022,Norte,onus_aluguel,acima_faixa_3,0
+2022,Norte,onus_aluguel,total,184665
+2022,Norte,deficit_total,faixa_1,560896
+2022,Norte,deficit_total,faixa_2,113168
+2022,Norte,deficit_total,faixa_3,67860
+2022,Norte,deficit_total,acima_faixa_3,31405
+2022,Norte,deficit_total,total,773329
+2022,Nordeste,precaria,faixa_1,660743
+2022,Nordeste,precaria,faixa_2,28158
+2022,Nordeste,precaria,faixa_3,14028
+2022,Nordeste,precaria,acima_faixa_3,328
+2022,Nordeste,precaria,total,703256
+2022,Nordeste,coabitacao,faixa_1,148955
+2022,Nordeste,coabitacao,faixa_2,114495
+2022,Nordeste,coabitacao,faixa_3,86143
+2022,Nordeste,coabitacao,acima_faixa_3,16860
+2022,Nordeste,coabitacao,total,366454
+2022,Nordeste,onus_aluguel,faixa_1,657418
+2022,Nordeste,onus_aluguel,faixa_2,33904
+2022,Nordeste,onus_aluguel,faixa_3,0
+2022,Nordeste,onus_aluguel,acima_faixa_3,0
+2022,Nordeste,onus_aluguel,total,691322
+2022,Nordeste,deficit_total,faixa_1,1467116
+2022,Nordeste,deficit_total,faixa_2,176557
+2022,Nordeste,deficit_total,faixa_3,100171
+2022,Nordeste,deficit_total,acima_faixa_3,17188
+2022,Nordeste,deficit_total,total,1761032
+2022,Sudeste,precaria,faixa_1,299515
+2022,Sudeste,precaria,faixa_2,18775
+2022,Sudeste,precaria,faixa_3,12534
+2022,Sudeste,precaria,acima_faixa_3,6088
+2022,Sudeste,precaria,total,336911
+2022,Sudeste,coabitacao,faixa_1,103633
+2022,Sudeste,coabitacao,faixa_2,105263
+2022,Sudeste,coabitacao,faixa_3,166832
+2022,Sudeste,coabitacao,acima_faixa_3,108604
+2022,Sudeste,coabitacao,total,484332
+2022,Sudeste,onus_aluguel,faixa_1,1330520
+2022,Sudeste,onus_aluguel,faixa_2,291878
+2022,Sudeste,onus_aluguel,faixa_3,0
+2022,Sudeste,onus_aluguel,acima_faixa_3,0
+2022,Sudeste,onus_aluguel,total,1622398
+2022,Sudeste,deficit_total,faixa_1,1733668
+2022,Sudeste,deficit_total,faixa_2,415915
+2022,Sudeste,deficit_total,faixa_3,179366
+2022,Sudeste,deficit_total,acima_faixa_3,114692
+2022,Sudeste,deficit_total,total,2443642
+2022,Sul,precaria,faixa_1,126954
+2022,Sul,precaria,faixa_2,32348
+2022,Sul,precaria,faixa_3,26777
+2022,Sul,precaria,acima_faixa_3,7285
+2022,Sul,precaria,total,193364
+2022,Sul,coabitacao,faixa_1,10741
+2022,Sul,coabitacao,faixa_2,20197
+2022,Sul,coabitacao,faixa_3,39269
+2022,Sul,coabitacao,acima_faixa_3,27575
+2022,Sul,coabitacao,total,97782
+2022,Sul,onus_aluguel,faixa_1,348773
+2022,Sul,onus_aluguel,faixa_2,97707
+2022,Sul,onus_aluguel,faixa_3,0
+2022,Sul,onus_aluguel,acima_faixa_3,0
+2022,Sul,onus_aluguel,total,446481
+2022,Sul,deficit_total,faixa_1,486469
+2022,Sul,deficit_total,faixa_2,150252
+2022,Sul,deficit_total,faixa_3,66045
+2022,Sul,deficit_total,acima_faixa_3,34860
+2022,Sul,deficit_total,total,737626
+2022,Centro-Oeste,precaria,faixa_1,99184
+2022,Centro-Oeste,precaria,faixa_2,9080
+2022,Centro-Oeste,precaria,faixa_3,8265
+2022,Centro-Oeste,precaria,acima_faixa_3,1331
+2022,Centro-Oeste,precaria,total,117860
+2022,Centro-Oeste,coabitacao,faixa_1,23492
+2022,Centro-Oeste,coabitacao,faixa_2,15539
+2022,Centro-Oeste,coabitacao,faixa_3,27883
+2022,Centro-Oeste,coabitacao,acima_faixa_3,16996
+2022,Centro-Oeste,coabitacao,total,83910
+2022,Centro-Oeste,onus_aluguel,faixa_1,259222
+2022,Centro-Oeste,onus_aluguel,faixa_2,38693
+2022,Centro-Oeste,onus_aluguel,faixa_3,0
+2022,Centro-Oeste,onus_aluguel,acima_faixa_3,0
+2022,Centro-Oeste,onus_aluguel,total,297915
+2022,Centro-Oeste,deficit_total,faixa_1,381897
+2022,Centro-Oeste,deficit_total,faixa_2,63312
+2022,Centro-Oeste,deficit_total,faixa_3,36148
+2022,Centro-Oeste,deficit_total,acima_faixa_3,18327
+2022,Centro-Oeste,deficit_total,total,499685
+2022,Brasil,precaria,faixa_1,1482292
+2022,Brasil,precaria,faixa_2,112141
+2022,Brasil,precaria,faixa_3,70757
+2022,Brasil,precaria,acima_faixa_3,17464
+2022,Brasil,precaria,total,1682654
+2022,Brasil,coabitacao,faixa_1,384384
+2022,Brasil,coabitacao,faixa_2,327654
+2022,Brasil,coabitacao,faixa_3,378833
+2022,Brasil,coabitacao,acima_faixa_3,199008
+2022,Brasil,coabitacao,total,1289879
+2022,Brasil,onus_aluguel,faixa_1,2763371
+2022,Brasil,onus_aluguel,faixa_2,479409
+2022,Brasil,onus_aluguel,faixa_3,0
+2022,Brasil,onus_aluguel,acima_faixa_3,0
+2022,Brasil,onus_aluguel,total,3242780
+2022,Brasil,deficit_total,faixa_1,4630046
+2022,Brasil,deficit_total,faixa_2,919205
+2022,Brasil,deficit_total,faixa_3,449590
+2022,Brasil,deficit_total,acima_faixa_3,216472
+2022,Brasil,deficit_total,total,6215313
+2022,Total das RM,precaria,faixa_1,289880
+2022,Total das RM,precaria,faixa_2,24201
+2022,Total das RM,precaria,faixa_3,19447
+2022,Total das RM,precaria,acima_faixa_3,8345
+2022,Total das RM,precaria,total,341873
+2022,Total das RM,coabitacao,faixa_1,129229
+2022,Total das RM,coabitacao,faixa_2,127085
+2022,Total das RM,coabitacao,faixa_3,170957
+2022,Total das RM,coabitacao,acima_faixa_3,103949
+2022,Total das RM,coabitacao,total,531221
+2022,Total das RM,onus_aluguel,faixa_1,1190988
+2022,Total das RM,onus_aluguel,faixa_2,246018
+2022,Total das RM,onus_aluguel,faixa_3,0
+2022,Total das RM,onus_aluguel,acima_faixa_3,0
+2022,Total das RM,onus_aluguel,total,1437006
+2022,Total das RM,deficit_total,faixa_1,1610097
+2022,Total das RM,deficit_total,faixa_2,397304
+2022,Total das RM,deficit_total,faixa_3,190404
+2022,Total das RM,deficit_total,acima_faixa_3,112294
+2022,Total das RM,deficit_total,total,2310100
+2022,Demais áreas,precaria,faixa_1,1192412
+2022,Demais áreas,precaria,faixa_2,87940
+2022,Demais áreas,precaria,faixa_3,51310
+2022,Demais áreas,precaria,acima_faixa_3,9119
+2022,Demais áreas,precaria,total,1340781
+2022,Demais áreas,coabitacao,faixa_1,255154
+2022,Demais áreas,coabitacao,faixa_2,200569
+2022,Demais áreas,coabitacao,faixa_3,207876
+2022,Demais áreas,coabitacao,acima_faixa_3,95058
+2022,Demais áreas,coabitacao,total,758658
+2022,Demais áreas,onus_aluguel,faixa_1,1572383
+2022,Demais áreas,onus_aluguel,faixa_2,233392
+2022,Demais áreas,onus_aluguel,faixa_3,0
+2022,Demais áreas,onus_aluguel,acima_faixa_3,0
+2022,Demais áreas,onus_aluguel,total,1805774
+2022,Demais áreas,deficit_total,faixa_1,3019949
+2022,Demais áreas,deficit_total,faixa_2,521901
+2022,Demais áreas,deficit_total,faixa_3,259186
+2022,Demais áreas,deficit_total,acima_faixa_3,104177
+2022,Demais áreas,deficit_total,total,3905213

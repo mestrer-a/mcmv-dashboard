@@ -1,0 +1,27 @@
+{
+  "id": "deficit_fjp_faixa_componente",
+  "titulo": "Déficit habitacional por faixa de renda do MCMV e por componente, referência 2022",
+  "organizacao": "Fundação João Pinheiro (FJP)",
+  "portal_catalogo": "https://repositorio.fjp.mg.gov.br/handle/123456789/4262",
+  "data_acesso": "2026-09-13",
+  "bases": [
+    {
+      "nome": "FUNDAÇÃO JOÃO PINHEIRO. Déficit Habitacional no Brasil 2022. Belo Horizonte: FJP, 2023. 72 p.",
+      "url": "https://repositorio.fjp.mg.gov.br/bitstreams/cc248796-b48a-404f-a4b9-ea931f898604/download",
+      "tabelas": "Tabela 4 (absoluto, p. 30-31); Tabela 5 (composição %, p. 31-32); Gráfico 2 (p. 29)"
+    }
+  ],
+  "por_que_essa_versao": "Edição de referência 2022 (PnadC 2022) é a publicação completa mais recente da FJP com abertura do déficit por faixa de renda do MCMV e por componente. O total de referência 2024 (5.773.983) circulou apenas como manchete via Ministério das Cidades (abril/2026), sem relatório com as tabelas por renda e componente. Para o exercício de custo, usa-se a edição 2022 de forma consistente (total e abertura da mesma fonte); o total de 2024 pode ser citado como contexto.",
+  "script": "scripts/process_deficit_fjp_faixa.py",
+  "tabela": "data/processed/deficit_fjp_faixa_componente.csv",
+  "metrica": "Domicílios em déficit habitacional, por faixa de renda do MCMV (R$) e por componente (habitação precária, coabitação, ônus excessivo com aluguel urbano), por território.",
+  "premissas": [
+    "Faixas em R$ do MCMV (Lei 14.620/2023, art. 5, I), conforme a própria FJP: Faixa 1 ate R$2.640; Faixa 2 ate R$4.400; Faixa 3 ate R$8.000; Acima acima de R$8.000.",
+    "O crosswalk renda -> faixa e feito pela FJP. NAO equiparar aos codigos de faixa das bases de contratos do MCMV, que tem regras e tetos proprios que mudam no tempo.",
+    "Onus excessivo com aluguel so e definido para renda ate 3 SM; por isso e zero nas Faixas 3 e Acima da Faixa 3.",
+    "Totais impressos podem divergir da soma dos componentes em +-1 a 5 domicilios por conta da ponderacao amostral da PnadC. Valores transcritos como no original.",
+    "Quebra metodologica: metodologia atual (revisao ~2016, migracao para PnadC + CadUnico) nao e comparavel ponta a ponta com as series antigas da FJP.",
+    "Deficit e dado de ENTRADA (FJP). O trabalho nao recalcula nem prorrateia a distribuicao de 2022 sobre totais de outros anos.",
+    "Uma unidade em deficit nao equivale a uma unidade a construir: ~52% do deficit nacional e onus excessivo com aluguel (nao demanda necessariamente nova unidade)."
+  ]
+}

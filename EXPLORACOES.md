@@ -57,3 +57,30 @@ python scripts/validate_exploracao.py
 ```
 
 O primeiro script documenta fontes e premissas em `exploracao_contratos.meta.json`. O segundo reconcilia os valores de financiamento com a tabela original, confere os componentes de subsídio e executa as abas, os 18 gráficos e filtros extremos com o AppTest do Streamlit. Cada gráfico permite baixar sua tabela filtrada.
+
+
+## Alinhamento à v09 — 13/09/2026
+
+Todas as explorações anteriores continuam visíveis por rolagem. Recortes rápidos por aba: recortes da dissertação, governo atual 2023–2025, governo atual 2023–2026 parcial, série completa e personalizado. Cada bloco informa os anos efetivos e permite ajuste local. FJP 2022 e orçamento inicial 2026 são edições fixas, explicitadas sem extrapolação.
+
+### Correspondência com as figuras
+
+1. Subsídio registrado por contrato, média ponderada 2023–2025; gráfico adicional de desconto vs equilíbrio.
+2. Operações financiadas por faixa, barras agrupadas 2023–2026 parcial.
+3. Valor médio financiado por faixa; recorte 2023–2026 consistente com a legenda, corrigindo a divergência temporal da imagem da v09.
+4. Histórico por fonte e marcos, 2009–2026 parcial.
+5. Arrecadação e saques em barras agrupadas, 2020–2025.
+6. Caixa e patrimônio, 2020–2025 (no corpo do Word está numerada novamente como Figura 5).
+Quadro 2: orçamento inicial operacional 2026, também representado em gráfico.
+
+### Atendimento à Faixa 1 por modalidade
+
+`process_faixa1_modalidade.py` gera `faixa1_modalidade.csv`, `far_anual.csv` e `subsidio_rubricas_ano.csv`, com fichas e hashes. Somente as mesmas versões brutas do projeto. Financiado: operações código 1, mesma limpeza e exclusões. FAR: modalidade exatamente FAR; UH por ano de dt_assinatura; data de contratação escolhida para coerência temporal, não data de entrega. Não inclui FAR - Compra Assistida nem demais modalidades. Não filtra situação nem subtrai distratadas. FAR é proxy parcial da linha subsidiada da Faixa 1. As séries são justapostas, não somadas; objetivo é caracterização, não déficit eliminado. 2026 parcial em datas distintas. Não há registros FAR com assinatura 2023 nesta extração; isso não comprova ausência de política ou gastos.
+
+### Déficit FJP
+
+Quatro gráficos: faixa, faixa × componente, com/sem ônus e participação regional. Escolha de território nos três primeiros; comparação das cinco regiões no quarto. CSV de entrada preservado byte a byte. 2022 não é extrapolado para 2024. Não há conversão de contratos em percentual de déficit eliminado, nem atribuição de impacto causal às faixas. O contraste é descritivo e os limites de renda não são automaticamente comparáveis.
+
+### Validação
+
+`validate_dashboard.py`: reconciliação contábil, todos os recortes e extremos anuais, todos os territórios. `validate_v09_data.py`: hash FJP, tolerância de totais impressos, médias e unidades das novas bases. Os gráficos usam fontes maiores, linhas mais espessas, fundo branco e exportação em 1400 × 700 (escala 3); anos inteiros e asterisco em 2026.

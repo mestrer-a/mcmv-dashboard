@@ -82,3 +82,20 @@ Acesso: 2026-09-11. Processamento: `scripts/process_deficit_fjp.py`.
 - Cartilha metodológica FJP: https://drive.google.com/file/d/1ITXVvGuAs43gyQAVcwb_Z-P6XKGjtL1o/view
 
 2024 é a referência mais recente identificada; total confirmado na divulgação oficial do Ministério. Não substitui as tabelas originais por renda e componente, ainda indisponíveis nos endereços consultados.
+
+
+## Revisão de 13/09/2026 — déficit por renda e modalidades
+
+- FUNDAÇÃO JOÃO PINHEIRO. Déficit Habitacional no Brasil 2022. Belo Horizonte: FJP, 2023, conforme ficha fornecida pelo autor. Acesso set/2026.
+  Repositório: https://repositorio.fjp.mg.gov.br/handle/123456789/4262
+  PDF: https://repositorio.fjp.mg.gov.br/bitstreams/cc248796-b48a-404f-a4b9-ea931f898604/download
+  Tabelas 4 e 5, p. 30–32. CSV e script de transcrição fornecidos pelo autor, preservados sem reextração. Verificação desta revisão limitada à integridade e reconciliação interna.
+- Referência 2022: 6.215.313 domicílios, única edição **integrada neste repositório** com renda × componente. Referência 2024: 5.773.983, divulgação do Ministério já documentada, sem tabelas desagregadas integradas. Nenhum prorrateio entre edições.
+- Faixa 1 por modalidade: mesmas versões analítica (24/07/2026) e subsidiada (30/06/2026) documentadas acima. O ZIP subsidiado foi recuperado do mesmo URL oficial porque faltava na cópia local; não é atualização de base. `process_faixa1_modalidade.py` registra hashes, campos e exclusões.
+- Orçamento operacional inicial 2026: Resolução CCFGTS 1.133/2025, Anexo IV, p. 5 do PDF:
+  https://www.gov.br/cidades/pt-br/acesso-a-informacao/institucional/base-juridica/resolucoes/fgts/Res_CCFGTS_2025_1133.pdf
+  Suplementação de descontos em setembro:
+  https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/setembro/conselho-suplementa-r-500-milhoes-no-orcamento-do-fgts-para-subsidio-habitacional
+  O gráfico reproduz a peça **inicial**, não orçamento atualizado/consolidado nem execução.
+
+As pendências antigas de demonstrações, PNAD e abertura FJP acima foram parcialmente superadas. Permanecem pendentes execução setorial, OGU, Caged e índices de construção.

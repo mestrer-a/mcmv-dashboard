@@ -67,3 +67,30 @@ Conforme observação prévia do usuário (contratos Pró-Cotista, Faixa Estendi
 - `fonte_url`: divulgação oficial do Ministério das Cidades na Agência Gov.
 
 As tabelas por renda e componente não foram recuperadas. Não há imputação, nem uso de percentuais de outra edição para repartir o total.
+
+
+## deficit_fjp_faixa_componente.csv
+
+- `ano_referencia`: 2022, ano da pesquisa; não ano de divulgação.
+- `territorio`: Brasil, Norte, Nordeste, Sudeste, Sul, Centro-Oeste, Total das RM ou Demais áreas. Regiões e RM/demais áreas são partições alternativas; não somar todos os territórios.
+- `componente`: precaria | coabitacao | onus_aluguel | deficit_total. A linha deficit_total não é somada aos componentes.
+- `faixa`: faixa_1 | faixa_2 | faixa_3 | acima_faixa_3 | total. A linha total não é somada às faixas.
+- `deficit_domicilios`: valor inteiro transcrito, preservado inclusive quando a soma difere ligeiramente do total impresso.
+
+Limites da edição conforme metadados fornecidos: R$ 2.640 / 4.400 / 8.000, classificação FJP. Não equiparar aos códigos de contratos ou aos tetos vigentes de 2026. Ônus tem definição até 3 SM. O recorte sem ônus é total impresso menos ônus, não estimativa automática de moradias a construir. Não repartir 2024 com participações de 2022.
+
+## faixa1_modalidade.csv
+
+`ano`: ano da assinatura; `fonte`: FGTS, Fundo Social ou FAR/OGU (proxy); `modalidade`: financiada ou FAR; `unidade`: operações financiadas ou UH contratadas; `volume`: contagem de operações ou soma de qtd_uh, conforme unidade. Nunca somar as duas unidades como contratos equivalentes. Sem imputação de anos ausentes.
+
+## far_anual.csv
+
+`ano`: ano de dt_assinatura; `qtd_uh`: soma de unidades contratadas FAR; `val_contratado_total`: reais correntes contratados. Razão valor/UH é custo bruto aproximado, não desconto de contrato. Não desconta distratos nem usa data de entrega.
+
+## subsidio_rubricas_ano.csv
+
+`ano`, `faixa_codigo`: mesmos critérios da exploração de contratos. Quatro campos originais `vlr_subsidio_desconto_fgts`, `vlr_subsidio_desconto_ogu`, `vlr_subsidio_equilíbrio_fgts`, `vlr_subsidio_equilíbrio_ogu`: somas em reais correntes sobre registros com quatro campos completos. Dividir pelo denominador observado de exploracao_contratos, nunca por média simples dos anos.
+
+## orcamento_operacional_2026.csv
+
+`ano`: exercício 2026; `area`: três áreas mutuamente exclusivas; `valor_rs_milhares`: contratação prevista na edição inicial da Resolução 1.133/2025. Total 160.500.000 mil reais. Sem série histórica de execução ou consolidação de revisões.

@@ -51,7 +51,7 @@ def dissertation_charts():
                'Códigos históricos de faixa não são bandas de renda constantes e não incluem o FAR.')
     st.subheader('Valor médio financiado por operação e faixa')
     a['R$ mil por operação']=a.financiamento/a.financiamento_observado.replace(0,float('nan'))/1000
-    fig=px.line(a,x='ano',y='R$ mil por operação',color='Faixa',markers=True,color_discrete_map=PALETTE)
+    fig=px.bar(a,x='ano',y='R$ mil por operação',color='Faixa',barmode='group',color_discrete_map=PALETTE)
     plot(fig,'doc_ticket');table(a,'doc_ticket')
     st.caption('Figura 3 da v09 · mesmo recorte do gráfico de operações acima. Soma financiada / operações com valor observado. '
                'Principal mobilizado, não preço do imóvel nem custo econômico.')

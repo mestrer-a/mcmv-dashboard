@@ -41,7 +41,7 @@ def stocks():
     st.subheader('Quanto o Fundo tem — e de que tipo?')
     selected=st.multiselect('Saldos',['Caixa e equivalentes','Patrimônio líquido','Ativo total','TVM circulante','TVM não circulante'],default=['Caixa e equivalentes','Patrimônio líquido'])
     t=d[d.rubrica.isin(selected)].copy();t['R$ bilhões']=t.valor_rs_milhares/1e6
-    if not t.empty:plot(line(t,'ano','R$ bilhões','rubrica'),'stocks')
+    if not t.empty:plot(px.bar(t,x='ano',y='R$ bilhões',color='rubrica',barmode='group',color_discrete_sequence=COLORS),'stocks')
     else:st.info('Selecione um saldo.')
     table(t,'stocks')
     st.caption('2021 e 2022 reapresentados nas DF 2023. Patrimônio não é caixa; títulos não significam disponibilidade imediata. O ativo inclui a carteira de crédito.')

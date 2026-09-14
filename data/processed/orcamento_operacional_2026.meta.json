@@ -17,5 +17,9 @@
     "Contratação planejada, não execução, caixa disponível ou custo econômico.",
     "Anexo IV, unidade R$ mil: 144.500.000 + 8.000.000 + 8.000.000 = 160.500.000.",
     "Descontos separados do total de contratações; 12,5 bi iniciais e 13,0 bi após suplementação divulgada em setembro."
-  ]
+  ],
+  "script": "scripts/process_orcamento_operacional_2026.py",
+  "tabela": "data/processed/orcamento_operacional_2026.csv",
+  "metrica": "Orçamento inicial de contratação por área, em R$ mil",
+  "localizador": "Anexo IV, página 5 do PDF; coluna 2026"
 }

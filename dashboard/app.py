@@ -18,6 +18,7 @@ section[data-testid="stSidebar"] {background:#EAF0F5;border-right:1px solid #D6E
 div[data-testid="stMetric"] {background:white;border:1px solid #E0E7EF;padding:18px;border-radius:14px}
 div[data-testid="stExpander"] {background:white;border-radius:12px}
 div[data-testid="stPlotlyChart"],div[data-testid="stVegaLiteChart"] {background:white;border-radius:16px;padding:10px}
+.overview-title {font-size:1.75rem;font-weight:700;letter-spacing:-.025em;color:#153149;margin:.2rem 0 .65rem}
 </style>""",unsafe_allow_html=True)
 
 @st.cache_data
@@ -27,6 +28,10 @@ def br(v):return f'{v:,.2f}'.replace(',','X').replace('.',',').replace('X','.')
 
 SOURCES={1:['financiamento_por_fonte_ano','subsidio_medio_faixa','exploracao_contratos','faixa1_modalidade','far_anual','subsidio_rubricas_ano'],
  2:['arrecadacao_saques_fgts','orcamento_fgts_rubrica','balanco_fgts','ponte_caixa_fgts','orcamento_operacional_2026'],3:['formalizacao_pnad']}
+NAV=['Visão geral','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção']
+
+def navigate(target):
+    st.session_state.nav_page=target
 
 def explore(index):
     render_exploracao(index)
@@ -112,18 +117,21 @@ def housing():
 
 with st.sidebar:
     st.markdown('## MCMV / FGTS');st.caption('LABORATÓRIO DA DISSERTAÇÃO')
-    page=st.radio('Navegação',range(6),format_func=lambda x:['Visão geral','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção'][x]);st.divider()
+    page=st.radio('Navegação',range(6),format_func=lambda x:NAV[x],key='nav_page');st.divider()
 if page==0:
     st.caption('FGV EPGE · ARTHUR MESSER · ORIENTADOR: FERNANDO DE HOLANDA BARBOSA FILHO')
     st.title('Minha Casa Minha Vida e sustentabilidade do FGTS')
     st.write('Investigar de onde vêm os recursos, quem recebe os subsídios e quais limites condicionam a expansão do programa.')
     for c,label,value in zip(st.columns(3),['Contratações','Balanços do FGTS','Fontes principais'],['2009–2026*','2020–2025','4']):c.metric(label,value)
     st.caption('*2026 parcial. Resultados descritivos e exercícios hipotéticos são apresentados separadamente.')
-    for title,text in [('Programa e subsídios','Fontes, escala, faixas e benefícios registrados.'),('FGTS','Caixa, carteira, patrimônio e os fluxos que explicam sua evolução.'),('Emprego formal','A base potencial de contribuição no mercado de trabalho.'),('Déficit habitacional','Renda, componentes e diferentes instrumentos de política habitacional.')]:
-        with st.container(border=True):st.subheader(title);st.write(text)
+    for target,title,text in [(1,'Programa e subsídios','Fontes, escala, faixas e benefícios registrados.'),(2,'FGTS','Caixa, carteira, patrimônio e os fluxos que explicam sua evolução.'),(3,'Emprego formal','A base potencial de contribuição no mercado de trabalho.'),(4,'Déficit habitacional','Renda, componentes e diferentes instrumentos de política habitacional.')]:
+        with st.container(border=True):
+            st.markdown(f'<div class="overview-title">{title}</div>',unsafe_allow_html=True)
+            st.write(text)
+            st.button(f'Abrir {title}',key=f'open_{target}',on_click=navigate,args=(target,),use_container_width=True)
     st.caption('Escolha uma aba à esquerda e percorra todos os gráficos rolando a página. A hipótese de restrição financeira do FGTS será testada, não presumida.')
 else:
-    st.title(['','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção'][page])
+    st.title(NAV[page])
     if page in SOURCES:
         sources(SOURCES[page]);st.caption('Passe o mouse pela área das séries temporais para consultar o período. Clique na legenda para ocultar séries; use a barra do gráfico para ampliar ou exportar.')
         controls(page)

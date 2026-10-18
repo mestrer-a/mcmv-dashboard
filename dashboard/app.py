@@ -8,6 +8,7 @@ from exploracao import render_exploracao
 from ui import DATA, COLORS, sources, plot, table, line
 from periods import period, controls
 from additions import dissertation_charts, far_comparison, deficit_charts, budget_chart, legacy_subsidy
+from juros import render_juros_2026
 
 st.markdown("""<style>
 .stApp {background:#F5F7FA;color:#25364B}
@@ -72,6 +73,7 @@ def stocks():
 def essentials(page):
     if page==1:
         dissertation_charts()
+        render_juros_2026()
         far_comparison()
         st.header('Histórico do programa')
         d=period(read('financiamento_por_fonte_ano'),'sources',True,default=(2009,2026))

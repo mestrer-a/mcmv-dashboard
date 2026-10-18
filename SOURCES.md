@@ -99,3 +99,11 @@ Acesso: 2026-09-11. Processamento: `scripts/process_deficit_fjp.py`.
   O gráfico reproduz a peça **inicial**, não orçamento atualizado/consolidado nem execução.
 
 As pendências antigas de demonstrações, PNAD e abertura FJP acima foram parcialmente superadas. Permanecem pendentes execução setorial, OGU, Caged e índices de construção.
+
+## Taxas nominais da linha financiada do MCMV — 2026
+
+- Ministério das Cidades. **Minha Casa, Minha Vida — Linha Financiada**:
+  https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/habitacao/programa-minha-casa-minha-vida/mcmv-fgts
+- Tabela oficial atualizada em 28/06/2026; conferida em 18/10/2026.
+- Transcrição em `dashboard/juros.py`: oito níveis de renda, com taxas nominais anuais por região e condição de cotista. Nas linhas acima de R$ 3.500, a fonte agrupa as regiões; o código repete a mesma taxa para os dois grupos regionais sem criar diferenças.
+- A simulação SAC é apenas ilustrativa e mantém principal e prazo constantes. Não estima prestação bancária efetiva, subsídio implícito ou custo do FGTS.

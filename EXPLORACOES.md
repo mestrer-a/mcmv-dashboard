@@ -17,6 +17,10 @@ O primeiro gráfico deriva da tabela original. Os outros sete usam nova agregaç
 
 Os filtros de período do primeiro gráfico e dos contratos são independentes e identificados pela posição. 2026 é parcial e fica excluído por padrão. A tabela de contratos tem cobertura de 100% nas quatro rubricas de subsídio nesta extração, mas o processamento preserva a distinção entre ausência e zero para futuras reproduções.
 
+### Condições oficiais de juros em 2026
+
+Na aba **Programa e subsídios**, três gráficos adicionais apresentam: taxas mínimas e máximas por faixa; taxas por renda, região e condição de cotista; e uma simulação da primeira prestação pelo SAC. Essa seção usa parâmetros oficiais fixos de 2026 e permanece separada das séries históricas de contratos de 2023–2025. O exercício SAC não mede subsídio implícito nem custo do Fundo.
+
 ## FGTS
 
 9. Saldo de arrecadação menos saques.

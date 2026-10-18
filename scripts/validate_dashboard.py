@@ -6,8 +6,25 @@ import pandas as pd
 from streamlit.testing.v1 import AppTest
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'dashboard'))
+from juros import primeira_prestacao_sac, tabela_taxas
 
 def main():
+    taxas=tabela_taxas()
+    assert taxas.shape==(8,6)
+    assert taxas.iloc[:,2:].min().min()==4.00
+    assert taxas.iloc[:,2:].max().max()==10.00
+    assert set(taxas.Faixa)=={'Faixa 1','Faixa 2','Faixa 3','Classe Média'}
+    assert list(taxas.itertuples(index=False,name=None))==[
+        ('Faixa 1','Até R$ 2.160',4.00,4.25,4.50,4.75),
+        ('Faixa 1','R$ 2.160,01–2.850',4.25,4.50,4.75,5.00),
+        ('Faixa 1','R$ 2.850,01–3.200',4.50,4.75,5.00,5.25),
+        ('Faixa 2','R$ 3.200,01–3.500',4.75,5.00,5.25,5.50),
+        ('Faixa 2','R$ 3.500,01–4.000',5.50,5.50,6.00,6.00),
+        ('Faixa 2','R$ 4.000,01–5.000',6.50,6.50,7.00,7.00),
+        ('Faixa 3','R$ 5.000,01–9.600',7.66,7.66,8.16,8.16),
+        ('Classe Média','R$ 9.600,01–13.000',10.00,10.00,10.00,10.00),
+    ]
+    assert np.isclose(primeira_prestacao_sac(150000,360,4.00),916.6666666666667)
     d=pd.read_csv(ROOT/'data/processed/balanco_fgts.csv')
     assert not d.duplicated(['ano','rubrica']).any()
     p=d.pivot(index='ano',columns='rubrica',values='valor_rs_milhares')
@@ -30,6 +47,12 @@ def main():
         assert len(a.sidebar.radio)==1
         count=len(a.get('plotly_chart'))+len(a.get('vega_lite_chart'))
         assert count >= {1:15,2:12,3:5,4:5}[page],(page,count)
+        if page==1:
+            ids=[chart.proto.id for chart in a.get('plotly_chart')]
+            assert all(any(key in chart_id for chart_id in ids) for key in
+                       ['juros_faixas_2026','juros_renda_2026','juros_prestacao_2026'])
+            a.selectbox(key='juros_regiao_2026').set_value('Sul, Sudeste e Centro-Oeste').run();ok()
+            a.slider(key='juros_principal_2026').set_value(200000).run();ok()
         for preset in OPTIONS:
             a.radio(key='analysis_preset').set_value(preset).run();ok()
             if preset=='Personalizado':

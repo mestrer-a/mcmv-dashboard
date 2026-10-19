@@ -1,0 +1,15 @@
+{
+  "titulo": "Simulações condicionais de sustentabilidade e escala de atendimento",
+  "data_verificacao": "2026-10-19",
+  "unidade_resultados": "R$ bilhões de dezembro de 2025, salvo indicadores físicos",
+  "base": "DFC Controladora 2023–2025; FGTS Faixa 1 2023–2025; FAR 2024–2025; FJP 2024 e 2022",
+  "metodo": "docs/simulacoes.md",
+  "script": "scripts/build_simulations.py",
+  "limitacoes": [
+    "Não identifica causalidade",
+    "Fluxos reais constantes, sem projeção de safras",
+    "Crédito, subsídio registrado e FAR bruto separados",
+    "2026 parcial excluído",
+    "FAR 2023 ausente não é zero"
+  ]
+}

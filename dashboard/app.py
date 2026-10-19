@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 import streamlit as st
 st.set_page_config(page_title='MCMV · Laboratório de pesquisa',page_icon='🏘️',layout='wide')
 from exploracao import render_exploracao
+from simulacoes import render_simulacoes
 from ui import DATA, COLORS, sources, plot, table, line
 from periods import period, controls
 from additions import dissertation_charts, far_comparison, deficit_charts, budget_chart, legacy_subsidy
@@ -31,7 +32,7 @@ def br(v):return f'{v:,.2f}'.replace(',','X').replace('.',',').replace('X','.')
 
 SOURCES={1:['financiamento_por_fonte_ano','subsidio_medio_faixa','exploracao_contratos','faixa1_modalidade','far_anual','subsidio_rubricas_ano','juros_contratos_mensal'],
  2:['arrecadacao_saques_fgts','orcamento_fgts_rubrica','balanco_fgts','ponte_caixa_fgts','orcamento_operacional_2026','custo_oportunidade_fgts'],3:['formalizacao_pnad']}
-NAV=['Visão geral','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção']
+NAV=['Visão geral','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção','Sustentabilidade e simulações']
 
 def navigate(target):
     st.session_state.nav_page=target
@@ -124,7 +125,7 @@ def housing():
 
 with st.sidebar:
     st.markdown('## MCMV / FGTS');st.caption('LABORATÓRIO DA DISSERTAÇÃO')
-    page=st.radio('Navegação',range(6),format_func=lambda x:NAV[x],key='nav_page');st.divider()
+    page=st.radio('Navegação',range(7),format_func=lambda x:NAV[x],key='nav_page');st.divider()
 if page==0:
     st.caption('FGV EPGE · ARTHUR MESSER · ORIENTADOR: FERNANDO DE HOLANDA BARBOSA FILHO')
     st.title('Minha Casa Minha Vida e sustentabilidade do FGTS')
@@ -149,4 +150,5 @@ else:
         st.divider()
         explore(page-1)
     elif page==4:housing()
+    elif page==6:render_simulacoes()
     else:st.info('Integração SINAPI/INCC pendente. Não se infere custo de construção a partir do valor de financiamento.')

@@ -1,0 +1,39 @@
+{
+  "caixa_inicial_bi": 33.466156,
+  "principal_faixa1_rs": 130590.25099041399,
+  "subsidio_faixa1_rs": 46649.579805393376,
+  "far_unitario_rs": 174345.19176323107,
+  "contratos_faixa1_media": 211463.0,
+  "unidades_far_media": 65590.5,
+  "fatores_ipca": {
+    "2023": 1.1114131944183812,
+    "2024": 1.064903899172525,
+    "2025": 1.0140324003739294
+  },
+  "fluxos_medios_reais_bi": {
+    "deposits": 205.44721850696922,
+    "withdrawals": -173.52684534486,
+    "credit_new": -117.155757895958,
+    "credit_receipts": 84.44250896103198,
+    "title_op": 1.7287597858830106,
+    "other_loans": 1.2255973847781079,
+    "admin": -3.29958702357348,
+    "discounts": -10.41235982846726,
+    "cash_interest": 4.832030799497159,
+    "other_op": -0.1963891513420484,
+    "op_total": -38.83519696815054,
+    "bond_buy": -19.4991482192931,
+    "bond_principal": 27.361143282907904,
+    "bond_interest": 8.380925357931202,
+    "permanent": 3.224594576301172,
+    "other_inv": -0.0065255511405419055,
+    "inv_total": 19.460989446706634,
+    "pis_transfer": 9.627799148075452,
+    "cash_start": 31.814461912236595,
+    "cash_end": 34.73282840482644,
+    "net_deposits": 31.920373162109204,
+    "fin_total": 22.292574014033757,
+    "delta_cash": 2.9183664925898536,
+    "maintenance": 1.4595760007493335
+  }
+}

@@ -2,11 +2,13 @@
 from pathlib import Path
 import hashlib
 import sys
+from unittest.mock import patch
 import pandas as pd
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'dashboard'))
 from deficit_historico import history_figure
+from ui import plot
 
 
 def main():
@@ -24,9 +26,19 @@ def main():
     assert d.loc[d.ano.eq(2024),'deficit_domicilios'].item()==pd.read_csv(ROOT/'data/processed/deficit_fjp_total.csv').deficit_domicilios.item()
     fig=history_figure(d[d.ano>=2007])
     xs=[x for trace in fig.data for x in trace.x]
-    assert '2020' not in xs and '2021' not in xs
-    assert '2020' in fig.layout.xaxis.categoryarray and '2021' in fig.layout.xaxis.categoryarray
+    assert 2020 not in xs and 2021 not in xs
+    assert 2020 in fig.layout.xaxis.tickvals and 2021 in fig.layout.xaxis.tickvals
     assert all(trace.type=='bar' for trace in fig.data)
+    # Regression for the user's screenshot, including the shared formatting layer.
+    for start,end in [(2013,2024),(2007,2024),(2023,2024),(2024,2024)]:
+        chart=history_figure(d[d.ano.between(start,end)])
+        with patch('ui.st.plotly_chart'):
+            plot(chart,'axis_regression')
+        assert chart.layout.xaxis.type=='linear'
+        assert list(chart.layout.xaxis.tickvals)==list(range(start,end+1))
+        assert tuple(chart.layout.xaxis.range)==(start-.7,end+.7)
+        for annotation in chart.layout.annotations:
+            assert isinstance(annotation.x,int) and start<=annotation.x<=end
     for year in [1991,2010,2024]:
         single=history_figure(d[d.ano.eq(year)],ancient=year<2007)
         assert len(single.data)==1 and len(single.data[0].x)==1

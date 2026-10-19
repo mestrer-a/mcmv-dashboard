@@ -9,7 +9,10 @@ from ui import DATA, plot, table
 
 def history_figure(data, ancient=False):
     d=data.copy()
-    d['Ano']=d.ano.astype(str)
+    # Recent years use real numeric coordinates, including missing calendar years.
+    # Numeric-looking category annotations can be interpreted as category indices
+    # (e.g. 2020th category), stretching the axis and crushing all bars at the left.
+    d['Ano']=d.ano.astype(str) if ancient else d.ano.astype(int)
     d['Milhões de domicílios']=d.deficit_domicilios/1e6
     d['Total publicado']=d.deficit_domicilios.map(lambda x:f'{x:,.0f}'.replace(',','.'))
     d['Rótulo']=d['Milhões de domicílios'].map(lambda x:f'{x:.2f}'.replace('.',','))
@@ -21,14 +24,19 @@ def history_figure(data, ancient=False):
     fig.update_traces(textposition='outside',cliponaxis=False,
         hovertemplate='%{x}<br>%{customdata[0]} domicílios<br>%{customdata[1]}<extra></extra>')
     fig.update_yaxes(range=[0,d['Milhões de domicílios'].max()*1.2])
-    # Categoria explícita mantém 2020–2021 como lacuna, nunca como barra zero.
     years=(d.ano.tolist() if ancient else list(range(int(d.ano.min()),int(d.ano.max())+1)))
-    fig.update_xaxes(type='category',categoryorder='array',categoryarray=[str(y) for y in years],
-                     tickmode='array',tickvals=[str(y) for y in years],tickangle=-45)
+    if ancient:
+        fig.update_xaxes(type='category',categoryorder='array',categoryarray=[str(y) for y in years],
+                         tickmode='array',tickvals=[str(y) for y in years],tickangle=0)
+    else:
+        fig.update_traces(width=.7)
+        fig.update_xaxes(type='linear',range=[years[0]-.7,years[-1]+.7],
+                         tickmode='array',tickvals=years,ticktext=[str(y) for y in years],
+                         tickangle=-45 if len(years)>12 else 0)
     if not ancient:
         for year in [2020,2021]:
             if year in years:
-                fig.add_annotation(x=str(year),y=.3,text='s/d',showarrow=False,font=dict(size=13,color='#65778A'))
+                fig.add_annotation(x=year,y=.3,text='s/d',showarrow=False,font=dict(size=13,color='#65778A'))
     return fig
 
 

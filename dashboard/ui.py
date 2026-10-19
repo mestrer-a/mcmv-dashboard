@@ -34,7 +34,7 @@ def plot(fig,key):
         if trace.type=='scatter':trace.update(line_width=3,marker_size=9)
     # Integer calendar years, including a visible partial-year marker.
     xs=[x for t in fig.data if t.x is not None for x in t.x]
-    if xs and all(isinstance(x,(int,float)) or hasattr(x,'item') for x in xs):
+    if fig.layout.xaxis.tickmode!='array' and xs and all(isinstance(x,(int,float)) or hasattr(x,'item') for x in xs):
         try:
             years=sorted(set(int(x) for x in xs))
             if all(2000<=x<=2100 for x in years):

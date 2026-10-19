@@ -59,6 +59,17 @@ def main():
                 for yr in [2009,2022,2025,2026]:
                     a.slider(key='analysis_years').set_value((yr,yr)).run();ok()
         a.radio(key='analysis_preset').set_value(OPTIONS[0]).run();ok()
+        if page==4:
+            ids=[chart.proto.id for chart in a.get('plotly_chart')]
+            assert all(any(key in chart_id for chart_id in ids) for key in
+                       ['fjp_historico_total','fjp_historico_antigo'])
+            a.radio(key='analysis_preset').set_value('Personalizado').run();ok()
+            for year in [1991,2000,2010,2020,2021,2024]:
+                a.slider(key='analysis_years').set_value((year,year)).run();ok()
+                ids=[chart.proto.id for chart in a.get('plotly_chart')]
+                if year in [2020,2021]:
+                    assert not any('fjp_historico_total' in x or 'fjp_historico_antigo' in x for x in ids)
+            a.radio(key='analysis_preset').set_value(OPTIONS[0]).run();ok()
     for territory in a.selectbox[1].options:
         a.selectbox[1].set_value(territory).run();ok()
     for page in [5,0]:a.sidebar.radio[0].set_value(page).run();ok()

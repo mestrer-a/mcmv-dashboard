@@ -66,10 +66,12 @@ Conforme observação prévia do usuário (contratos Pró-Cotista, Faixa Estendi
 - `percentual_domicilios`: percentual dos domicílios particulares ocupados (7,4; escala 0–100).
 - `fonte_url`: divulgação oficial do Ministério das Cidades na Agência Gov.
 
-As tabelas por renda e componente não foram recuperadas. Não há imputação, nem uso de percentuais de outra edição para repartir o total.
+Relatório e planilhas completos de 2024 foram localizados em 19/10/2026 e reconfirmam o total. O CSV original permanece preservado; a série histórica usa as planilhas originais. Não há imputação nem uso de percentuais de outra edição para repartir o total.
 
 
 ## deficit_fjp_faixa_componente.csv
+
+Ver também `deficit_fjp_historico.csv`, que acrescenta totais anuais sem alterar esta transcrição.
 
 - `ano_referencia`: 2022, ano da pesquisa; não ano de divulgação.
 - `territorio`: Brasil, Norte, Nordeste, Sudeste, Sul, Centro-Oeste, Total das RM ou Demais áreas. Regiões e RM/demais áreas são partições alternativas; não somar todos os territórios.
@@ -94,3 +96,16 @@ Limites da edição conforme metadados fornecidos: R$ 2.640 / 4.400 / 8.000, cla
 ## orcamento_operacional_2026.csv
 
 `ano`: exercício 2026; `area`: três áreas mutuamente exclusivas; `valor_rs_milhares`: contratação prevista na edição inicial da Resolução 1.133/2025. Total 160.500.000 mil reais. Sem série histórica de execução ou consolidação de revisões.
+
+## deficit_fjp_historico.csv
+
+- `ano`: ano de referência da pesquisa, não de publicação. 21 observações: 1991, 2000, 2004–2019, 2022–2024. Não representa todos os anos do calendário nem todas as revisões de cada divulgação.
+- `territorio`: Brasil.
+- `deficit_domicilios`: total publicado, arredondado ao inteiro mais próximo quando o XLSX contém estimativa amostral fracionária. Total não é reconstruído a partir dos componentes.
+- `percentual_domicilios`: percentual publicado (escala 0–100); ausente quando não transcrito. Denominadores/metodologias diferem entre edições; não é zero nem uma série relativa homogênea.
+- `serie_metodologica`: metodologia anterior a 2007; Pnad anual 2007–2015; Censo 2010; PnadC + CadÚnico. Mesma família metodológica não garante ausência de ajustes entre edições.
+- `edicao_fonte`, `fonte_url`, `localizador_fonte`: versão, endereço e página/célula que permitem auditar cada total.
+- `nota`: limitações específicas do ano e da edição.
+- `data_acesso`: 2026-10-19 para esta consolidação.
+
+FJP é dado de entrada: sem estimativa própria de déficit, imputação de anos ou prorrateio de faixas. 1991–2006 ficam em gráfico separado. Série 2016–2019 usa reponderação, não mistura os totais da publicação inicial. 2022 preserva o hash da base fornecida. 2024 continua 5.773.983, agora confirmado em relatório e planilha completos.

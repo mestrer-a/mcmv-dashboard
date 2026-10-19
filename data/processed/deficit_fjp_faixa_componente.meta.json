@@ -11,7 +11,7 @@
       "tabelas": "Tabela 4 (absoluto, p. 30-31); Tabela 5 (composição %, p. 31-32); Gráfico 2 (p. 29)"
     }
   ],
-  "por_que_essa_versao": "Edição de referência 2022 (PnadC 2022) é a publicação completa mais recente da FJP com abertura do déficit por faixa de renda do MCMV e por componente. O total de referência 2024 (5.773.983) circulou apenas como manchete via Ministério das Cidades (abril/2026), sem relatório com as tabelas por renda e componente. Para o exercício de custo, usa-se a edição 2022 de forma consistente (total e abertura da mesma fonte); o total de 2024 pode ser citado como contexto.",
+  "por_que_essa_versao": "Preserva a transcrição fornecida pelo autor para referência 2022, com total e abertura por faixa do MCMV da mesma edição. Atualização em 19/10/2026: relatório e planilhas completos de 2023 e 2024 foram localizados na FJP. Os novos totais estão em deficit_fjp_historico; as faixas em salários mínimos das novas planilhas não substituem automaticamente a classificação em reais desta base. Não aplicar a distribuição de 2022 a outros anos.",
   "script": "scripts/process_deficit_fjp_faixa.py",
   "tabela": "data/processed/deficit_fjp_faixa_componente.csv",
   "metrica": "Domicílios em déficit habitacional, por faixa de renda do MCMV (R$) e por componente (habitação precária, coabitação, ônus excessivo com aluguel urbano), por território.",

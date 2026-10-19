@@ -9,6 +9,7 @@ from ui import DATA, COLORS, sources, plot, table, line
 from periods import period, controls
 from additions import dissertation_charts, far_comparison, deficit_charts, budget_chart, legacy_subsidy
 from juros import render_juros_2026
+from deficit_historico import render_deficit_historico
 
 st.markdown("""<style>
 .stApp {background:#F5F7FA;color:#25364B}
@@ -112,8 +113,9 @@ def essentials(page):
         st.caption('Proxy de pessoas ocupadas com carteira, não vínculos ou depósitos efetivos. Não identifica pejotização nem a massa salarial sujeita ao FGTS.')
 
 def housing():
-    sources(['deficit_fjp_total','deficit_fjp_faixa_componente','exploracao_contratos'])
+    sources(['deficit_fjp_historico','deficit_fjp_total','deficit_fjp_faixa_componente','exploracao_contratos'])
     controls(4)
+    render_deficit_historico()
     deficit_charts()
 
 

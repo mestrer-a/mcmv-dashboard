@@ -3,8 +3,12 @@
   "titulo": "Déficit habitacional total, referência 2024",
   "organizacao": "Fundação João Pinheiro; divulgação Ministério das Cidades / Agência Gov",
   "portal_catalogo": "https://fjp.mg.gov.br/deficit-habitacional-no-brasil/",
-  "data_acesso": "2026-09-11",
+  "data_acesso": "2026-10-19",
   "bases": [
+    {
+      "nome": "FJP: relatório completo Déficit Habitacional 2024, tabela 1",
+      "url": "https://drive.google.com/file/d/1wcGG-95LHqzhjXbtTvCnFh2XX2vL0xyW/view"
+    },
     {
       "nome": "Ministério das Cidades na Agência Gov, 29/04/2026",
       "url": "https://agenciagov.ebc.com.br/noticias/202604/minha-casa-minha-vida-contribui-para-o-menor-deficit-habitacional-da-historia-do-pais-afirma-ministro"
@@ -14,7 +18,7 @@
       "url": "https://drive.google.com/file/d/1ITXVvGuAs43gyQAVcwb_Z-P6XKGjtL1o/view"
     }
   ],
-  "por_que_essa_versao": "2024 é a referência mais recente identificada; total confirmado na divulgação oficial do Ministério. Não substitui as tabelas originais por renda e componente, ainda indisponíveis nos endereços consultados.",
+  "por_que_essa_versao": "Total de 2024 inicialmente obtido na divulgação do Ministério; reconfirmado em 19/10/2026 no relatório e na planilha completos da FJP. O CSV original permanece preservado. A série histórica tem proveniência própria em deficit_fjp_historico.",
   "script": "scripts/process_deficit_fjp.py",
   "tabela": "data/processed/deficit_fjp_total.csv",
   "metrica": "Domicílios em déficit e percentual do total de domicílios particulares ocupados.",

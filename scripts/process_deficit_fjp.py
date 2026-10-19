@@ -1,5 +1,6 @@
 """Total FJP 2024 divulgado pelo Ministério das Cidades na Agência Gov.
-As aberturas originais FJP ainda estão pendentes; não inferir de percentuais de notícias.
+Registro da primeira fonte usada. Relatório e planilha completos reconfirmados
+em outubro de 2026; ver process_deficit_historico.py. Este CSV é preservado.
 """
 import csv
 from pathlib import Path

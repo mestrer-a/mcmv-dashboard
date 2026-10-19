@@ -2,6 +2,23 @@
 
 Cada entrada: nome, URL de origem, URL de download direto (quando distinta), data de acesso, tamanho no momento do acesso.
 
+## Histórico nacional do déficit habitacional — atualização 19/10/2026
+
+`data/processed/deficit_fjp_historico.csv` reúne 21 anos de referência (1991, 2000, 2004–2019, 2022–2024), com uma edição identificada por ano. Não é um inventário de todas as revisões. Script: `scripts/process_deficit_historico.py`; URLs, células e hashes SHA-256 dos XLSX constam no `.meta.json`. Os downloads ficam em `data/raw/fjp_historico`, fora do Git.
+
+- Catálogo oficial: https://fjp.mg.gov.br/deficit-habitacional-no-brasil/
+- 1991, 2000, 2004–2006: FJP/Ministério das Cidades, *Déficit habitacional no Brasil 2007*, publicado em 2009, tabela 5.1, página 54. Cópia do relatório na UNMP: https://www.unmp.org.br/wp-content/uploads/2009/06/Deficit%20Habitacional%20no%20Brasil%202007-Versao%20Final%20.pdf
+- 2007–2015: consolidação de dados FJP no Boletim SECAP 10/2019, gráfico 1, página 6 impressa (PDF p. 7): https://www.gov.br/gestao/pt-br/central-de-conteudo/publicacoes/boletins/boletim-subsidios/arquivos/2019/boletim-mensal-sobre-os-subsidios-da-uniao-2013-programa-minha-casa-minha-vida-edicao-10.pdf
+- 2016–2019, versão reponderada: https://docs.google.com/spreadsheets/d/1y0c_oDcNpcq29fJyPAA4jtjDTAzij2MW/edit — aba `Déficit`, células F55, F109, F163, F217.
+- 2022: somente leitura do total Brasil da transcrição fornecida pelo autor; CSV original e seus valores preservados.
+- 2023: https://docs.google.com/spreadsheets/d/1lQzsAuzhRCEJufiIEI_tVzO4vllcBT38/edit — `Deficit_habitacional!E55`.
+- 2024: https://docs.google.com/spreadsheets/d/1AwlL17JBmASv8Jurnkb6zhfXc0fzGQwp/edit — `Deficit_habitacional!E55`.
+- Relatório completo 2024 (disponibilidade reconfirmada nesta atualização): https://drive.google.com/file/d/1wcGG-95LHqzhjXbtTvCnFh2XX2vL0xyW/view — seção 2 explica tratamento dos improvisados; tabela 1 confirma o total 5.773.983.
+
+Quebras: definição de famílias conviventes anterior a 2007; Censo 2010; migração para PnadC/CadÚnico em 2016; tratamento de improvisados em 2022–2024. Não interpolar 2020–2021, nem calcular uma variação homogênea entre todas as metodologias. Percentuais de 2022 não são aplicados a outros anos. Fonte oficial nova não altera automaticamente os recortes por faixa da dissertação.
+
+O levantamento de literatura e dos dados necessários ao custo de oportunidade está em `docs/custo_oportunidade_fgts.md`. Nenhuma estimativa de custo implícito foi inserida no dashboard como fato observado.
+
 ## Portal de Dados Abertos do Ministério das Cidades
 
 Dataset "catálogo" (metadados, não hospeda os arquivos em si):
@@ -81,7 +98,7 @@ Acesso: 2026-09-11. Processamento: `scripts/process_deficit_fjp.py`.
 - Ministério das Cidades na Agência Gov, 29/04/2026: https://agenciagov.ebc.com.br/noticias/202604/minha-casa-minha-vida-contribui-para-o-menor-deficit-habitacional-da-historia-do-pais-afirma-ministro
 - Cartilha metodológica FJP: https://drive.google.com/file/d/1ITXVvGuAs43gyQAVcwb_Z-P6XKGjtL1o/view
 
-2024 é a referência mais recente identificada; total confirmado na divulgação oficial do Ministério. Não substitui as tabelas originais por renda e componente, ainda indisponíveis nos endereços consultados.
+2024 é a referência mais recente identificada. Atualização de 19/10/2026: relatório e planilhas completos foram localizados no catálogo FJP, reconfirmando o total. A ressalva anterior de indisponibilidade está superada; ver a série histórica abaixo. O CSV original não foi alterado.
 
 
 ## Revisão de 13/09/2026 — déficit por renda e modalidades

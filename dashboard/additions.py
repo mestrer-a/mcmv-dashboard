@@ -102,8 +102,9 @@ def deficit_charts():
     d=read('deficit_fjp_faixa_componente')
     st.selectbox('Edição com abertura disponível nesta base',[2022],key='fjp_edition')
     territory=st.selectbox('Território dos gráficos de déficit',d.territorio.unique().tolist(),index=list(d.territorio.unique()).index('Brasil'))
-    st.info('Os recortes de governo se aplicam às séries de contratos. Os gráficos FJP abaixo mantêm a referência 2022: '
-            'é a única edição com abertura integrada neste repositório. O total nacional de 2024 (5.773.983) é contexto de outra edição, sem repartição por renda/componente aqui.')
+    st.info('O recorte temporal se aplica ao histórico acima e às séries de contratos. Os gráficos por faixa abaixo mantêm a referência 2022: '
+            'é a abertura por faixa do MCMV integrada neste repositório. Já existe relatório completo de 2024, com total nacional de 5.773.983. '
+            'As proporções de 2022 não são aplicadas aos totais de outros anos.')
     t=d[d.territorio.eq(territory)].copy()
     totals=t[(t.componente=='deficit_total')&(t.faixa!='total')].copy()
     denominator=t[(t.componente=='deficit_total')&(t.faixa=='total')].deficit_domicilios.iloc[0]

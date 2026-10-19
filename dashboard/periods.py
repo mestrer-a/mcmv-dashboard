@@ -7,7 +7,7 @@ OPTIONS = ['Recortes da dissertação', 'Governo atual · 2023–2025',
 def controls(page):
     st.radio('Recorte temporal da aba', OPTIONS, horizontal=True, key='analysis_preset')
     if st.session_state.analysis_preset == 'Personalizado':
-        st.slider('Intervalo personalizado',2009,2026,(2023,2025),key='analysis_years')
+        st.slider('Intervalo personalizado',1991 if page==4 else 2009,2026,(2023,2025),key='analysis_years')
     st.caption('O recorte vale para todas as séries da aba. Abaixo de cada bloco é possível ajustar o período. '
                '*2026 parcial nas bases de contratos; balanços encerram em 2025. Edições fixas não são extrapoladas.')
 

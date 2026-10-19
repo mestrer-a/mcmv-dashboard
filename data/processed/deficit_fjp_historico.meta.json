@@ -1,0 +1,69 @@
+{
+  "id": "deficit_fjp_historico",
+  "titulo": "Déficit habitacional nacional: publicações históricas, 1991–2024",
+  "organizacao": "Fundação João Pinheiro; consolidação histórica SECAP",
+  "data_acesso": "2026-10-19",
+  "bases": [
+    {
+      "nome": "FJP: catálogo de relatórios e planilhas",
+      "url": "https://fjp.mg.gov.br/deficit-habitacional-no-brasil/"
+    },
+    {
+      "nome": "FJP 2007, tabela retrospectiva 5.1 (cópia do relatório na UNMP)",
+      "url": "https://www.unmp.org.br/wp-content/uploads/2009/06/Deficit%20Habitacional%20no%20Brasil%202007-Versao%20Final%20.pdf"
+    },
+    {
+      "nome": "Ministério da Economia/SECAP, Boletim de Subsídios 10/2019, gráfico 1 (fonte FJP)",
+      "url": "https://www.gov.br/gestao/pt-br/central-de-conteudo/publicacoes/boletins/boletim-subsidios/arquivos/2019/boletim-mensal-sobre-os-subsidios-da-uniao-2013-programa-minha-casa-minha-vida-edicao-10.pdf"
+    },
+    {
+      "nome": "FJP: relatório 2024, seção 2 e tabela 1",
+      "url": "https://drive.google.com/file/d/1wcGG-95LHqzhjXbtTvCnFh2XX2vL0xyW/view"
+    },
+    {
+      "nome": "FJP: planilha 2016_2019",
+      "url": "https://docs.google.com/spreadsheets/d/1y0c_oDcNpcq29fJyPAA4jtjDTAzij2MW/edit"
+    },
+    {
+      "nome": "FJP: planilha 2023",
+      "url": "https://docs.google.com/spreadsheets/d/1lQzsAuzhRCEJufiIEI_tVzO4vllcBT38/edit"
+    },
+    {
+      "nome": "FJP: planilha 2024",
+      "url": "https://docs.google.com/spreadsheets/d/1AwlL17JBmASv8Jurnkb6zhfXc0fzGQwp/edit"
+    }
+  ],
+  "originais": [
+    {
+      "arquivo": "data\\raw\\fjp_historico\\2016_2019.xlsx",
+      "url": "https://docs.google.com/spreadsheets/d/1y0c_oDcNpcq29fJyPAA4jtjDTAzij2MW/edit",
+      "download": "https://drive.google.com/uc?export=download&id=1y0c_oDcNpcq29fJyPAA4jtjDTAzij2MW",
+      "sha256": "1b9fa535bdd31bd3c7b543aa76813806770525f58893b73bc0a27a553ec4cf45"
+    },
+    {
+      "arquivo": "data\\raw\\fjp_historico\\2023.xlsx",
+      "url": "https://docs.google.com/spreadsheets/d/1lQzsAuzhRCEJufiIEI_tVzO4vllcBT38/edit",
+      "download": "https://drive.google.com/uc?export=download&id=1lQzsAuzhRCEJufiIEI_tVzO4vllcBT38",
+      "sha256": "243876197c4b1ee81869a1a8d61651b0acfabeb3b7f71ecb372fb1a11a88515f"
+    },
+    {
+      "arquivo": "data\\raw\\fjp_historico\\2024.xlsx",
+      "url": "https://docs.google.com/spreadsheets/d/1AwlL17JBmASv8Jurnkb6zhfXc0fzGQwp/edit",
+      "download": "https://drive.google.com/uc?export=download&id=1AwlL17JBmASv8Jurnkb6zhfXc0fzGQwp",
+      "sha256": "e7b9b58df200b66d174820cc1d9363c3bcbc0d4c6a0b4c7c8b90d3919438aa55"
+    }
+  ],
+  "script": "scripts/process_deficit_historico.py",
+  "tabela": "data/processed/deficit_fjp_historico.csv",
+  "premissas": [
+    "Ano de referência da pesquisa, não ano de publicação. 21 observações; não há uma divulgação para cada ano do calendário.",
+    "Uma edição identificada por ano; não é um inventário de todas as versões e revisões de cada estimativa.",
+    "1991–2006: retrospectiva da tabela 5.1 do relatório 2007; definição antiga e diferenças de cobertura. 2000 inclui depreciação.",
+    "2007–2015: consolidação SECAP/FJP; 2010 é Censo e deve ser distinguido dos anos Pnad.",
+    "Desde 2016: PnadC + CadÚnico. 2016–2019 reponderados. Ajustes nos improvisados em 2022–2024 também afetam comparabilidade.",
+    "2020 e 2021 sem observações nesta série; não interpolar, preencher com zero ou repetir 2019.",
+    "Dados de entrada publicados, arredondados ao domicílio; não recalculamos o déficit a partir dos microdados.",
+    "Não aplicar composição de 2022 a outro total; mudanças agregadas não identificam efeito causal do MCMV.",
+    "Relatório e planilha completos de 2024 localizados em 19/10/2026; a antiga ressalva de disponibilidade apenas em notícia está superada."
+  ]
+}

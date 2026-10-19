@@ -135,7 +135,8 @@ def render_fund_opportunity():
     adjustment = st.slider('Ajuste da referência em relação à Selic · pontos percentuais ao ano',
                             -5.0,5.0,0.0,0.5,key='opportunity_adjustment')
     d = opportunity_estimate(d, adjustment)
-    subtitle = 'Carteira habitacional total · cenário Selic '+f'({adjustment:+.1f} p.p.)'.replace('.',',')+' · valores brutos'
+    adjustment_label = f'{adjustment:+.1f}'.replace('.',',')
+    subtitle = f'Carteira habitacional total · cenário Selic ({adjustment_label} p.p.) · valores brutos'
     st.caption('0 p.p. = Selic acumulada em cada ano. O ajuste é uma hipótese de sensibilidade, '
                'não uma estimativa observada de custos ou prêmio de risco.')
     st.subheader('Retorno da carteira habitacional e referência financeira')

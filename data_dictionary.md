@@ -109,3 +109,38 @@ Limites da edição conforme metadados fornecidos: R$ 2.640 / 4.400 / 8.000, cla
 - `data_acesso`: 2026-10-19 para esta consolidação.
 
 FJP é dado de entrada: sem estimativa própria de déficit, imputação de anos ou prorrateio de faixas. 1991–2006 ficam em gráfico separado. Série 2016–2019 usa reponderação, não mistura os totais da publicação inicial. 2022 preserva o hash da base fornecida. 2024 continua 5.773.983, agora confirmado em relatório e planilha completos.
+
+## custo_oportunidade_fgts.csv
+
+Uma linha por exercício, 2021–2025; carteira habitacional total, não exclusivamente MCMV.
+
+- `ano`: exercício contábil.
+- `saldo_inicial_bruto_rs_milhares`, `saldo_final_bruto_rs_milhares`: saldos antes de provisões da Nota 9; em 2021 o encerramento foi recomposto adicionando a provisão ao líquido.
+- `receita_rs_milhares`: juros/encargos/atualização monetária da linha habitacional da movimentação; regime de competência.
+- `liberacoes_liquidas_rs_milhares`, `demais_movimentos_rs_milhares`: componentes para reconciliar abertura e encerramento; não substituem DFC.
+- `saldo_medio_rs_milhares`: média simples da abertura e encerramento, aproximação do saldo médio anual.
+- `retorno_contabil_bruto_pct`: 100 × receita / saldo médio; não retorno líquido.
+- `selic_pct_ano`: 100 × [produto(1 + Selic mensal / 100) − 1], doze meses.
+- `descontos_fgts_dre_rs_milhares`: despesa positiva de descontos da DRE do Fundo inteiro, universo distinto da carteira habitacional.
+- `arquivo_fonte`, `localizador_fonte`: documento e localização dos dados da carteira. Descontos remetem a `orcamento_fgts_rubrica.csv`.
+
+Exportação do dashboard acrescenta ajuste em p.p., referência anual ajustada, receita alternativa e diferencial assinado, em R$ milhares e bilhões. Esses campos são **estimativas de cenário**; não se somam automaticamente aos descontos.
+
+## selic_mensal.csv e juros_mercado_bcb.csv
+
+- `mes`: AAAA-MM.
+- `selic_pct_mes`: Selic acumulada mensal (%), BCB via Ipeadata BM12_TJOVER12, janeiro/2021 a dezembro/2025.
+- `mercado_pct_aa`: unidade prevista do SGS 20772 (% a.a.). **Arquivo vazio com cabeçalho**, pois a consulta falhou em 19/10/2026. Não equivale a taxas iguais a zero.
+
+## juros_contratos_mensal.csv
+
+Agregado por `mes` (AAAA-MM), `fonte` (FGTS/Fundo Social) e `faixa_codigo` (1–4/Sem classificação). Códigos têm a mesma interpretação exploratória das demais bases.
+
+- `contratos`: número de operações, mesmas exclusões de programas de `exploracao_contratos.csv`.
+- `contratos_taxa_valida`: financiamento positivo e taxa numérica entre 0 e 100; ausências não imputadas.
+- `financiamento_total`: soma do principal informado (R$), inclusive operações sem taxa válida; denominador da cobertura monetária.
+- `principal_taxa_valida`: principal dos contratos válidos (R$), peso para médias.
+- `soma_taxa_principal`: soma(taxa informada × principal), em percentual × R$.
+- `soma_taxa_equivalente_principal`: soma({100 × [(1 + taxa/1200)^12 − 1]} × principal); conversão individual sob hipótese de nominal anual, nunca conversão da média.
+
+Taxas e coberturas anuais são razões de somas. Quando houver benchmark, restringir os dois numeradores aos mesmos meses e principais; não imputar anos/meses ausentes. Fonte de crédito não identifica o pagador do subsídio. Microdados não são publicados.

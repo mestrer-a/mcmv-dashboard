@@ -1,0 +1,40 @@
+{
+  "id": "custo_oportunidade_fgts",
+  "titulo": "Carteira habitacional: retorno e custo de oportunidade estimado",
+  "data_acesso": "2026-10-19",
+  "bases": [
+    {
+      "nome": "FGTS — Demonstracao_Financeira_FGTS_2021.docx",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2021.docx"
+    },
+    {
+      "nome": "FGTS — Demonstracao_Financeira_FGTS_2023-v6.pdf",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2023-v6.pdf"
+    },
+    {
+      "nome": "FGTS — Demonstracao_Financeira_FGTS_2025.pdf",
+      "url": "https://www.fgts.gov.br/Paginas/downloads/relatorios/demonstracoes_financeiras/Demonstracao_Financeira_FGTS_2025.pdf"
+    },
+    {
+      "nome": "BCB SGS 4390 — Selic acumulada no mês",
+      "url": "https://dadosabertos.bcb.gov.br/dataset/4390-taxa-de-juros---selic-acumulada-no-mes"
+    },
+    {
+      "nome": "Ipeadata — via de acesso à Selic do BCB (BM12_TJOVER12)",
+      "url": "https://www.ipeadata.gov.br/api/odata4/ValoresSerie(SERCODIGO='BM12_TJOVER12')"
+    }
+  ],
+  "script": "scripts/process_custo_oportunidade.py",
+  "tabela": "data/processed/custo_oportunidade_fgts.csv",
+  "premissas": [
+    "Carteira habitacional total do FGTS, incluindo operações antigas, FAR e dívida subordinada; não é exclusivamente MCMV.",
+    "2021–2025: receita de juros/encargos/atualização monetária da Nota 9. Regime de competência, não recebimento de caixa.",
+    "Saldo médio aproximado pela média da abertura e do encerramento brutos, antes de provisões. Retorno contábil bruto = receita / saldo médio.",
+    "Estimativa = saldo médio × Selic anual acumulada − receita. Selic composta pelos 12 meses do SGS 4390; não é meta de dezembro.",
+    "Consulta direta à API BCB indisponível em 19/10/2026. Selic obtida do Ipeadata, série BM12_TJOVER12, cuja fonte é BCB; resposta preservada em data/raw.",
+    "Não deduz custos, perdas, impostos ou remuneração dos cotistas. Não é retorno líquido nem prova de insolvência. Selic é contrafactual de sensibilidade, sem equivalência de prazo, risco ou restrições legais.",
+    "Descontos concedidos vêm da DRE do Fundo inteiro e são mostrados separadamente. Não somar automaticamente ao diferencial da carteira habitacional.",
+    "Ajuste de cenário em pontos percentuais aplicado à Selic de cada ano; não é dado observado. Diferenças negativas são preservadas.",
+    "Sem extrapolar 2020 (saldo inicial não apurado) ou 2026 (DF anual indisponível nesta base)."
+  ]
+}

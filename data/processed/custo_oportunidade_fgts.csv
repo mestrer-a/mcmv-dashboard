@@ -1,0 +1,6 @@
+ano,saldo_inicial_bruto_rs_milhares,saldo_final_bruto_rs_milhares,receita_rs_milhares,liberacoes_liquidas_rs_milhares,demais_movimentos_rs_milhares,arquivo_fonte,localizador_fonte,saldo_medio_rs_milhares,retorno_contabil_bruto_pct,selic_pct_ano,descontos_fgts_dre_rs_milhares
+2021,354970638,368221302,18256193,-4738923,-266606,Demonstracao_Financeira_FGTS_2021.docx,Nota 9: movimentação; Financiamentos imobiliários,361595970.0,5.048782208496405,4.435687758932216,7315745
+2022,368221302,394448763,24844703,1548453,-165695,Demonstracao_Financeira_FGTS_2023-v6.pdf,p. 21; Nota 9(C); Habitacional,381335032.5,6.5151902874278935,12.38048663384661,6319165
+2023,394448763,445534802,26685063,26281656,-1880680,Demonstracao_Financeira_FGTS_2023-v6.pdf,p. 20; Nota 9(C); Habitacional,419991782.5,6.353710741947672,13.028230909492699,8782467
+2024,445534802,510802423,26631236,38744998,-108613,Demonstracao_Financeira_FGTS_2025.pdf,p. 18; Nota 9(C); Habitacional,478168612.5,5.569423693613934,10.888126434790024,11388468
+2025,510802423,582230648,36187663,35129497,111065,Demonstracao_Financeira_FGTS_2025.pdf,p. 18; Nota 9(C); Habitacional,546516535.5,6.621512918523579,14.332756393084377,11538915

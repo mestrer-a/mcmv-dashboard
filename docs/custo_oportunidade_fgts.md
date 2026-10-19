@@ -1,10 +1,28 @@
 # Custo registrado e custo de oportunidade do FGTS
 
-Levantamento de 19/10/2026. Esta é uma proposta de mensuração, não uma série de custos já estimada.
+Atualização de 19/10/2026. O dashboard agora contém uma primeira estimativa anual **bruta** para a carteira habitacional do FGTS, de 2021 a 2025, e as taxas históricas dos contratos. Não é uma medida líquida nem exclusiva do MCMV.
+
+## Implementação disponível
+
+Na aba **FGTS**, três gráficos em colunas mostram (1) retorno contábil bruto versus Selic, (2) receita reconhecida versus receita alternativa e (3) descontos concedidos na DRE versus diferencial de retorno estimado. Todos respondem ao recorte temporal e ao ajuste da Selic em pontos percentuais. Os dados e parâmetros podem ser baixados em CSV.
+
+Usamos a linha habitacional da movimentação da Nota 9 das DF: receita de juros/encargos/atualização monetária, abertura e encerramento **brutos**, sem provisões. Em 2021, adicionamos a provisão de 529.595 (R$ milhares) ao encerramento líquido de 367.691.707, chegando a 368.221.302. O script verifica a identidade abertura + liberações líquidas + receita + demais movimentos = encerramento. Em 2022–2025 os saldos brutos estão diretamente na movimentação. Os saldos de um exercício coincidem com a abertura do seguinte.
+
+`Diferencial = média(saldo inicial bruto, saldo final bruto) × (Selic anual + ajuste) − receita reconhecida`.
+
+A Selic é composta pelos 12 meses, em vez de usar a meta de dezembro. A API direta do BCB falhou na consulta; os valores foram obtidos do **Ipeadata BM12_TJOVER12**, que informa BCB como fonte e a mesma unidade mensal do SGS 4390. Resposta original preservada localmente, valores mensais versionados em `selic_mensal.csv`. Uma referência ajustada em ± pontos percentuais é um cenário, não dado observado.
+
+O resultado é bruto: não desconta custos, perdas, impostos ou remuneração de cotistas. Não supõe equivalência de prazo, risco ou admissibilidade legal entre a carteira e aplicações à Selic. Valores negativos são preservados: indicam receita superior à referência naquele ano, não ausência de subsídios. Não estimamos 2020 sem a abertura correspondente, nem 2026 sem DF anual.
+
+Os **descontos da DRE abrangem o Fundo inteiro**, enquanto a estimativa usa a carteira habitacional. São exibidos lado a lado para comparar ordens de grandeza; não são somados. Tampouco substituem a soma de desconto/equilíbrio por safra de contratação do MCMV: são universos e momentos de reconhecimento distintos.
+
+Na aba **Programa e subsídios**, as taxas iniciais foram agregadas por mês, fonte e código de faixa, com ponderação pelo principal e cobertura explícita. A convenção nominal/efetiva não foi confirmada pelo dicionário SNH; há opção de leitura informada ou de conversão sob hipótese nominal anual com capitalização mensal. A **série BCB 20772 não pôde ser obtida**, portanto o dashboard exibe somente taxas contratadas, sem inventar taxa de mercado ou diferencial. A implementação comporta a comparação ponderada no mesmo mês quando a fonte for recuperada; o CSV de mercado está vazio, com cabeçalho e ausência documentada.
+
+Reprodução desta versão: `python scripts/process_custo_oportunidade.py --market-unavailable`. Omitir essa opção somente quando o SGS 20772 estiver acessível; `--skip-contracts` evita reler os microdados. Validação: `python scripts/validate_custo_oportunidade.py` e `python scripts/validate_dashboard.py`.
 
 ## O que existe no repositório
 
-Temos descontos e equilíbrio registrados por contrato e agregados por ano; despesas contábeis, fluxos de caixa e estoques do FGTS de 2020 a 2025. A base analítica original também contém `num_taxa_juros`, `txt_sistema_amortizacao`, data de contratação, valor financiado, renda, região e condição de cotista. Esses campos de juros ainda não foram agregados nos CSVs do dashboard. A tabela normativa de junho de 2026 não representa as taxas contratadas no passado.
+Temos descontos e equilíbrio registrados por contrato e agregados por ano; despesas contábeis, fluxos de caixa e estoques do FGTS de 2020 a 2025. A base analítica original também contém `num_taxa_juros`, `txt_sistema_amortizacao`, data de contratação, valor financiado, renda, região e condição de cotista. As taxas iniciais agora estão agregadas em `juros_contratos_mensal.csv`. A tabela normativa de junho de 2026 não representa as taxas contratadas no passado.
 
 O cabeçalho da base analítica não contém prazo, saldo devedor ao longo do tempo, pré-pagamentos, inadimplência, fluxo de pagamentos ou remuneração que cabe exclusivamente ao FGTS. Logo, há insumos para uma comparação histórica de taxas, mas não uma medida completa observada do custo de oportunidade anual do Fundo.
 

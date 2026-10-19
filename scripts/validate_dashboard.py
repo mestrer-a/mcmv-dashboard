@@ -50,9 +50,19 @@ def main():
         if page==1:
             ids=[chart.proto.id for chart in a.get('plotly_chart')]
             assert all(any(key in chart_id for chart_id in ids) for key in
-                       ['juros_faixas_2026','juros_renda_2026','juros_prestacao_2026'])
+                       ['juros_faixas_2026','juros_renda_2026','juros_prestacao_2026',
+                        'opportunity_rates'])
+            a.radio(key='opportunity_convention').set_value('Nominal anual → equivalente com capitalização mensal').run();ok()
+            a.multiselect(key='opportunity_sources').set_value([]).run();ok()
+            a.multiselect(key='opportunity_sources').set_value(['FGTS']).run();ok()
             a.selectbox(key='juros_regiao_2026').set_value('Sul, Sudeste e Centro-Oeste').run();ok()
             a.slider(key='juros_principal_2026').set_value(200000).run();ok()
+        if page==2:
+            ids=[chart.proto.id for chart in a.get('plotly_chart')]
+            assert all(any(key in chart_id for chart_id in ids) for key in
+                       ['opportunity_fund_rates','opportunity_fund_income','opportunity_fund_cost'])
+            a.slider(key='opportunity_adjustment').set_value(-5.0).run();ok()
+            a.slider(key='opportunity_adjustment').set_value(0.0).run();ok()
         for preset in OPTIONS:
             a.radio(key='analysis_preset').set_value(preset).run();ok()
             if preset=='Personalizado':

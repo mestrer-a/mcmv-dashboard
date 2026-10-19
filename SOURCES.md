@@ -124,3 +124,11 @@ As pendências antigas de demonstrações, PNAD e abertura FJP acima foram parci
 - Tabela oficial atualizada em 28/06/2026; conferida em 18/10/2026.
 - Transcrição em `dashboard/juros.py`: oito níveis de renda, com taxas nominais anuais por região e condição de cotista. Nas linhas acima de R$ 3.500, a fonte agrupa as regiões; o código repete a mesma taxa para os dois grupos regionais sem criar diferenças.
 - A simulação SAC é apenas ilustrativa e mantém principal e prazo constantes. Não estima prestação bancária efetiva, subsídio implícito ou custo do FGTS.
+
+## Custo de oportunidade e juros históricos — 19/10/2026
+
+- FGTS, DF 2021 (DOCX), 2023-v6 e 2025: Nota 9, movimentação de financiamentos habitacionais, 2021–2025. Fontes e páginas estão em `custo_oportunidade_fgts.csv` e no respectivo `.meta.json`. Receita contábil e saldos brutos, não caixa nem carteira exclusiva MCMV.
+- BCB, SGS 4390, **Selic acumulada no mês**: https://dadosabertos.bcb.gov.br/dataset/4390-taxa-de-juros---selic-acumulada-no-mes . Via efetivamente usada: Ipeadata, série `BM12_TJOVER12`, fonte declarada BCB: https://www.ipeadata.gov.br/api/odata4/ValoresSerie(SERCODIGO='BM12_TJOVER12') . Sessenta meses de 2021–2025; composição anual, sem usar meta de dezembro. API direta BCB indisponível nesta consulta.
+- SNH, versão analítica 24/07/2026 já preservada: agregação de `num_taxa_juros`, principal e data de contratação em `juros_contratos_mensal.csv`, mesmos filtros do projeto. Dicionário: https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/habitacao/arquivos-1/Dicionarios_SNH_2025_10_09.pdf . Não confirma convenção nominal/efetiva; qualquer conversão é hipótese visível.
+- BCB SGS 20772, **financiamento imobiliário PF com taxas de mercado**, identificado como referência possível, mas **sem dados obtidos** nesta consulta: https://dadosabertos.bcb.gov.br/dataset/20772-taxa-media-de-juros-das-operacoes-de-credito-com-recursos-direcionados---pessoas-fisicas---fi . CSV vazio com cabeçalho; nenhum benchmark foi fabricado ou substituído pela Selic no comparativo do mutuário.
+- Método, limites e literatura: `docs/custo_oportunidade_fgts.md`. Selic é cenário bruto, sem equivalência automática de prazo, risco ou restrições legais. Descontos da DRE e diferencial da carteira são comparados, não somados.

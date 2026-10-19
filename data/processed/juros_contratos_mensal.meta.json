@@ -1,0 +1,30 @@
+{
+  "id": "juros_contratos_mensal",
+  "titulo": "Juros históricos dos contratos e referência de mercado",
+  "data_acesso": "2026-10-19",
+  "bases": [
+    {
+      "nome": "SNH — contratos analíticos, versão 24/07/2026",
+      "url": "https://www.cidades.gov.br/images/stories/ArquivosSNH/ArquivosZIP/mcmv_financ_analitico_20260724.zip"
+    },
+    {
+      "nome": "SNH — dicionário de dados, versão 2.4",
+      "url": "https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/habitacao/arquivos-1/Dicionarios_SNH_2025_10_09.pdf"
+    },
+    {
+      "nome": "BCB SGS 20772 — financiamento imobiliário PF, taxas de mercado",
+      "url": "https://dadosabertos.bcb.gov.br/dataset/20772-taxa-media-de-juros-das-operacoes-de-credito-com-recursos-direcionados---pessoas-fisicas---fi"
+    }
+  ],
+  "script": "scripts/process_custo_oportunidade.py",
+  "tabela": "data/processed/juros_contratos_mensal.csv",
+  "premissas": [
+    "Mesmos filtros de programas das bases existentes: exclui Pró-Cotista e Faixa Estendida. Agregados mensais, sem publicar microdados.",
+    "Taxas iniciais observadas nos contratos históricos; não são a tabela normativa de junho de 2026. 2026 parcial.",
+    "Ponderação pelo principal dos contratos com financiamento positivo e taxa entre 0 e 100; cobertura exibida. Não imputar taxa ausente.",
+    "BCB 20772 indisponível na consulta de 19/10/2026: arquivo de referência contém somente cabeçalho; nenhum valor foi imputado. Dashboard exibe apenas taxas contratadas.",
+    "O dicionário SNH não confirma convenção anual nominal/efetiva. Controle permite valor informado ou hipótese nominal anual capitalizada mensalmente; comparação exploratória, não harmonização comprovada.",
+    "SGS reúne indexadores e perfis distintos. Não controla TR, risco, prazo, seguros ou tarifas; diferença não é CET, subsídio implícito ou receita perdida pelo FGTS.",
+    "Códigos de faixa mantêm a interpretação exploratória existente, sem assumir que as regras de renda ficaram constantes."
+  ]
+}

@@ -10,6 +10,7 @@ from periods import period, controls
 from additions import dissertation_charts, far_comparison, deficit_charts, budget_chart, legacy_subsidy
 from juros import render_juros_2026
 from deficit_historico import render_deficit_historico
+from custo_oportunidade import render_contract_rates, render_fund_opportunity
 
 st.markdown("""<style>
 .stApp {background:#F5F7FA;color:#25364B}
@@ -28,8 +29,8 @@ def read(name):return pd.read_csv(DATA/f'{name}.csv')
 
 def br(v):return f'{v:,.2f}'.replace(',','X').replace('.',',').replace('X','.')
 
-SOURCES={1:['financiamento_por_fonte_ano','subsidio_medio_faixa','exploracao_contratos','faixa1_modalidade','far_anual','subsidio_rubricas_ano'],
- 2:['arrecadacao_saques_fgts','orcamento_fgts_rubrica','balanco_fgts','ponte_caixa_fgts','orcamento_operacional_2026'],3:['formalizacao_pnad']}
+SOURCES={1:['financiamento_por_fonte_ano','subsidio_medio_faixa','exploracao_contratos','faixa1_modalidade','far_anual','subsidio_rubricas_ano','juros_contratos_mensal'],
+ 2:['arrecadacao_saques_fgts','orcamento_fgts_rubrica','balanco_fgts','ponte_caixa_fgts','orcamento_operacional_2026','custo_oportunidade_fgts'],3:['formalizacao_pnad']}
 NAV=['Visão geral','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção']
 
 def navigate(target):
@@ -75,6 +76,7 @@ def essentials(page):
     if page==1:
         dissertation_charts()
         render_juros_2026()
+        render_contract_rates()
         far_comparison()
         st.header('Histórico do programa')
         d=period(read('financiamento_por_fonte_ano'),'sources',True,default=(2009,2026))
@@ -96,6 +98,7 @@ def essentials(page):
             st.caption('Contexto temporal, sem identificação causal. A EC 95 é de dezembro de 2016 e não explica isoladamente movimentos anteriores. Tetos de renda e códigos de faixa mudam no tempo.')
         legacy_subsidy()
     elif page==2:
+        render_fund_opportunity()
         st.subheader('Arrecadação e saques')
         d=period(read('arrecadacao_saques_fgts'),'flow');t=d.melt(id_vars='ano',value_vars=['arrecadacao_rs_milhares','saques_rs_milhares'],var_name='Série',value_name='valor')
         t['Série']=t['Série'].map({'arrecadacao_rs_milhares':'Arrecadação','saques_rs_milhares':'Saques'});t['R$ bilhões']=t.valor/1e6

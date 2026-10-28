@@ -4,14 +4,14 @@ Documento: `Dissertacao_FAR_Revisada.docx`. SHA-256: `d5146be5370262388d2e1aadae
 
 Foram conferidos a lista de figuras, as legendas no corpo, as notas de fonte e as imagens embutidas: **15 figuras (1, 1A e 2–14), 14 imagens**. Não há outra figura gráfica no DOCX. A Figura 4 possui legenda, fonte e discussão, mas não imagem embutida. Sua reprodução usa o valor médio por ano/faixa da base citada; a equivalência visual com uma imagem ausente não pode ser verificada. Não há figura pendente de reprodução ou dado imputado para completar uma figura. O custo econômico integrado da linha financiada continua pendente de mensuração, como no documento.
 
-O inventário de legendas e fontes extraídas está em `inventario_figuras.json`. A reprodução usa `dashboard/figuras_dissertacao.py`, com recortes fixos e sem depender dos controles exploratórios. O índice **Gráficos da dissertação** na abertura abre cada figura diretamente em sua seção. Na seção, o seletor **Figura do documento** permite percorrer as demais. Todas têm fonte, período, unidade, fórmula, hipóteses, tabela e download CSV. As páginas e controles anteriores permanecem disponíveis abaixo.
+O inventário de legendas e fontes extraídas está em `inventario_figuras.json`. A reprodução usa `dashboard/figuras_dissertacao.py`. As Figuras 1 e 2–14 mantêm recortes fixos; a Figura 1A foi redesenhada, ampliada e oferece controles próprios, sem depender dos filtros exploratórios. O índice **Gráficos da dissertação** na abertura abre cada figura diretamente em sua seção. Na seção, o seletor **Figura do documento** permite percorrer as demais. Todas têm fonte, período, unidade, fórmula, hipóteses, tabela e download CSV. As páginas e controles anteriores permanecem disponíveis abaixo.
 
 ## Inventário e localização
 
 | Figura | Título | Seção / acesso | Situação anterior |
 |---|---|---|---|
 | 1 | Subsídio registrado por contrato financiado e por faixa, 2023–2025 | Programa e subsídios → Figura 1 | Já existia: Programa e subsídios, doc_subsidy. |
-| 1A | Subsídio líquido FAR: referência e sensibilidade | Programa e subsídios → Figura 1A (também na abertura → Evidências e resultados) | Ausente; fornecida no patch, incompatível textualmente com inicio.py atual. |
+| 1A | Quanto do valor de cada unidade FAR é subsídio? (documento: referência e sensibilidade) | Programa e subsídios → Figura 1A (também na abertura → Evidências e resultados) | Ausente; fornecida no patch, incompatível textualmente com inicio.py atual. |
 | 2 | Intervalos das taxas nominais da linha financiada em 2026 | Programa e subsídios → Figura 2 | Já havia mínimos/máximos em barras, juros_faixas_2026; agora também intervalos como no documento. |
 | 3 | Número de operações da linha financiada (FGTS e Fundo Social) por faixa, 2023–2026 | Programa e subsídios → Figura 3 | Já existia: Programa e subsídios, doc_profile; legenda antiga dizia Figura 2. |
 | 4 | Valor médio dos contratos por faixa, 2023–2026 | Programa e subsídios → Figura 4 | Já existia: Programa e subsídios, doc_ticket; legenda antiga dizia Figura 3. Imagem ausente no DOCX. |
@@ -38,15 +38,18 @@ O inventário de legendas e fontes extraídas está em `inventario_figuras.json`
 - **Hipóteses e limites:** FGTS e Fundo Social; exclui FAR. Zero registrado não exclui benefício de juros. Não é custo econômico completo.
 - **Fonte:** [MCMV Financiado com FGTS/FS — dados analíticos](https://www.cidades.gov.br/images/stories/ArquivosSNH/ArquivosZIP/mcmv_financ_analitico_20260724.zip).
 
-### Figura 1A — Subsídio líquido FAR: referência e sensibilidade
+### Figura 1A — Quanto do valor de cada unidade FAR é subsídio?
 
-- **Período:** Contratações FAR 2024–2025; recebimentos hipotéticos nos meses 1–60.
-- **Unidade:** R$ mil de dezembro de 2025 por unidade.
-- **Natureza:** Cenários calculados.
-- **Base local:** `data/processed/far_anual.csv`, `data/processed/sim_parametros.json`.
-- **Construção:** S = V − (1−e)(1−λ) × Σ[m=1…60] (0,10V/60)/(1+0,06)^(m/12).
-- **Hipóteses e limites:** V = R$ 174.345,19; contribuição histórica de 10% (SECAP 2020, p. 27), 60 parcelas reais, desconto real de 6% a.a. Cenários fixos: e=0/λ=0; e=50%/λ=0; e=50%/λ=20%; e=100%/λ=0. Isenções e perdas são hipóteses, não médias nacionais. Perda somente sobre recebimentos dos pagantes, uma única vez.
-- **Fonte:** [MCMV Financiado com FGTS/FS — dados analíticos](https://www.cidades.gov.br/images/stories/ArquivosSNH/ArquivosZIP/mcmv_financ_analitico_20260724.zip); [MCMV Subsidiado — Empreendimentos](https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/habitacao/programa-minha-casa-minha-vida/arquivos/mcmv_subsidiado_202606302.zip); [SECAP (2020), p. 27 · contribuição histórica de 10%](https://www.gov.br/cgu/pt-br/assuntos/noticias/2021/04/cgu-divulga-prestacao-de-contas-do-presidente-da-republica-de-2020/relatorio-de-avaliacao-pmcmv.pdf).
+- **Período:** anos com registros de 2009–2026; 2026 parcial até 30/06. Referência da dissertação: 2024–2025. O usuário também pode destacar cada ano ou o histórico 2009–2025 ponderado pelas unidades.
+- **Unidade:** reais de dezembro de 2025 por unidade habitacional. Contratos de empreendimentos podem abranger centenas de unidades; não dividir por número de empreendimentos para comparar moradias.
+- **Natureza:** valor contratado bruto observado; subsídio e recebimentos calculados sob hipóteses uniformes, não fluxos efetivamente observados.
+- **Bases locais:** `far_anual.csv` e `far_ipca_mensal.csv`; cálculo em `dashboard/far_historico.py`.
+- **Construção:** valor bruto médio anual = valor contratado / unidades. Fator de preços = IPCA dez./2025 / média mensal do ano; 2026 usa janeiro–junho. Média de vários anos pondera cada valor real pelo número de unidades, preservando a convenção dos parâmetros da dissertação.
+- **Decomposição:** subsídio em VP = valor bruto − soma das 60 parcelas reais de 0,10V/60 descontadas a 6% a.a.; sem isenções/perdas. Conta alternativa = 0,90V, sem desconto temporal. A hipótese de recebimentos é aplicada uniformemente às safras para comparação, sem afirmar que corresponde aos contratos ou regras de cada ano.
+- **Fonte SECAP, corrigida:** a p. 27 descreve participação de até 10% do valor; a p. 29 contabiliza aportes FAR/FDS integralmente como subsídio financeiro em sua análise econômica, desconsiderando retornos. A contribuição uniforme de 10%, as 60 parcelas e o desconto de 6% são hipóteses da dissertação. O dashboard anterior não distinguia essas atribuições com clareza suficiente.
+- **Fontes:** [SECAP 2020, pp. 27 e 29](https://www.gov.br/cgu/pt-br/assuntos/noticias/2021/04/cgu-divulga-prestacao-de-contas-do-presidente-da-republica-de-2020/relatorio-de-avaliacao-pmcmv.pdf); [empreendimentos subsidiados, Ministério das Cidades](https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/habitacao/programa-minha-casa-minha-vida/arquivos/mcmv_subsidiado_202606302.zip); [IPCA, IBGE/SIDRA 1737](https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/200901-202606).
+- **Limites:** 2020–2023 sem registros FAR estritos na extração, nunca imputados como zero. Inclui situações contratuais e distratos do recorte original; não mede custo por unidade entregue, custo marginal de construção ou custo econômico completo. As médias variam com a composição dos empreendimentos e 2026 é parcial.
+- **Figura original:** os quatro cenários e seus valores exatos permanecem na memória de cálculo e no download específico. A figura principal os substitui por uma decomposição do total e pelo histórico anual; trata-se de reformulação identificada, não fac-símile da imagem antiga do DOCX.
 
 ### Figura 2 — Intervalos das taxas nominais da linha financiada em 2026
 
@@ -180,7 +183,7 @@ O inventário de legendas e fontes extraídas está em `inventario_figuras.json`
 
 ## Integração do patch e conferência cruzada
 
-`figura_far_dashboard.patch` foi inspecionado e `git apply --check` confirmou incompatibilidade de contexto e nomes (`fmt`/`params` versus `br`/`p`). Seu conteúdo foi integrado sem substituir a versão atual: quatro cenários fixos, barra horizontal, referência de valor bruto, fórmula, tabela, download e seis gráficos na abertura. A fórmula FAR agora é compartilhada em `dashboard/far.py`; a Figura 1A aparece tanto na abertura quanto no catálogo.
+`figura_far_dashboard.patch` foi inspecionado e `git apply --check` confirmou incompatibilidade de contexto e nomes (`fmt`/`params` versus `br`/`p`). Seu conteúdo foi integrado sem substituir a versão atual: quatro cenários fixos, barra horizontal, referência de valor bruto, fórmula, tabela e download. Na reformulação posterior, as quatro barras passaram à memória numérica; a composição e o histórico substituíram o gráfico principal. A abertura tem cinco gráficos, pois a cascata redundante foi incorporada à nova Figura 1A. A fórmula FAR agora é compartilhada em `dashboard/far.py`; a Figura 1A aparece tanto na abertura quanto no catálogo.
 
 - Figura 1: R$ 44.045,94 e R$ 8.177,23 por contrato nas Faixas 1 e 2, **valores correntes** de 2023–2025; zeros registrados nas Faixas 3/4 não excluem apoio via juros.
 - Figura 1A: R$ 159.257,41; R$ 166.801,30; R$ 168.310,08; R$ 174.345,19 nos quatro cenários. O primeiro é alta recuperação, não média nacional.
@@ -208,3 +211,35 @@ requirements.txt); implantação mantém seu runtime Python 3.11. O código de
 largura dos gráficos aceita as APIs de ambas as versões do Streamlit.
 Conferência no Chrome local: 15 entradas no índice; Figuras 1A, 9, 10 e 14
 abertas e inspecionadas visualmente, sem exceções.
+
+## Auditoria adicional da Figura 1A — 28/10/2026
+
+O arquivo bruto subsidiado foi reaberto: os agregados FAR estritos coincidem
+com `far_anual.csv`, para os 14 anos com registros. O SHA-256 do ZIP é
+`049b70eae6378b1b900f5d8cd314d2e5a3f84f33abe297db545f8dbaba27a4b6`,
+igual ao registrado nos metadados. Existem 4.697 registros de empreendimentos
+FAR, dos quais 139 estão distratados/cancelados. Mantém-se o universo da série
+original; não se transformaram contratações em entregas.
+
+O IPCA foi obtido pelas rotas SIDRA e agregados do IBGE: os 210 índices de
+janeiro/2009 a junho/2026 coincidem. Os 36 índices de 2023–2025 também
+coincidem com `sim_ipca_mensal.csv`. Não se alteraram os parâmetros unitários,
+o argumento da árvore ou as demais figuras.
+
+A referência 2024–2025 usa 131.181 unidades e mantém V=R$ 174.345,19 e
+S_VP=R$ 159.257,41. O abatimento direto resulta em R$ 156.910,67. No histórico
+2009–2025, somente anos com registros, a média ponderada é R$ 130.356,87 para
+1.495.898 unidades; não é média simples das médias anuais. Esses recortes
+não são intercambiáveis.
+
+O título, a narrativa, os denominadores e as fontes foram revistos. O acesso
+à Figura 1A agora aparece antes das abas da abertura, e ela é o primeiro
+gráfico da aba Evidências e resultados. As sensibilidades continuam no
+simulador; os quatro cenários do DOCX continuam consultáveis na memória.
+
+Validação da reformulação: **14 testes passaram**, incluindo o histórico
+completo, ausência de imputação nos anos sem registros, reconciliação bruto =
+subsídio + recebimentos, média ponderada, igualdade do IPCA com os parâmetros
+anteriores, alternância dos métodos e acesso pelo novo destaque da abertura.
+No Chrome foram inspecionados os dois métodos e o período histórico; a barra
+de composição deve ter altura legível, verificada também no SVG renderizado.

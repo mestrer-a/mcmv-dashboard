@@ -15,7 +15,7 @@ class HomeTests(unittest.TestCase):
  def test_home(self):
   a=AppTest.from_file(str(ROOT/'dashboard/app.py'),default_timeout=40).run()
   self.assertFalse(a.exception,list(a.exception))
-  self.assertEqual(len(a.get('plotly_chart')),6)
+  self.assertEqual(len(a.get('plotly_chart')),5)
   a.slider(key='home_exempt').set_value(100).run()
   self.assertIn('R$ 174.345,19',[m.value for m in a.metric])
   a.button(key='home_go_6').click().run()

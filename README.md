@@ -67,3 +67,11 @@ unidades, períodos, fórmulas, hipóteses e download dos dados.
 Consulte [o inventário e a conferência cruzada](docs/graficos_dissertacao.md).
 A Figura 4 está sem imagem no DOCX e foi reproduzida pela legenda e pela base
 citada. O custo integrado da linha financiada continua sem mensuração.
+
+A **Figura 1A** foi redesenhada: mostra quanto do valor contratado por unidade
+permanece subsidiado e amplia a comparação para os anos com registros de
+2009–2026, todos em preços de dezembro de 2025. Distingue abatimento direto
+de 10% de recebimentos em valor presente; os quatro cenários originais estão
+na memória de cálculo. A SECAP descreve participação de até 10%, mas sua
+contabilização econômica considera os aportes integralmente como subsídio;
+os 60 meses e o desconto de 6% são hipóteses da dissertação.

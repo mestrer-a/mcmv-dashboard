@@ -5,6 +5,12 @@ A cada nova versão da dissertação ou apresentação, conferir todos os gráfi
 Inventário de referência: `docs/graficos_dissertacao.md`; catálogo e reproduções
 fixas: `dashboard/figuras_dissertacao.py`. Atualizar ambos quando mudar a versão.
 
+Antes de declarar uma figura concluída, conferir seus valores e a renderização
+no navegador. Distinguir o que a fonte efetivamente calcula de hipóteses
+acrescentadas pela dissertação. Na Figura 1A, os 60 meses e o desconto de 6%
+são hipóteses próprias; a SECAP descreve participação de até 10% e contabiliza
+os aportes FAR/FDS integralmente como subsídio na sua análise econômica.
+
 A página inicial conecta o mapa visual (`dashboard/assets/mapa_dissertacao.html`)
 às evidências e ao simulador em `dashboard/inicio.py`.
 

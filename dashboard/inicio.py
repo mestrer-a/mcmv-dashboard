@@ -28,6 +28,7 @@ def render_inicio(navigate):
     vals=[br(n/1e6)+' milhões','R$ '+br(net/1000,1)+' mil','R$ '+br(p['subsidio_faixa1_rs']/1000,1)+' mil','R$ '+br(p['caixa_inicial_bi'])+' bi']
     for col,label,value in zip(st.columns(4),labels,vals):col.metric(label,value)
     st.caption('Valores em reais de dezembro de 2025. FAR líquido é estimativa de cenário; subsídio registrado não representa todo o custo econômico da linha financiada.')
+    st.button('Figura 1A · Quanto do valor de cada unidade FAR é subsídio?',on_click=navigate,args=(1,'1A'),key='home_far_feature',use_container_width=True)
     tabs=st.tabs(['🧠 Mapa do argumento','📊 Evidências e resultados','🏘️ Simular a linha FAR'])
     with tabs[0]:
         st.write('Clique nos blocos da árvore para ver sua função, fontes e fórmulas. Use o zoom e o percurso da apresentação para acompanhar as conexões.')
@@ -36,14 +37,10 @@ def render_inicio(navigate):
         else:components.html(html,height=1130,scrolling=True)
         st.download_button('Baixar mapa interativo',html,'Mapa_Dissertacao.html','text/html',key='home_map_download')
     with tabs[1]:
-        st.subheader('1 · O tamanho do problema e sua evolução')
+        render_figure('1A', key_prefix='home')
+        st.subheader('2 · O tamanho do problema e sua evolução')
         plot(build_figure('8'),'home_history')
         st.caption('FJP: séries separadas por metodologia. Evolução descritiva não identifica o efeito causal do MCMV.')
-        st.subheader('2 · Do valor bruto ao subsídio líquido FAR')
-        f=go.Figure(go.Waterfall(x=['Valor bruto','Recebimentos em VP','Subsídio líquido'],y=[gross/1000,-(gross-net)/1000,0],measure=['absolute','relative','total'],text=[br(gross/1000,1),'-'+br((gross-net)/1000,1),br(net/1000,1)],textposition='outside',decreasing={'marker':{'color':TEAL}},totals={'marker':{'color':BLUE}}))
-        f.update_yaxes(title='R$ mil por unidade · dez./2025');plot(f,'home_far_waterfall')
-        st.caption('FAR 2024–2025. Referência: contribuição total de 10%, em 60 parcelas reais, desconto real de 6% a.a., sem isenção ou perda. O parâmetro de contribuição se ancora na SECAP (2020); o cálculo é uma hipótese de alta recuperação.')
-        render_figure('1A', key_prefix='home')
         st.subheader('3 · O que retorna e o que é apoio na linha financiada')
         f=go.Figure(go.Bar(x=['Principal reembolsável','Subsídio registrado'],y=[p['principal_faixa1_rs']/1000,p['subsidio_faixa1_rs']/1000],marker_color=[BLUE,GOLD],text=[br(p['principal_faixa1_rs']/1000,1),br(p['subsidio_faixa1_rs']/1000,1)],textposition='outside'))
         f.update_yaxes(title='R$ mil por contrato · Faixa 1 · 2023–2025');plot(f,'home_financed')

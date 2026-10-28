@@ -12,6 +12,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'dashboard'))
 from figuras_dissertacao import FIGURES, figure_data, build_figure, source_links
 from far import far_subsidy
+from far_historico import annual_history, cohort, reference_scenarios, cost_figure, GROSS, NET, RET, SIMPLE
 
 
 class DissertationDataTests(unittest.TestCase):
@@ -28,13 +29,52 @@ class DissertationDataTests(unittest.TestCase):
                     self.assertTrue(s[field])
 
     def test_far_patch_scenarios_match_document_and_model(self):
-        d=figure_data('1A')
+        d=reference_scenarios(cohort(annual_history())[0])
         np.testing.assert_allclose(d['Subsídio líquido (R$)'],
             [159257.41070965742,166801.30123644424,168310.0793418016,174345.19176323107])
         np.testing.assert_allclose(d['Valor bruto (R$)']-d['Recebimentos em VP (R$)'],d['Subsídio líquido (R$)'])
         v=d['Valor bruto (R$)'].iloc[0]
         self.assertAlmostEqual(v-far_subsidy(v,.5,.2),.4*(v-far_subsidy(v)))
         self.assertEqual(far_subsidy(v,1,.2),v)
+
+    def test_far_history_uses_all_observed_years_and_explicit_gaps(self):
+        d=figure_data('1A').set_index('ano')
+        self.assertEqual(set(d[d.qtd_uh.notna()].index),set(range(2009,2020))|{2024,2025,2026})
+        self.assertTrue(d.loc[2020:2023,[GROSS,NET,RET,'qtd_uh']].isna().all().all())
+        raw=pd.read_csv(ROOT/'data/processed/far_anual.csv').set_index('ano')
+        np.testing.assert_allclose(d.loc[raw.index,'qtd_uh'],raw.qtd_uh)
+        np.testing.assert_allclose(d.loc[raw.index,'Valor bruto nominal por unidade (R$)'],raw.val_contratado_total/raw.qtd_uh)
+        valid=d.dropna(subset=[GROSS])
+        np.testing.assert_allclose(valid[GROSS],valid[NET]+valid[RET])
+        np.testing.assert_allclose(valid[SIMPLE],.9*valid[GROSS])
+        self.assertEqual(d.loc[2026,'Meses no índice médio'],6)
+        self.assertEqual(d.loc[2025,'Meses no índice médio'],12)
+        self.assertIn('Parcial',d.loc[2026,'Situação'])
+
+    def test_far_price_base_and_weighting_preserve_dissertation_reference(self):
+        ipca=pd.read_csv(ROOT/'data/processed/far_ipca_mensal.csv',dtype={'mes':str})
+        old=pd.read_csv(ROOT/'data/processed/sim_ipca_mensal.csv',dtype={'mes':str})
+        self.assertEqual(len(ipca),210)
+        np.testing.assert_allclose(old.indice,old.mes.map(ipca.set_index('mes').indice))
+        d=annual_history();gross,n=cohort(d)
+        self.assertEqual(n,131181)
+        self.assertAlmostEqual(gross,174345.19176323107)
+        self.assertAlmostEqual(far_subsidy(gross),159257.41070965742)
+        all_gross,all_n=cohort(d,'2009–2025')
+        self.assertEqual(all_n,1495898)
+        self.assertAlmostEqual(all_gross,130356.86555772352)
+        with self.assertRaises(ValueError):cohort(d,'2023')
+
+    def test_far_chart_explains_whole_value_and_handles_both_methods(self):
+        f=cost_figure();s=cost_figure(simple=True)
+        self.assertAlmostEqual(f.layout.meta['net'],159257.41070965742)
+        self.assertAlmostEqual(s.layout.meta['net'],156910.67258690798)
+        for fig in (f,s):
+            self.assertEqual(fig.layout.barmode,'stack')
+            self.assertEqual(fig.data[0].orientation,'h')
+            self.assertAlmostEqual(sum(t.x[0] for t in fig.data[:2]),174.34519176323107)
+            self.assertEqual(set(fig.data[2].x),set(range(2009,2020))|{2024,2025,2026})
+            self.assertNotIn(2023,fig.data[2].x)
 
     def test_administrative_figures_match_document(self):
         g=figure_data('1').set_index('Faixa')
@@ -98,6 +138,19 @@ class DissertationDataTests(unittest.TestCase):
 
 
 class DissertationNavigationTests(unittest.TestCase):
+    def test_featured_far_entry_switches_method_and_weighted_period(self):
+        app=AppTest.from_file(str(ROOT/'dashboard/app.py'),default_timeout=60).run()
+        app.button(key='home_far_feature').click().run()
+        self.assertFalse(app.exception,list(app.exception))
+        self.assertEqual(app.selectbox(key='dissertation_selection_1').value,'1A')
+        app.selectbox(key='dissertation_figure_1A_method').select(True).run()
+        self.assertFalse(app.exception,list(app.exception))
+        self.assertIn('R$ 156.910,67',[m.value for m in app.metric])
+        app.selectbox(key='dissertation_figure_1A_period').select('2009–2025').run()
+        self.assertFalse(app.exception,list(app.exception))
+        self.assertIn('R$ 130.356,87',[m.value for m in app.metric])
+        self.assertIn('R$ 117.321,18',[m.value for m in app.metric])
+
     def test_every_index_entry_opens_its_figure_with_download(self):
         app=AppTest.from_file(str(ROOT/'dashboard/app.py'),default_timeout=60).run()
         for n,s in FIGURES.items():

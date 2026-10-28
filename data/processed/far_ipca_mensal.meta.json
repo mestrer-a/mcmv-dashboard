@@ -1,0 +1,22 @@
+{
+  "id": "far_ipca_mensal",
+  "titulo": "IPCA mensal para histórico FAR, janeiro/2009–junho/2026",
+  "data_acesso": "2026-10-28",
+  "bases": [
+    {
+      "nome": "IBGE · SIDRA 1737, variável 2266, Brasil",
+      "url": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/200901-202606"
+    },
+    {
+      "nome": "IBGE · API de agregados, conferência independente do transporte",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/1737/periodos/200901-202606/variaveis/2266?localidades=N1[all]"
+    }
+  ],
+  "premissas": [
+    "Número-índice, dezembro de 1993=100; não taxa mensal.",
+    "Deflator: índice dez./2025 / média dos índices mensais do ano. Para 2026, média janeiro–junho, mesmo corte da base FAR.",
+    "Correção pela média anual é aproximação; mantém a convenção e os parâmetros da dissertação. Não é correção na data exata de cada desembolso.",
+    "Todos os 36 índices 2023–2025 coincidem com sim_ipca_mensal.csv; as duas APIs oficiais coincidem nos 210 meses."
+  ],
+  "tabela": "data/processed/far_ipca_mensal.csv"
+}

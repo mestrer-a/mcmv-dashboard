@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import streamlit as st
 
-from far import far_subsidy
+from far_historico import annual_history, cost_figure, render_detail
 from juros import tabela_taxas, COLUNAS_TAXAS, FAIXAS, FONTE
 from ui import DATA, COLORS, plot, table
 
@@ -28,10 +28,10 @@ FIGURES = {
         '2023–2025, anos completos', 'R$ correntes por contrato', 'Dados observados · agregação administrativa',
         'exploracao_contratos', 'Σ(desconto FGTS + equilíbrio FGTS + desconto OGU + equilíbrio OGU) / contratos com as quatro rubricas preenchidas, incluindo zeros.',
         'FGTS e Fundo Social; exclui FAR. Zero registrado não exclui benefício de juros. Não é custo econômico completo.'),
-    '1A': spec('Subsídio líquido FAR: referência e sensibilidade', 1,
-        'Contratações FAR 2024–2025; recebimentos hipotéticos nos meses 1–60', 'R$ mil de dezembro de 2025 por unidade', 'Cenários calculados',
-        'far_anual sim_parametros', 'S = V − (1−e)(1−λ) × Σ[m=1…60] (0,10V/60)/(1+0,06)^(m/12).',
-        'V = R$ 174.345,19; contribuição histórica de 10% (SECAP 2020, p. 27), 60 parcelas reais, desconto real de 6% a.a. Cenários fixos: e=0/λ=0; e=50%/λ=0; e=50%/λ=20%; e=100%/λ=0. Isenções e perdas são hipóteses, não médias nacionais. Perda somente sobre recebimentos dos pagantes, uma única vez.'),
+    '1A': spec('Quanto do valor de cada unidade FAR é subsídio?', 1,
+        '2009–2026, anos com registros; 2026 parcial até 30/06', 'R$ mil de dezembro de 2025 por unidade habitacional', 'Valor contratado observado; subsídio e retornos hipotéticos',
+        'far_anual far_ipca_mensal', 'V(ano) = valor contratado / unidades × IPCA(dez./2025)/IPCA médio do ano. S_VP = V − Σ[m=1…60](0,10V/60)/(1+0,06)^(m/12). Conta simplificada: S = 0,90V.',
+        'Decomposição de cada média anual sob a mesma hipótese, sem isenções ou perdas. Os 60 meses e os 6% reais são hipóteses da dissertação. A SECAP descreve contribuição de até 10%, mas contabiliza os aportes FAR/FDS integralmente como subsídio em sua análise econômica; não estima esta série. Sem reconstrução de regras/recebimentos por safra. Anos sem registros são lacunas; 2026 usa IPCA janeiro–junho. A referência 2024–2025 e os quatro cenários do documento permanecem na memória de cálculo.'),
     '2': spec('Intervalos das taxas nominais da linha financiada em 2026', 1,
         'Tabela de 2026; consulta do documento: 19/10/2026', '% nominal ao ano', 'Regras normativas · não são médias de contratos',
         '', 'Mínimo e máximo das células de renda, região e condição de cotista em cada faixa.',
@@ -98,17 +98,7 @@ def parameters():
 def figure_data(number):
     """Dados exatos usados no gráfico e no download, sem depender da sessão UI."""
     if number == '1A':
-        gross = parameters()['far_unitario_rs']
-        scenarios = [('Referência: sem isenção, sem perda', 0., 0.),
-                     ('50% isentos; sem perda', .5, 0.),
-                     ('50% isentos; perda de 20%', .5, .2), ('100% isentos', 1., 0.)]
-        return pd.DataFrame([{'Cenário':label, 'Isentos (%)':e*100,
-            'Perda dos pagantes (%)':loss*100, 'Desconto real (% a.a.)':6.,
-            'Parcelas reais':60, 'Contribuição total (%)':10., 'Valor bruto (R$)':gross,
-            'Recebimentos em VP (R$)':gross-far_subsidy(gross,e,loss),
-            'Subsídio líquido (R$)':far_subsidy(gross,e,loss),
-            'Subsídio líquido (R$ mil)':far_subsidy(gross,e,loss)/1000}
-            for label,e,loss in scenarios])
+        return annual_history()
     if number == '2':
         base = tabela_taxas()
         return pd.DataFrame([{'Faixa':f,
@@ -171,16 +161,7 @@ def figure_data(number):
 def build_figure(number, d=None):
     d=figure_data(number) if d is None else d
     if number == '1A':
-        gross=d['Valor bruto (R$)'].iloc[0]
-        fig=go.Figure(go.Bar(y=d['Cenário'],x=d['Subsídio líquido (R$ mil)'],orientation='h',
-            marker_color=['#184f63','#467b89','#78a4ab','#c1d4d7'],
-            text=[f'{v:.1f}'.replace('.',',') for v in d['Subsídio líquido (R$ mil)']],
-            textposition='outside',cliponaxis=False))
-        fig.add_vline(x=gross/1000,line_dash='dash',line_color='#c58341')
-        fig.update_layout(title='Valor bruto por unidade: R$ 174,3 mil',
-            xaxis_title='Subsídio líquido estimado · R$ mil de dez./2025',
-            yaxis=dict(autorange='reversed'),xaxis=dict(range=[0,gross/1000*1.15]))
-        return fig
+        return cost_figure(d)
     if number == '2':
         fig=go.Figure()
         for i,row in d.iterrows():
@@ -259,11 +240,13 @@ def source_links(number):
     for name in FIGURES[number]['bases']:
         meta=json.loads((DATA/f'{name}.meta.json').read_text(encoding='utf-8'))
         for base in meta.get('bases',[]):
+            if number=='1A' and name=='far_anual' and 'Subsidiado' not in base['nome']:
+                continue
             pair=(base['nome'],base['url'])
             if pair not in links:
                 links.append(pair)
     if number=='1A':
-        links.append(('SECAP (2020), p. 27 · contribuição histórica de 10%',
+        links.append(('SECAP (2020), pp. 27 e 29 · contribuição e convenção contábil',
             'https://www.gov.br/cgu/pt-br/assuntos/noticias/2021/04/cgu-divulga-prestacao-de-contas-do-presidente-da-republica-de-2020/relatorio-de-avaliacao-pmcmv.pdf'))
     if number in {'11','12','13','14'}:
         for year in (2023,2025):
@@ -283,10 +266,11 @@ def render_figure(number, key_prefix='dissertation'):
     s=FIGURES[number];key=f'{key_prefix}_figure_{number}'
     st.subheader(f'Figura {number} — {s["title"]}')
     st.caption(f'{s["kind"]} · Período: {s["period"]} · Unidade: {s["unit"]}')
-    d=figure_data(number)
-    plot(build_figure(number,d),key)
     if number=='1A':
-        st.latex(r'S = V - (1-e)(1-\lambda)\sum_{m=1}^{60}\frac{0{,}10V/60}{(1+0{,}06)^{m/12}}')
+        d=render_detail(key)
+    else:
+        d=figure_data(number)
+        plot(build_figure(number,d),key)
     st.write('**Fórmula / construção:** '+s['formula'])
     st.caption('Hipóteses e limites: '+s['assumptions'])
     st.markdown('**Fonte:** '+' · '.join(f'[{name}]({url})' for name,url in source_links(number)))
@@ -296,7 +280,7 @@ def render_figure(number, key_prefix='dissertation'):
 
 def render_index(navigate):
     st.header('Gráficos da dissertação')
-    st.write('15 figuras da revisão FAR, com o recorte do documento, fontes, hipóteses e dados para download. Selecione uma figura para abrir sua reprodução na seção correspondente.')
+    st.write('15 figuras da revisão FAR, com fontes, hipóteses e dados para download. A Figura 1A foi redesenhada e ampliada para o histórico 2009–2026; os quatro cenários do documento estão na memória de cálculo. Selecione uma figura para abrir sua reprodução na seção correspondente.')
     for page,title in SECTIONS.items():
         with st.expander(title,expanded=True):
             for number,s in FIGURES.items():
@@ -311,7 +295,7 @@ def render_section(page):
     if not choices:
         return
     st.header('Gráficos da dissertação · reprodução de referência')
-    st.caption('Recortes fixos do documento. Os controles exploratórios abaixo continuam disponíveis e não alteram estas figuras.')
+    st.caption('Referências do documento. A Figura 1A oferece uma ampliação histórica e alternativas explícitas de cálculo. Os controles exploratórios abaixo continuam disponíveis.')
     number=st.selectbox('Figura do documento',choices,
         format_func=lambda n:f'Figura {n} — {FIGURES[n]["title"]}',key=f'dissertation_selection_{page}')
     render_figure(number)

@@ -26,8 +26,8 @@ def sources(names):
             st.markdown('**'+m.get('titulo',m.get('id','Base'))+'**')
             for p in m.get('premissas',[]):st.write(p)
 
-def plot(fig,key):
-    fig.update_layout(template='plotly_white',height=540,margin=dict(l=30,r=35,t=65,b=80),
+def plot(fig,key,height=540):
+    fig.update_layout(template='plotly_white',height=height,margin=dict(l=30,r=35,t=65,b=80),
         font=dict(family='Arial, sans-serif',size=17,color='#25364B'),paper_bgcolor='white',
         plot_bgcolor='white',hovermode='x unified',hoverdistance=-1,
         legend=dict(orientation='h',y=-.23,x=0,title_text='',font=dict(size=16)),

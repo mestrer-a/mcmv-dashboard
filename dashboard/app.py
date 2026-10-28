@@ -1,4 +1,7 @@
-"""Laboratório de pesquisa: fontes agrupadas e controles persistentes."""
+"""Laboratório de pesquisa, com Figura 1A histórica e decomposição FAR.
+
+Revisão visual de 28/10/2026: histórico 2009–2026, em preços de dez./2025.
+"""
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -129,6 +132,7 @@ def housing():
 
 with st.sidebar:
     st.markdown('## MCMV / FGTS');st.caption('LABORATÓRIO DA DISSERTAÇÃO')
+    st.caption('Revisão de gráficos · FAR 2009–2026')
     page=st.radio('Navegação',range(7),format_func=lambda x:NAV[x],key='nav_page');st.divider()
 if page==0:
     render_inicio(navigate)

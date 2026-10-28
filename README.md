@@ -55,3 +55,15 @@ desconto real de 6% a.a., sem isenção ou perda. É um cenário de alta recuper
 não uma média nacional observada das condições atuais.
 
 Testes: `python -m unittest discover -s tests -v`.
+
+### Gráficos da dissertação
+
+O índice **Gráficos da dissertação** na página inicial dá acesso às 15 figuras
+(1, 1A e 2–14) de `Dissertacao_FAR_Revisada.docx`, conferida em 28/10/2026.
+As reproduções fixas ficam nas seções Programa e subsídios, FGTS, Déficit
+habitacional e Sustentabilidade e simulações; cada uma oferece fontes,
+unidades, períodos, fórmulas, hipóteses e download dos dados.
+
+Consulte [o inventário e a conferência cruzada](docs/graficos_dissertacao.md).
+A Figura 4 está sem imagem no DOCX e foi reproduzida pela legenda e pela base
+citada. O custo integrado da linha financiada continua sem mensuração.

@@ -1,0 +1,22 @@
+{
+  "id": "deficit_fjp_componentes_2022_2024",
+  "titulo": "Composição do déficit nacional nas edições 2022 e 2024",
+  "data_acesso": "2026-10-28",
+  "bases": [
+    {
+      "nome": "FJP 2022 · tabela 4, Brasil",
+      "url": "https://repositorio.fjp.mg.gov.br/bitstreams/cc248796-b48a-404f-a4b9-ea931f898604/download"
+    },
+    {
+      "nome": "FJP 2024 · tabela 1, p. 20",
+      "url": "https://drive.google.com/file/d/1wcGG-95LHqzhjXbtTvCnFh2XX2vL0xyW/view"
+    }
+  ],
+  "tabela": "data/processed/deficit_fjp_componentes_2022_2024.csv",
+  "proveniencia": "2022: totais por componente do CSV deficit_fjp_faixa_componente. 2024: valores transcritos de Dissertacao_FAR_Revisada.docx, parágrafo anterior à Figura 9, e já documentados em docs/simulacoes.md. Não foram calculados por proporções de 2022.",
+  "premissas": [
+    "Estimativas publicadas de cada edição; não são contagens de unidades entregues.",
+    "Mudanças na mensuração dos improvisados impedem atribuir toda a variação a uma mudança real ou ao MCMV.",
+    "Soma dos três componentes deve reconciliar com o total nacional da respectiva edição."
+  ]
+}

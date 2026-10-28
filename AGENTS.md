@@ -1,5 +1,10 @@
 # Continuidade da dissertação MCMV
 
+A cada nova versão da dissertação ou apresentação, conferir todos os gráficos e tabelas utilizados. Atualizar suas reproduções no dashboard e avaliar se a árvore precisa acompanhar mudanças no argumento, parâmetros ou resultados.
+
+Inventário de referência: `docs/graficos_dissertacao.md`; catálogo e reproduções
+fixas: `dashboard/figuras_dissertacao.py`. Atualizar ambos quando mudar a versão.
+
 A página inicial conecta o mapa visual (`dashboard/assets/mapa_dissertacao.html`)
 às evidências e ao simulador em `dashboard/inicio.py`.
 

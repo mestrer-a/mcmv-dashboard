@@ -1,11 +1,16 @@
 """Componentes compartilhados de leitura e interação."""
 import json
+from inspect import signature
 from pathlib import Path
 import plotly.express as px
 import streamlit as st
 
 DATA = Path(__file__).resolve().parents[1]/'data/processed'
 COLORS = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#65778A']
+
+def chart_width(renderer):
+    """Mesma largura nas versões do Streamlit usadas no Mac e na implantação."""
+    return {'width':'stretch'} if 'width' in signature(renderer).parameters else {'use_container_width':True}
 
 def sources(names):
     metas=[json.loads((DATA/f'{n}.meta.json').read_text(encoding='utf-8')) for n in names]
@@ -40,7 +45,7 @@ def plot(fig,key):
             if all(2000<=x<=2100 for x in years):
                 fig.update_xaxes(tickmode='array',tickvals=years,ticktext=[str(y)+('*' if y==2026 else '') for y in years])
         except (ValueError,TypeError):pass
-    st.plotly_chart(fig,width='stretch',key=key,theme=None,config={'displaylogo':False,'scrollZoom':False,
+    st.plotly_chart(fig,**chart_width(st.plotly_chart),key=key,theme=None,config={'displaylogo':False,'scrollZoom':False,
         'toImageButtonOptions':{'format':'png','scale':3,'width':1400,'height':700,'filename':key}})
 
 def table(df,key):

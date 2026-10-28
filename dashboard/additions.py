@@ -26,7 +26,7 @@ def dissertation_charts():
         fig.update_traces(textposition='outside',cliponaxis=False);fig.update_yaxes(rangemode='tozero')
         if a['R$ por contrato'].max()>0:fig.update_yaxes(range=[0,a['R$ por contrato'].max()*1.15])
         plot(fig,'doc_subsidy');table(a,'doc_subsidy')
-        st.caption('Figura 1 da v09 · padrão 2023–2025. Média ponderada: soma das quatro rubricas registradas / contratos com rubricas completas. '
+        st.caption('Figura 1 da revisão FAR · padrão 2023–2025. Média ponderada: soma das quatro rubricas registradas / contratos com rubricas completas. '
                    'FAR fica fora desta figura. Desconto e equilíbrio são campos distintos; esta soma não mede o benefício total de taxa.')
         st.subheader('Desconto e equilíbrio dentro do subsídio registrado')
         r=read('subsidio_rubricas_ano');r=r[r.ano.isin(d.ano)]
@@ -47,13 +47,13 @@ def dissertation_charts():
     a=c.groupby(['ano','Faixa'],as_index=False).sum(numeric_only=True)
     a['Mil operações']=a.contratos/1000
     plot(px.bar(a,x='ano',y='Mil operações',color='Faixa',barmode='group',color_discrete_map=PALETTE),'doc_profile');table(a,'doc_profile')
-    st.caption('Figura 2 da v09 · FGTS e Fundo Social; somente operações financiadas. 2026 parcial. '
+    st.caption('Figura 3 da revisão FAR · FGTS e Fundo Social; somente operações financiadas. 2026 parcial. '
                'Códigos históricos de faixa não são bandas de renda constantes e não incluem o FAR.')
     st.subheader('Valor médio financiado por operação e faixa')
     a['R$ mil por operação']=a.financiamento/a.financiamento_observado.replace(0,float('nan'))/1000
     fig=px.bar(a,x='ano',y='R$ mil por operação',color='Faixa',barmode='group',color_discrete_map=PALETTE)
     plot(fig,'doc_ticket');table(a,'doc_ticket')
-    st.caption('Figura 3 da v09 · mesmo recorte do gráfico de operações acima. Soma financiada / operações com valor observado. '
+    st.caption('Figura 4 da revisão FAR · mesmo recorte do gráfico de operações acima. Soma financiada / operações com valor observado. '
                'Principal mobilizado, não preço do imóvel nem custo econômico.')
 
 def far_comparison():

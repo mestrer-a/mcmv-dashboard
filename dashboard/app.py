@@ -7,6 +7,7 @@ st.set_page_config(page_title='MCMV · Laboratório de pesquisa',page_icon='🏘
 from exploracao import render_exploracao
 from simulacoes import render_simulacoes
 from inicio import render_inicio
+from figuras_dissertacao import render_section
 from ui import DATA, COLORS, sources, plot, table, line
 from periods import period, controls
 from additions import dissertation_charts, far_comparison, deficit_charts, budget_chart, legacy_subsidy
@@ -35,7 +36,9 @@ SOURCES={1:['financiamento_por_fonte_ano','subsidio_medio_faixa','exploracao_con
  2:['arrecadacao_saques_fgts','orcamento_fgts_rubrica','balanco_fgts','ponte_caixa_fgts','orcamento_operacional_2026','custo_oportunidade_fgts'],3:['formalizacao_pnad']}
 NAV=['Mapa da dissertação','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção','Sustentabilidade e simulações']
 
-def navigate(target):
+def navigate(target, figure=None):
+    if figure is not None:
+        st.session_state[f'dissertation_selection_{target}']=figure
     st.session_state.nav_page=target
 
 def explore(index):
@@ -131,6 +134,7 @@ if page==0:
     render_inicio(navigate)
 else:
     st.title(NAV[page])
+    render_section(page)
     if page in SOURCES:
         sources(SOURCES[page]);st.caption('Passe o mouse pela área das séries temporais para consultar o período. Clique na legenda para ocultar séries; use a barra do gráfico para ampliar ou exportar.')
         controls(page)

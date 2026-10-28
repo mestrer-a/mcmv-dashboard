@@ -7,15 +7,11 @@ import plotly.graph_objects as go
 import streamlit as st
 import streamlit.components.v1 as components
 from ui import DATA, plot
+from far import far_subsidy
+from figuras_dissertacao import render_figure, render_index, build_figure
 
 ASSET=Path(__file__).parent/'assets/mapa_dissertacao.html'
 TEAL,BLUE,GOLD='#137d81','#173e59','#c58341'
-
-def far_subsidy(value,exempt=0.,loss=0.,rate=.06):
-    if value<0 or not 0<=exempt<=1 or not 0<=loss<=1 or rate<0:
-        raise ValueError('Parâmetros fora do domínio')
-    receipts=sum(.1*value/60/(1+rate)**(m/12) for m in range(1,61))
-    return value-(1-exempt)*(1-loss)*receipts
 
 def br(value,n=2):
     return f'{value:,.{n}f}'.replace(',','X').replace('.',',').replace('X','.')
@@ -25,7 +21,7 @@ def render_inicio(navigate):
     deficit=pd.read_csv(DATA/'deficit_fjp_total.csv')
     n=int(deficit.loc[(deficit.ano==2024)&(deficit.territorio=='Brasil'),'deficit_domicilios'].iloc[0])
     gross=p['far_unitario_rs']; net=far_subsidy(gross)
-    st.caption('FGV EPGE · ARTHUR MESSER · MAPA DA DISSERTAÇÃO · REVISÃO FAR 23/10/2026')
+    st.caption('FGV EPGE · ARTHUR MESSER · MAPA DA DISSERTAÇÃO · REVISÃO FAR · CONFERÊNCIA 28/10/2026')
     st.title('Da necessidade de moradia à capacidade de financiar')
     st.write('Literatura, déficit habitacional, custo por modalidade e liquidez do FGTS: veja como cada resultado sustenta o argumento e quais ligações ainda precisam ser completadas.')
     labels=['Déficit habitacional · 2024','FAR líquido · referência','Subsídio registrado · FGTS F1','Caixa inicial do FGTS']
@@ -41,14 +37,13 @@ def render_inicio(navigate):
         st.download_button('Baixar mapa interativo',html,'Mapa_Dissertacao.html','text/html',key='home_map_download')
     with tabs[1]:
         st.subheader('1 · O tamanho do problema e sua evolução')
-        h=pd.read_csv(DATA/'deficit_fjp_historico.csv');h=h[h.ano>=2007].copy()
-        h['Milhões de domicílios']=h.deficit_domicilios/1e6
-        plot(px.line(h,x='ano',y='Milhões de domicílios',color='serie_metodologica',markers=True),'home_history')
+        plot(build_figure('8'),'home_history')
         st.caption('FJP: séries separadas por metodologia. Evolução descritiva não identifica o efeito causal do MCMV.')
         st.subheader('2 · Do valor bruto ao subsídio líquido FAR')
         f=go.Figure(go.Waterfall(x=['Valor bruto','Recebimentos em VP','Subsídio líquido'],y=[gross/1000,-(gross-net)/1000,0],measure=['absolute','relative','total'],text=[br(gross/1000,1),'-'+br((gross-net)/1000,1),br(net/1000,1)],textposition='outside',decreasing={'marker':{'color':TEAL}},totals={'marker':{'color':BLUE}}))
         f.update_yaxes(title='R$ mil por unidade · dez./2025');plot(f,'home_far_waterfall')
         st.caption('FAR 2024–2025. Referência: contribuição total de 10%, em 60 parcelas reais, desconto real de 6% a.a., sem isenção ou perda. O parâmetro de contribuição se ancora na SECAP (2020); o cálculo é uma hipótese de alta recuperação.')
+        render_figure('1A', key_prefix='home')
         st.subheader('3 · O que retorna e o que é apoio na linha financiada')
         f=go.Figure(go.Bar(x=['Principal reembolsável','Subsídio registrado'],y=[p['principal_faixa1_rs']/1000,p['subsidio_faixa1_rs']/1000],marker_color=[BLUE,GOLD],text=[br(p['principal_faixa1_rs']/1000,1),br(p['subsidio_faixa1_rs']/1000,1)],textposition='outside'))
         f.update_yaxes(title='R$ mil por contrato · Faixa 1 · 2023–2025');plot(f,'home_financed')
@@ -78,8 +73,10 @@ def render_inicio(navigate):
         f=px.line(points,x='Isenção (%)',y='Subsídio por unidade (R$ mil)',markers=True);f.add_vline(x=e*100,line_dash='dash',line_color=GOLD);plot(f,'home_far_sensitivity')
         st.caption('Controles são hipóteses de cenário. Perda incide somente sobre recebimentos de não isentos. Compromisso bruto dividido pelo prazo é escala de contratação, não cronograma de caixa. O custo FAR não sai automaticamente do caixa do FGTS.')
         st.markdown('**Ligação a completar:** custo unitário integrado da linha financiada → custo das duas modalidades → calendário de implantação e fontes.')
-    st.divider();st.subheader('Aprofundar cada ramo')
+    st.divider()
+    render_index(navigate)
+    st.subheader('Aprofundar cada ramo')
     for col,target,label in zip(st.columns(4),[1,4,2,6],['Programa e subsídios','Déficit habitacional','FGTS','Sustentabilidade e simulações']):col.button(label,on_click=navigate,args=(target,),key=f'home_go_{target}',use_container_width=True)
     with st.expander('Fontes e atualização da árvore'):
         st.markdown('[SECAP (2020), p. 27](https://www.gov.br/cgu/pt-br/assuntos/noticias/2021/04/cgu-divulga-prestacao-de-contas-do-presidente-da-republica-de-2020/relatorio-de-avaliacao-pmcmv.pdf) · [Ministério das Cidades: participação familiar](https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/caravana-federativa/habitacao)')
-        st.write('Os gráficos nativos leem as bases processadas do dashboard. A árvore registra a revisão FAR de 23/10/2026. A cada nova versão da dissertação, avaliar mudanças na pergunta, literatura, hipóteses, resultados e conexões, atualizando o mapa quando necessário.')
+        st.write('Os gráficos nativos leem as bases processadas do dashboard. As 15 figuras foram conferidas com Dissertacao_FAR_Revisada.docx em 28/10/2026. A árvore mantém os parâmetros FAR dessa revisão. A cada nova versão da dissertação ou apresentação, conferir todos os gráficos e tabelas e avaliar mudanças no argumento, parâmetros e resultados.')

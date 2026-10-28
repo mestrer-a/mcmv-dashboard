@@ -1,0 +1,143 @@
+{
+  "documento": "Dissertacao_FAR_Revisada.docx",
+  "sha256": "d5146be5370262388d2e1aadae895928dab8187a8d2ad3d7510c375f55dc0aee",
+  "patch_sha256": "4496dc3ef3d8503986c6e6d3f5584085f3127e922ee112ef7b0af0b006f7cd0b",
+  "conferencia": "2026-10-28",
+  "figuras": [
+    {
+      "numero": "1",
+      "legenda_documento": "Figura 1 – Subsídio registrado por contrato financiado e por faixa, 2023–2025",
+      "fonte_documento": "Fonte: elaboração própria a partir da base analítica de contratos do Ministério das Cidades. Subsídio registrado corresponde à soma dos campos de desconto e de equilíbrio, identificados por fonte. Nas Faixas 1 e 2, os valores observados em 2023–2025 provêm do FGTS. A média é a soma dessas rubricas dividida pelo número de contratos com informação completa no período, incluindo os registros de valor zero; neste recorte, esse universo coincide com o total de contratos. A medida não representa exclusivamente abatimento do principal nem todo o benefício econômico frente ao mercado. Acesso em: ago. 2026.",
+      "paragrafo_xml_base_zero": 273,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "Programa e subsídios"
+    },
+    {
+      "numero": "1A",
+      "legenda_documento": "Figura 1A – Subsídio líquido FAR: referência e sensibilidade",
+      "fonte_documento": "Fonte: elaboração própria. Valor bruto: base FAR 2024–2025, corrigida pelo IPCA. Contribuição de 10%: referência histórica SECAP (2020, p. 27). Hipóteses do exercício: 60 parcelas reais iguais e desconto real de 6% a.a. Isenção de 50% e perda de 20% são cenários, não estatísticas observadas. A perda incide somente sobre parcelas de famílias não isentas.",
+      "paragrafo_xml_base_zero": 280,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "Programa e subsídios"
+    },
+    {
+      "numero": "2",
+      "legenda_documento": "Figura 2 – Intervalos das taxas nominais da linha financiada em 2026",
+      "fonte_documento": "Fonte: Ministério das Cidades, tabela da linha financiada, consultada em 19 out. 2026. Taxas nominais anuais; não incluem TR, seguros e tarifas. Não representam custo efetivo total nem retorno líquido do FGTS.",
+      "paragrafo_xml_base_zero": 284,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "Programa e subsídios"
+    },
+    {
+      "numero": "3",
+      "legenda_documento": "Figura 3 – Número de operações da linha financiada (FGTS e Fundo Social) por faixa, 2023–2026",
+      "fonte_documento": "Fonte: elaboração própria a partir da base analítica de contratos do Ministério das Cidades. Linha financiada (FGTS e Fundo Social); exclui a linha subsidiada (OGU, FAR e FDS); 2026 parcial. Acesso em set. 2026.",
+      "paragrafo_xml_base_zero": 291,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "Programa e subsídios"
+    },
+    {
+      "numero": "4",
+      "legenda_documento": "Figura 4 – Valor médio dos contratos por faixa, 2023–2026",
+      "fonte_documento": "Fonte: elaboração própria a partir da base analítica de contratos do Ministério das Cidades. Linha financiada (FGTS e Fundo Social); exclui a linha subsidiada (OGU, FAR e FDS); 2026 parcial. Acesso em set. 2026.",
+      "paragrafo_xml_base_zero": 296,
+      "imagem_embutida": false,
+      "reproducao": "incluída",
+      "pagina": "Programa e subsídios"
+    },
+    {
+      "numero": "5",
+      "legenda_documento": "Figura 5 – Financiamento do MCMV por fonte e por ano com as mudanças do Programa, 2009–2026",
+      "fonte_documento": "Fonte: elaboração própria a partir da base analítica de contratos (séries FGTS e Fundo Social) e da base de empreendimentos subsidiados (proxy do Orçamento Geral da União) do Ministério das Cidades; valores correntes; 2026 parcial. Acesso em set. 2026.",
+      "paragrafo_xml_base_zero": 303,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "Programa e subsídios"
+    },
+    {
+      "numero": "6",
+      "legenda_documento": "Figura 6 – Arrecadação e saques em depósitos vinculados do FGTS, 2020–2025",
+      "fonte_documento": "Fonte: elaboração própria a partir das Demonstrações Financeiras do FGTS (exercícios de 2021, 2023 e 2025), coluna Controladora; valores correntes; a arrecadação de 2020 exclui a transferência extraordinária do PIS/PASEP (Medida Provisória nº 946/2020). Acesso em set. 2026.",
+      "paragrafo_xml_base_zero": 321,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "FGTS"
+    },
+    {
+      "numero": "7",
+      "legenda_documento": "Figura 7 – Caixa e patrimônio líquido do FGTS, 2020–2025",
+      "fonte_documento": "Fonte: elaboração própria a partir das Demonstrações Financeiras do FGTS de 2021, 2023 e 2025, Controladora; 2021–2022 reapresentados. CSV balanco_fgts e script process_balanco_fgts.py. Valores correntes.",
+      "paragrafo_xml_base_zero": 330,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "FGTS"
+    },
+    {
+      "numero": "8",
+      "legenda_documento": "Figura 8 – Déficit habitacional nacional e mudanças de base estatística",
+      "fonte_documento": "Fonte: FJP e série FJP consolidada pela SECAP (2019), conforme metadados do dashboard. Pontos de 2022–2024 são apresentados sem linha de continuidade por mudanças no tratamento de improvisados. Valores publicados; não constituem uma série harmonizada nem uma estimativa causal.",
+      "paragrafo_xml_base_zero": 336,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "Déficit habitacional"
+    },
+    {
+      "numero": "9",
+      "legenda_documento": "Figura 9 – Composição do déficit habitacional em 2022 e 2024",
+      "fonte_documento": "Fonte: FJP, Déficit habitacional no Brasil 2022, e FJP (2026), tabela 1, p. 20. Valores das respectivas edições. A comparação não isola mudanças reais de alterações de mensuração dos improvisados; não se aplicam proporções de 2022 ao total de 2024.",
+      "paragrafo_xml_base_zero": 342,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "Déficit habitacional"
+    },
+    {
+      "numero": "10",
+      "legenda_documento": "Figura 10 – Retorno da carteira habitacional e diferencial bruto frente à Selic",
+      "fonte_documento": "Fonte: elaboração própria com a Nota 9 das DF do FGTS e Selic mensal do BCB, obtida pelo Ipeadata. Carteira habitacional inteira, não exclusivamente MCMV; valores correntes. Diferencial = saldo médio bruto × Selic anual − receita reconhecida. Não é despesa de caixa nem custo líquido adicional aos descontos.",
+      "paragrafo_xml_base_zero": 348,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "FGTS"
+    },
+    {
+      "numero": "11",
+      "legenda_documento": "Figura 11 – Variação efetiva do caixa e fluxo de manutenção",
+      "fonte_documento": "Fonte: elaboração própria a partir da DFC e do IPCA. Valores em reais de dez./2025. Fluxo de manutenção exclui PIS/PASEP, resgates líquidos de principal e recebimentos de investimentos permanentes.",
+      "paragrafo_xml_base_zero": 399,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "Sustentabilidade e simulações"
+    },
+    {
+      "numero": "12",
+      "legenda_documento": "Figura 12 – Saldos indicativos sob fluxos reais constantes",
+      "fonte_documento": "Fonte: elaboração própria. A região negativa representa necessidade de financiamento não coberta; não representa operação efetiva com caixa negativo. Caixa inicial em 31/12/2025: R$ 33,47 bilhões.",
+      "paragrafo_xml_base_zero": 412,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "Sustentabilidade e simulações"
+    },
+    {
+      "numero": "13",
+      "legenda_documento": "Figura 13 – Ajuste anual necessário para preservar o caixa real",
+      "fonte_documento": "Fonte: elaboração própria. R$ bilhões de dez./2025. O ajuste pode envolver recursos externos ou mudanças nos fluxos; não constitui transferência da União já autorizada.",
+      "paragrafo_xml_base_zero": 415,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "Sustentabilidade e simulações"
+    },
+    {
+      "numero": "14",
+      "legenda_documento": "Figura 14 – Escala anual média no horizonte de dez anos",
+      "fonte_documento": "Fonte: elaboração própria. Déficit de 2024, combinação 50% FAR e 50% FGTS, focalização de 100%. Crédito reembolsável e subsídio registrado não são despesas fiscais equivalentes.",
+      "paragrafo_xml_base_zero": 436,
+      "imagem_embutida": true,
+      "reproducao": "incluída",
+      "pagina": "Sustentabilidade e simulações"
+    }
+  ]
+}

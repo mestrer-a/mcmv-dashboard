@@ -6,7 +6,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-from ui import plot, table
+from ui import plot, table, chart_width
 from periods import period
 
 DATA = Path(__file__).resolve().parents[1] / "data/processed"
@@ -33,7 +33,7 @@ def show(title, question, df, chart, sources, method, key, interpretation):
         plot(chart, key)
     else:
         st.altair_chart(chart.configure_view(strokeWidth=0).configure_axis(gridColor="#e1e0d9",labelFontSize=16,titleFontSize=17)
-            .configure_legend(orient="bottom", labelLimit=500, columns=2,labelFontSize=16), width="stretch")
+            .configure_legend(orient="bottom", labelLimit=500, columns=2,labelFontSize=16), **chart_width(st.altair_chart))
     st.caption(interpretation)
     with st.expander("Como ler e calcular este gráfico"):
         st.write(method)

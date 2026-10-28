@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
@@ -138,6 +139,16 @@ class DissertationDataTests(unittest.TestCase):
 
 
 class DissertationNavigationTests(unittest.TestCase):
+    def test_entrypoint_replaces_stale_imported_home(self):
+        import inicio
+        import streamlit as st
+        st.cache_resource.clear()
+        with patch.object(inicio,'render_inicio',lambda _:st.error('Módulo antigo')):
+            app=AppTest.from_file(str(ROOT/'dashboard/app.py'),default_timeout=60).run()
+        self.assertFalse(app.exception,list(app.exception))
+        self.assertFalse(app.error,list(app.error))
+        self.assertIsNotNone(app.button(key='home_far_feature'))
+
     def test_featured_far_entry_switches_method_and_weighted_period(self):
         app=AppTest.from_file(str(ROOT/'dashboard/app.py'),default_timeout=60).run()
         app.button(key='home_far_feature').click().run()

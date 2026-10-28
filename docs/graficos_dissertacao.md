@@ -243,3 +243,13 @@ subsídio + recebimentos, média ponderada, igualdade do IPCA com os parâmetros
 anteriores, alternância dos métodos e acesso pelo novo destaque da abertura.
 No Chrome foram inspecionados os dois métodos e o período histórico; a barra
 de composição deve ter altura legível, verificada também no SVG renderizado.
+
+Na verificação em produção, o script de entrada atualizado apareceu enquanto
+`inicio` e o catálogo importado ainda exibiam a versão anterior. O ponto de
+entrada agora recarrega os módulos visuais em ordem de dependência, uma vez
+por combinação de hashes dos arquivos. O cache de recursos evita repetir a
+inicialização em cada interação. Um teste injeta uma página inicial antiga em
+memória e verifica que a versão nova é efetivamente carregada.
+
+Após essa correção, **15 testes passaram** com
+`python -m unittest discover -s tests -v`.

@@ -3,10 +3,35 @@
 Revisão visual de 28/10/2026: histórico 2009–2026, em preços de dez./2025.
 """
 import pandas as pd
+import hashlib
+import importlib
+from pathlib import Path
+import sys
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 st.set_page_config(page_title='MCMV · Laboratório de pesquisa',page_icon='🏘️',layout='wide')
+
+
+@st.cache_resource
+def load_visual_modules(revisions):
+    """Recarrega uma vez por versão, inclusive com imports antigos no servidor.
+
+    A chave contém o conteúdo dos módulos, não apenas o script de entrada.
+    O cache serializa a inicialização entre sessões simultâneas.
+    """
+    for name,_ in revisions:
+        if name in sys.modules:
+            importlib.reload(sys.modules[name])
+        else:
+            importlib.import_module(name)
+
+
+_visual_modules=('ui','far','far_historico','figuras_dissertacao','inicio')
+load_visual_modules(tuple((name,hashlib.sha256(
+    (Path(__file__).parent/f'{name}.py').read_bytes()).hexdigest())
+    for name in _visual_modules))
+
 from exploracao import render_exploracao
 from simulacoes import render_simulacoes
 from inicio import render_inicio

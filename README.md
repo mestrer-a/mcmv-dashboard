@@ -41,3 +41,17 @@ python3 scripts/build_excel.py                        # gera outputs/graficos_re
 
 streamlit run dashboard/app.py                         # dashboard interativo
 ```
+
+### Página inicial: mapa da dissertação
+
+A abertura reúne **Mapa do argumento**, **Evidências e resultados** e
+**Simular a linha FAR**. O mapa HTML pode ser baixado para apresentação.
+Os gráficos nativos leem as bases processadas do projeto. A árvore acompanha
+a revisão FAR de 23/10/2026; ao receber versões posteriores, revisar suas
+conexões conforme `AGENTS.md`.
+
+O FAR de referência supõe contribuição total de 10% em 60 parcelas reais,
+desconto real de 6% a.a., sem isenção ou perda. É um cenário de alta recuperação,
+não uma média nacional observada das condições atuais.
+
+Testes: `python -m unittest discover -s tests -v`.

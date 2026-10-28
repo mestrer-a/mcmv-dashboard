@@ -6,6 +6,7 @@ import streamlit as st
 st.set_page_config(page_title='MCMV · Laboratório de pesquisa',page_icon='🏘️',layout='wide')
 from exploracao import render_exploracao
 from simulacoes import render_simulacoes
+from inicio import render_inicio
 from ui import DATA, COLORS, sources, plot, table, line
 from periods import period, controls
 from additions import dissertation_charts, far_comparison, deficit_charts, budget_chart, legacy_subsidy
@@ -32,7 +33,7 @@ def br(v):return f'{v:,.2f}'.replace(',','X').replace('.',',').replace('X','.')
 
 SOURCES={1:['financiamento_por_fonte_ano','subsidio_medio_faixa','exploracao_contratos','faixa1_modalidade','far_anual','subsidio_rubricas_ano','juros_contratos_mensal'],
  2:['arrecadacao_saques_fgts','orcamento_fgts_rubrica','balanco_fgts','ponte_caixa_fgts','orcamento_operacional_2026','custo_oportunidade_fgts'],3:['formalizacao_pnad']}
-NAV=['Visão geral','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção','Sustentabilidade e simulações']
+NAV=['Mapa da dissertação','Programa e subsídios','FGTS','Emprego formal','Déficit habitacional','Custos de construção','Sustentabilidade e simulações']
 
 def navigate(target):
     st.session_state.nav_page=target
@@ -127,17 +128,7 @@ with st.sidebar:
     st.markdown('## MCMV / FGTS');st.caption('LABORATÓRIO DA DISSERTAÇÃO')
     page=st.radio('Navegação',range(7),format_func=lambda x:NAV[x],key='nav_page');st.divider()
 if page==0:
-    st.caption('FGV EPGE · ARTHUR MESSER · ORIENTADOR: FERNANDO DE HOLANDA BARBOSA FILHO')
-    st.title('Minha Casa Minha Vida e sustentabilidade do FGTS')
-    st.write('Investigar de onde vêm os recursos, quem recebe os subsídios e quais limites condicionam a expansão do programa.')
-    for c,label,value in zip(st.columns(3),['Contratações','Balanços do FGTS','Fontes principais'],['2009–2026*','2020–2025','4']):c.metric(label,value)
-    st.caption('*2026 parcial. Resultados descritivos e exercícios hipotéticos são apresentados separadamente.')
-    for target,title,text in [(1,'Programa e subsídios','Fontes, escala, faixas e benefícios registrados.'),(2,'FGTS','Caixa, carteira, patrimônio e os fluxos que explicam sua evolução.'),(3,'Emprego formal','A base potencial de contribuição no mercado de trabalho.'),(4,'Déficit habitacional','Renda, componentes e diferentes instrumentos de política habitacional.')]:
-        with st.container(border=True):
-            st.markdown(f'<div class="overview-title">{title}</div>',unsafe_allow_html=True)
-            st.write(text)
-            st.button(f'Abrir {title}',key=f'open_{target}',on_click=navigate,args=(target,),use_container_width=True)
-    st.caption('Escolha uma aba à esquerda e percorra todos os gráficos rolando a página. A hipótese de restrição financeira do FGTS será testada, não presumida.')
+    render_inicio(navigate)
 else:
     st.title(NAV[page])
     if page in SOURCES:

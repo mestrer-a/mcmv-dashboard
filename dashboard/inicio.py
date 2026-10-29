@@ -28,7 +28,7 @@ def render_inicio(navigate):
     vals=[br(n/1e6)+' milhões','R$ '+br(net/1000,1)+' mil','R$ '+br(p['subsidio_faixa1_rs']/1000,1)+' mil','R$ '+br(p['caixa_inicial_bi'])+' bi']
     for col,label,value in zip(st.columns(4),labels,vals):col.metric(label,value)
     st.caption('Valores em reais de dezembro de 2025. FAR líquido é estimativa de cenário; subsídio registrado não representa todo o custo econômico da linha financiada.')
-    st.button('Figura 1A · Quanto do valor de cada unidade FAR é subsídio?',on_click=navigate,args=(1,'1A'),key='home_far_feature',use_container_width=True)
+    st.button('Figura 1A · Subsídio médio por unidade FAR · 2024–2025',on_click=navigate,args=(1,'1A'),key='home_far_feature',use_container_width=True)
     tabs=st.tabs(['🧠 Mapa do argumento','📊 Evidências e resultados','🏘️ Simular a linha FAR'])
     with tabs[0]:
         st.write('Clique nos blocos da árvore para ver sua função, fontes e fórmulas. Use o zoom e o percurso da apresentação para acompanhar as conexões.')

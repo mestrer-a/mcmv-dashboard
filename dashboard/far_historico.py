@@ -61,6 +61,33 @@ def reference_scenarios(gross):
         'Subsídio líquido (R$)':far_subsidy(gross,e,loss)} for label,e,loss in scenarios])
 
 
+def summary_data():
+    gross,n=cohort(annual_history(),'2024–2025')
+    net=far_subsidy(gross)
+    return pd.DataFrame([{'Modalidade':'FAR','Período':'2024–2025',
+        'Unidades habitacionais':n,GROSS:gross,RET:gross-net,NET:net,
+        'Base de preços':'dezembro de 2025','Contribuição hipotética (%)':10,
+        'Parcelas reais':60,'Desconto real anual (%)':6,'Isenção (%)':0,'Perda (%)':0}])
+
+
+def summary_figure(data=None):
+    """Síntese por modalidade, na linguagem visual da Figura 1."""
+    d=summary_data() if data is None else data
+    net=float(d[NET].iloc[0])
+    fig=go.Figure(go.Bar(x=d.Modalidade,y=d[NET],width=.4,
+        marker_color='#1f77b4',text=['R$ '+br(net/1000)+' mil'],
+        textposition='outside',cliponaxis=False,
+        hovertemplate='FAR · média ponderada 2024–2025<br>Subsídio líquido estimado: R$ %{y:,.2f}<extra></extra>'))
+    fig.update_layout(title='Subsídio líquido estimado por unidade FAR<br><sup>Média ponderada · 2024–2025</sup>',
+        showlegend=False,meta={'kind':'far_period_mean','period':'2024–2025','net':net,
+            'gross':float(d[GROSS].iloc[0]),'units':int(d['Unidades habitacionais'].iloc[0])})
+    fig.update_xaxes(title='Modalidade',type='category')
+    fig.update_yaxes(title='R$ por unidade · preços de dez./2025',range=[0,200000],
+        tickmode='array',tickvals=[0,50000,100000,150000,200000],
+        ticktext=['0','50 mil','100 mil','150 mil','200 mil'])
+    return fig
+
+
 def cost_figure(history=None,period='2024–2025',simple=False):
     d=annual_history() if history is None else history
     gross,_=cohort(d,period)
@@ -109,7 +136,7 @@ def cost_figure(history=None,period='2024–2025',simple=False):
     return fig
 
 
-def render_detail(key_prefix):
+def render_history(key_prefix):
     history=annual_history()
     default,_=cohort(history)
     st.write('**Mesmo com recuperação integral da contribuição hipotética de 10%, a maior parte do valor da unidade continua sendo subsídio.** O gráfico separa essas duas parcelas e mostra sua escala no histórico disponível.')
@@ -135,3 +162,17 @@ def render_detail(key_prefix):
         st.caption('Comparação na referência 2024–2025. Valor contratado por unidade é uma proxy; não equivale à série de aportes orçamentários efetivos analisada pela SECAP.')
         table(reference_scenarios(default),key_prefix+'_scenarios')
     return history
+
+
+def render_detail(key_prefix):
+    d=summary_data()
+    row=d.iloc[0]
+    st.write('A Figura 1 caracteriza o subsídio registrado nas faixas da linha financiada. Esta síntese complementa a caracterização com o **subsídio líquido estimado por unidade da linha FAR**, na referência de 2024–2025.')
+    plot(summary_figure(d),key_prefix,height=500)
+    st.caption(f'Média ponderada por {br(row["Unidades habitacionais"],0)} unidades contratadas em 2024–2025. Valor bruto médio de R$ {br(row[GROSS],2)} menos R$ {br(row[RET],2)} de recebimentos hipotéticos em valor presente = R$ {br(row[NET],2)} de subsídio líquido por unidade.')
+    st.caption('Cenário da dissertação: contribuição total de 10% em 60 parcelas reais, desconto real de 6% a.a., sem isenções ou perdas. O valor é uma estimativa sob essas hipóteses; não é média observada de subsídio efetivamente pago.')
+    st.caption('Leitura conjunta: a Figura 1 usa subsídios registrados em valores correntes de 2023–2025; esta figura usa uma estimativa FAR de 2024–2025 em preços de dezembro de 2025. As medidas caracterizam apoios distintos e não representam o custo econômico integrado de todas as modalidades.')
+    with st.expander('Complemento · histórico FAR e decomposição do valor por unidade',expanded=False):
+        history=render_history(key_prefix+'_history')
+        table(history,key_prefix+'_history')
+    return d

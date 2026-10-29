@@ -75,3 +75,8 @@ de 10% de recebimentos em valor presente; os quatro cenários originais estão
 na memória de cálculo. A SECAP descreve participação de até 10%, mas sua
 contabilização econômica considera os aportes integralmente como subsídio;
 os 60 meses e o desconto de 6% são hipóteses da dissertação.
+
+Em 29/10/2026, a Figura 1A ganhou uma síntese principal na linguagem da Figura
+1: barra vertical com o subsídio líquido médio FAR de 2024–2025. O gráfico
+histórico e a decomposição anteriores permanecem no complemento expansível,
+com seus controles e download, sem alterar a síntese fixa.

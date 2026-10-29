@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import streamlit as st
 
-from far_historico import annual_history, cost_figure, render_detail
+from far_historico import summary_data, summary_figure, render_detail
 from juros import tabela_taxas, COLUNAS_TAXAS, FAIXAS, FONTE
 from ui import DATA, COLORS, plot, table
 
@@ -28,10 +28,10 @@ FIGURES = {
         '2023–2025, anos completos', 'R$ correntes por contrato', 'Dados observados · agregação administrativa',
         'exploracao_contratos', 'Σ(desconto FGTS + equilíbrio FGTS + desconto OGU + equilíbrio OGU) / contratos com as quatro rubricas preenchidas, incluindo zeros.',
         'FGTS e Fundo Social; exclui FAR. Zero registrado não exclui benefício de juros. Não é custo econômico completo.'),
-    '1A': spec('Quanto do valor de cada unidade FAR é subsídio?', 1,
-        '2009–2026, anos com registros; 2026 parcial até 30/06', 'R$ mil de dezembro de 2025 por unidade habitacional', 'Valor contratado observado; subsídio e retornos hipotéticos',
-        'far_anual far_ipca_mensal', 'V(ano) = valor contratado / unidades × IPCA(dez./2025)/IPCA médio do ano. S_VP = V − Σ[m=1…60](0,10V/60)/(1+0,06)^(m/12). Conta simplificada: S = 0,90V.',
-        'Decomposição de cada média anual sob a mesma hipótese, sem isenções ou perdas. Os 60 meses e os 6% reais são hipóteses da dissertação. A SECAP descreve contribuição de até 10%, mas contabiliza os aportes FAR/FDS integralmente como subsídio em sua análise econômica; não estima esta série. Sem reconstrução de regras/recebimentos por safra. Anos sem registros são lacunas; 2026 usa IPCA janeiro–junho. A referência 2024–2025 e os quatro cenários do documento permanecem na memória de cálculo.'),
+    '1A': spec('Subsídio líquido estimado por unidade FAR · média 2024–2025', 1,
+        '2024–2025; histórico 2009–2026 preservado no complemento', 'R$ de dezembro de 2025 por unidade habitacional', 'Subsídio e retornos estimados sob as hipóteses da dissertação',
+        'far_anual far_ipca_mensal', 'V = Σ[valor contratado anual × IPCA(dez./2025)/IPCA médio anual] / Σ unidades, em 2024–2025. S_VP = V − Σ[m=1…60](0,10V/60)/(1+0,06)^(m/12). No complemento, a conta simplificada usa S = 0,90V.',
+        'Síntese fixa de 2024–2025: média ponderada pelas unidades, sob a mesma hipótese do simulador, sem isenções ou perdas. Os 60 meses e os 6% reais são hipóteses da dissertação. A SECAP descreve contribuição de até 10%, mas contabiliza os aportes FAR/FDS integralmente como subsídio em sua análise econômica. O histórico e sua decomposição permanecem como complemento, com controles próprios e CSV independente.'),
     '2': spec('Intervalos das taxas nominais da linha financiada em 2026', 1,
         'Tabela de 2026; consulta do documento: 19/10/2026', '% nominal ao ano', 'Regras normativas · não são médias de contratos',
         '', 'Mínimo e máximo das células de renda, região e condição de cotista em cada faixa.',
@@ -98,7 +98,7 @@ def parameters():
 def figure_data(number):
     """Dados exatos usados no gráfico e no download, sem depender da sessão UI."""
     if number == '1A':
-        return annual_history()
+        return summary_data()
     if number == '2':
         base = tabela_taxas()
         return pd.DataFrame([{'Faixa':f,
@@ -161,7 +161,7 @@ def figure_data(number):
 def build_figure(number, d=None):
     d=figure_data(number) if d is None else d
     if number == '1A':
-        return cost_figure(d)
+        return summary_figure(d)
     if number == '2':
         fig=go.Figure()
         for i,row in d.iterrows():
@@ -172,7 +172,7 @@ def build_figure(number, d=None):
         fig.update_yaxes(autorange='reversed')
         return fig
     if number == '1':
-        fig=px.bar(d,x='Faixa',y='Subsídio registrado (R$ por contrato)',text_auto='.2s')
+        fig=px.bar(d,x='Faixa',y='Subsídio registrado (R$ por contrato)',text_auto='.2s',color_discrete_sequence=[COLORS[0]])
     elif number in {'3','4'}:
         fig=px.bar(d,x='ano',y='Mil operações' if number=='3' else 'R$ mil por operação',color='Faixa',barmode='group')
     elif number == '5':
@@ -280,7 +280,7 @@ def render_figure(number, key_prefix='dissertation'):
 
 def render_index(navigate):
     st.header('Gráficos da dissertação')
-    st.write('15 figuras da revisão FAR, com fontes, hipóteses e dados para download. A Figura 1A foi redesenhada e ampliada para o histórico 2009–2026; os quatro cenários do documento estão na memória de cálculo. Selecione uma figura para abrir sua reprodução na seção correspondente.')
+    st.write('15 figuras da revisão FAR, com fontes, hipóteses e dados para download. A Figura 1A apresenta a média FAR de 2024–2025, complementando a Figura 1. O histórico 2009–2026 e os quatro cenários permanecem disponíveis no complemento. Selecione uma figura para abrir sua reprodução na seção correspondente.')
     for page,title in SECTIONS.items():
         with st.expander(title,expanded=True):
             for number,s in FIGURES.items():
@@ -295,7 +295,7 @@ def render_section(page):
     if not choices:
         return
     st.header('Gráficos da dissertação · reprodução de referência')
-    st.caption('Referências do documento. A Figura 1A oferece uma ampliação histórica e alternativas explícitas de cálculo. Os controles exploratórios abaixo continuam disponíveis.')
+    st.caption('Referências do documento. A Figura 1A mostra a média FAR de 2024–2025; o histórico e as alternativas de cálculo ficam no complemento. Os controles exploratórios abaixo continuam disponíveis.')
     number=st.selectbox('Figura do documento',choices,
         format_func=lambda n:f'Figura {n} — {FIGURES[n]["title"]}',key=f'dissertation_selection_{page}')
     render_figure(number)

@@ -13,7 +13,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'dashboard'))
 from figuras_dissertacao import FIGURES, figure_data, build_figure, source_links
 from far import far_subsidy
-from far_historico import annual_history, cohort, reference_scenarios, cost_figure, GROSS, NET, RET, SIMPLE
+from far_historico import annual_history, cohort, reference_scenarios, cost_figure, summary_data, summary_figure, GROSS, NET, RET, SIMPLE
 
 
 class DissertationDataTests(unittest.TestCase):
@@ -39,7 +39,7 @@ class DissertationDataTests(unittest.TestCase):
         self.assertEqual(far_subsidy(v,1,.2),v)
 
     def test_far_history_uses_all_observed_years_and_explicit_gaps(self):
-        d=figure_data('1A').set_index('ano')
+        d=annual_history().set_index('ano')
         self.assertEqual(set(d[d.qtd_uh.notna()].index),set(range(2009,2020))|{2024,2025,2026})
         self.assertTrue(d.loc[2020:2023,[GROSS,NET,RET,'qtd_uh']].isna().all().all())
         raw=pd.read_csv(ROOT/'data/processed/far_anual.csv').set_index('ano')
@@ -76,6 +76,21 @@ class DissertationDataTests(unittest.TestCase):
             self.assertAlmostEqual(sum(t.x[0] for t in fig.data[:2]),174.34519176323107)
             self.assertEqual(set(fig.data[2].x),set(range(2009,2020))|{2024,2025,2026})
             self.assertNotIn(2023,fig.data[2].x)
+
+    def test_far_period_summary_keeps_mean_separate_from_historical_chart(self):
+        d=figure_data('1A')
+        self.assertEqual(len(d),1)
+        self.assertEqual(d['Período'].iloc[0],'2024–2025')
+        self.assertEqual(d['Unidades habitacionais'].iloc[0],131181)
+        self.assertAlmostEqual(d[GROSS].iloc[0],174345.19176323107)
+        self.assertAlmostEqual(d[NET].iloc[0],159257.41070965742)
+        f=build_figure('1A')
+        self.assertEqual(len(f.data),1)
+        self.assertEqual(list(f.data[0].x),['FAR'])
+        self.assertAlmostEqual(f.data[0].y[0],d[NET].iloc[0])
+        self.assertEqual(f.layout.meta['period'],'2024–2025')
+        self.assertEqual(f.layout.yaxis.range[0],0)
+        self.assertEqual(len(cost_figure().data),4)
 
     def test_administrative_figures_match_document(self):
         g=figure_data('1').set_index('Faixa')
@@ -154,13 +169,15 @@ class DissertationNavigationTests(unittest.TestCase):
         app.button(key='home_far_feature').click().run()
         self.assertFalse(app.exception,list(app.exception))
         self.assertEqual(app.selectbox(key='dissertation_selection_1').value,'1A')
-        app.selectbox(key='dissertation_figure_1A_method').select(True).run()
+        app.selectbox(key='dissertation_figure_1A_history_method').select(True).run()
         self.assertFalse(app.exception,list(app.exception))
         self.assertIn('R$ 156.910,67',[m.value for m in app.metric])
-        app.selectbox(key='dissertation_figure_1A_period').select('2009–2025').run()
+        app.selectbox(key='dissertation_figure_1A_history_period').select('2009–2025').run()
         self.assertFalse(app.exception,list(app.exception))
         self.assertIn('R$ 130.356,87',[m.value for m in app.metric])
         self.assertIn('R$ 117.321,18',[m.value for m in app.metric])
+        primary=next(c for c in app.get('plotly_chart') if c.proto.id.endswith('-dissertation_figure_1A'))
+        self.assertAlmostEqual(json.loads(primary.proto.spec)['layout']['meta']['net'],159257.41070965742)
 
     def test_every_index_entry_opens_its_figure_with_download(self):
         app=AppTest.from_file(str(ROOT/'dashboard/app.py'),default_timeout=60).run()

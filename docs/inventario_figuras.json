@@ -19,10 +19,11 @@
       "fonte_documento": "Fonte: elaboração própria. Valor bruto: base FAR 2024–2025, corrigida pelo IPCA. Contribuição de 10%: referência histórica SECAP (2020, p. 27). Hipóteses do exercício: 60 parcelas reais iguais e desconto real de 6% a.a. Isenção de 50% e perda de 20% são cenários, não estatísticas observadas. A perda incide somente sobre parcelas de famílias não isentas.",
       "paragrafo_xml_base_zero": 280,
       "imagem_embutida": true,
-      "reproducao": "Redesenhada e ampliada: composição do valor por unidade e histórico 2009–2026; quatro cenários originais disponíveis na memória de cálculo e no CSV.",
+      "reproducao": "Síntese principal: barra vertical da média ponderada FAR 2024–2025, em diálogo com a Figura 1. Histórico 2009–2026 e decomposição preservados como complemento, com controles e CSV próprios.",
       "pagina": "Programa e subsídios",
-      "titulo_dashboard": "Quanto do valor de cada unidade FAR é subsídio?",
-      "nota_fonte": "SECAP 2020, p. 27: prestações tendem a cobrir até 10%; p. 29: convenção de contabilizar aportes FAR/FDS integralmente como subsídio, desconsiderando retornos. 60 parcelas reais e desconto de 6% são hipóteses da dissertação, não método da SECAP."
+      "titulo_dashboard": "Subsídio líquido estimado por unidade FAR · média 2024–2025",
+      "nota_fonte": "SECAP 2020, p. 27: prestações tendem a cobrir até 10%; p. 29: convenção de contabilizar aportes FAR/FDS integralmente como subsídio, desconsiderando retornos. 60 parcelas reais e desconto de 6% são hipóteses da dissertação, não método da SECAP.",
+      "revisao_dashboard": "2026-10-29"
     },
     {
       "numero": "2",

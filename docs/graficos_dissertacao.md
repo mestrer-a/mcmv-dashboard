@@ -11,7 +11,7 @@ O inventário de legendas e fontes extraídas está em `inventario_figuras.json`
 | Figura | Título | Seção / acesso | Situação anterior |
 |---|---|---|---|
 | 1 | Subsídio registrado por contrato financiado e por faixa, 2023–2025 | Programa e subsídios → Figura 1 | Já existia: Programa e subsídios, doc_subsidy. |
-| 1A | Quanto do valor de cada unidade FAR é subsídio? (documento: referência e sensibilidade) | Programa e subsídios → Figura 1A (também na abertura → Evidências e resultados) | Ausente; fornecida no patch, incompatível textualmente com inicio.py atual. |
+| 1A | Subsídio líquido estimado por unidade FAR · média 2024–2025 (documento: referência e sensibilidade) | Programa e subsídios → Figura 1A (também na abertura → Evidências e resultados) | Ausente; fornecida no patch, incompatível textualmente com inicio.py atual. |
 | 2 | Intervalos das taxas nominais da linha financiada em 2026 | Programa e subsídios → Figura 2 | Já havia mínimos/máximos em barras, juros_faixas_2026; agora também intervalos como no documento. |
 | 3 | Número de operações da linha financiada (FGTS e Fundo Social) por faixa, 2023–2026 | Programa e subsídios → Figura 3 | Já existia: Programa e subsídios, doc_profile; legenda antiga dizia Figura 2. |
 | 4 | Valor médio dos contratos por faixa, 2023–2026 | Programa e subsídios → Figura 4 | Já existia: Programa e subsídios, doc_ticket; legenda antiga dizia Figura 3. Imagem ausente no DOCX. |
@@ -38,7 +38,7 @@ O inventário de legendas e fontes extraídas está em `inventario_figuras.json`
 - **Hipóteses e limites:** FGTS e Fundo Social; exclui FAR. Zero registrado não exclui benefício de juros. Não é custo econômico completo.
 - **Fonte:** [MCMV Financiado com FGTS/FS — dados analíticos](https://www.cidades.gov.br/images/stories/ArquivosSNH/ArquivosZIP/mcmv_financ_analitico_20260724.zip).
 
-### Figura 1A — Quanto do valor de cada unidade FAR é subsídio?
+### Figura 1A — Subsídio líquido estimado por unidade FAR · média 2024–2025
 
 - **Período:** anos com registros de 2009–2026; 2026 parcial até 30/06. Referência da dissertação: 2024–2025. O usuário também pode destacar cada ano ou o histórico 2009–2025 ponderado pelas unidades.
 - **Unidade:** reais de dezembro de 2025 por unidade habitacional. Contratos de empreendimentos podem abranger centenas de unidades; não dividir por número de empreendimentos para comparar moradias.
@@ -253,3 +253,37 @@ memória e verifica que a versão nova é efetivamente carregada.
 
 Após essa correção, **15 testes passaram** com
 `python -m unittest discover -s tests -v`.
+
+
+## Síntese por modalidade — 29/10/2026
+
+A Figura 1A passa a apresentar primeiro uma **barra vertical da média
+ponderada FAR de 2024–2025**, na linguagem da Figura 1: eixo a partir de zero,
+barra azul e valor destacado. A medida é R$ 159.257,41 por unidade, em preços
+de dezembro de 2025, sob o cenário de referência. Média bruta: R$ 174.345,19;
+recebimentos hipotéticos em VP: R$ 15.087,78; denominador: 131.181 unidades.
+Nenhum parâmetro foi recalibrado.
+
+O gráfico anterior, com composição e série anual 2009–2026, **foi preservado**
+no complemento expansível, junto aos seletores de período e tratamento de
+recebimentos, à memória dos quatro cenários e a um CSV histórico próprio.
+Esses controles não alteram a síntese fixa. O CSV principal da Figura 1A agora
+contém a linha de média 2024–2025 usada na barra; o complemento exporta os
+18 anos, com quatro lacunas explícitas.
+
+A leitura por modalidade permanece conceitualmente delimitada: a Figura 1
+mostra subsídio registrado dos contratos financiados, em valores correntes de
+2023–2025; o FAR é uma estimativa líquida em VP de 2024–2025, em preços de
+dezembro de 2025. O período FAR segue a disponibilidade da extração (2023
+sem registros FAR), não uma escolha de comparar valores incompatíveis como
+se fossem custos econômicos completos. Os avisos de período, unidade e
+hipóteses ficam visíveis junto à figura.
+
+A navegação e o índice mantêm as 15 figuras. Há duas visualizações FAR
+complementares na Figura 1A; não se inventou uma numeração de figura do DOCX.
+
+Validação desta síntese: **16 testes passaram**. A conferência no Chrome
+verificou uma barra FAR com eixo a partir de zero, o valor de R$ 159.257,41,
+o complemento histórico preservado (quatro séries/partes e 14 anos com
+registros) e a independência da síntese em relação aos controles do histórico.
+O download principal contém uma linha, correspondente à média da figura.

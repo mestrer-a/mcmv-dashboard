@@ -60,7 +60,7 @@ class DissertationDataTests(unittest.TestCase):
         d=annual_history();gross,n=cohort(d)
         self.assertEqual(n,131181)
         self.assertAlmostEqual(gross,174345.19176323107)
-        self.assertAlmostEqual(far_subsidy(gross),159257.41070965742)
+        self.assertAlmostEqual(far_subsidy(gross),161757.62716084567)
         all_gross,all_n=cohort(d,'2009–2025')
         self.assertEqual(all_n,1495898)
         self.assertAlmostEqual(all_gross,130356.86555772352)
@@ -68,7 +68,7 @@ class DissertationDataTests(unittest.TestCase):
 
     def test_far_chart_explains_whole_value_and_handles_both_methods(self):
         f=cost_figure();s=cost_figure(simple=True)
-        self.assertAlmostEqual(f.layout.meta['net'],159257.41070965742)
+        self.assertAlmostEqual(f.layout.meta['net'],161757.62716084567)
         self.assertAlmostEqual(s.layout.meta['net'],156910.67258690798)
         for fig in (f,s):
             self.assertEqual(fig.layout.barmode,'stack')
@@ -83,7 +83,7 @@ class DissertationDataTests(unittest.TestCase):
         self.assertEqual(d['Período'].iloc[0],'2024–2025')
         self.assertEqual(d['Unidades habitacionais'].iloc[0],131181)
         self.assertAlmostEqual(d[GROSS].iloc[0],174345.19176323107)
-        self.assertAlmostEqual(d[NET].iloc[0],159257.41070965742)
+        self.assertAlmostEqual(d[NET].iloc[0],161757.62716084567)
         f=build_figure('1A')
         self.assertEqual(len(f.data),1)
         self.assertEqual(list(f.data[0].x),['FAR'])
@@ -150,7 +150,7 @@ class DissertationDataTests(unittest.TestCase):
         np.testing.assert_allclose(d.loc['Sem ônus com aluguel',['far_anual_bi','credito_anual_bi','subsidio_anual_bi']].astype(float),[19.06,14.27,5.10],atol=.01)
         p=json.loads((ROOT/'data/processed/sim_parametros.json').read_text())
         self.assertAlmostEqual(p['subsidio_faixa1_rs'],46649.58,delta=.01)
-        self.assertAlmostEqual(5773983*.5*far_subsidy(p['far_unitario_rs'])/1e9,459.77,delta=.01)
+        self.assertAlmostEqual(5773983*.5*far_subsidy(p['far_unitario_rs'])/1e9,466.99,delta=.01)
 
 
 class DissertationNavigationTests(unittest.TestCase):
@@ -177,7 +177,7 @@ class DissertationNavigationTests(unittest.TestCase):
         self.assertIn('R$ 130.356,87',[m.value for m in app.metric])
         self.assertIn('R$ 117.321,18',[m.value for m in app.metric])
         primary=next(c for c in app.get('plotly_chart') if c.proto.id.endswith('-dissertation_figure_1A'))
-        self.assertAlmostEqual(json.loads(primary.proto.spec)['layout']['meta']['net'],159257.41070965742)
+        self.assertAlmostEqual(json.loads(primary.proto.spec)['layout']['meta']['net'],161757.62716084567)
 
     def test_every_index_entry_opens_its_figure_with_download(self):
         app=AppTest.from_file(str(ROOT/'dashboard/app.py'),default_timeout=60).run()

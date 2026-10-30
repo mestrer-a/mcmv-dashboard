@@ -7,7 +7,7 @@ from streamlit.testing.v1 import AppTest
 class HomeTests(unittest.TestCase):
  def test_far(self):
   v=174345.19176323107
-  self.assertAlmostEqual(far_subsidy(v),159257.41070965742)
+  self.assertAlmostEqual(far_subsidy(v),161757.62716084567)
   self.assertAlmostEqual(far_subsidy(v,rate=0),.9*v)
   self.assertEqual(far_subsidy(v,exempt=1),v)
   self.assertEqual(far_subsidy(v,loss=1),v)

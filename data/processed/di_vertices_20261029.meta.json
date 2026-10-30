@@ -1,0 +1,11 @@
+{
+  "pregao": "2026-10-29",
+  "consulta": "2026-10-30",
+  "fonte_dados": "https://taxasdotesouro.com/juros-futuros",
+  "fonte_instrumento": "https://www.b3.com.br/pt_br/produtos-e-servicos/negociacao/juros/futuro-de-taxa-media-de-depositos-interfinanceiros-de-um-dia.htm",
+  "proveniencia": "Taxas de ajuste DI1 atribuídas à B3 pelo portal Taxas do Tesouro; reprodução secundária, sem conferência independente do boletim B3.",
+  "metodo": "Média aritmética sem ponderação dos 34 vértices publicados de novembro/2026 a outubro/2031. A densidade de vencimentos é desigual. Sem interpolação, sem ponderação por volume e sem casar parcelas individualmente.",
+  "taxa_media_pct_aa": 14.530882352941175,
+  "unidade": "% nominal a.a., base de cotação 252 dias úteis",
+  "uso": "Taxa única como custo de oportunidade de cenário; não é remuneração contratual do FAR/FDS nem previsão garantida do CDI. Congelada no pregão de referência; não se atualiza automaticamente. Desconto mensal por (1+i)^(m/12), aproximação sem calendário de dias úteis."
+}

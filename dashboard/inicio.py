@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import streamlit as st
 import streamlit.components.v1 as components
 from ui import DATA, plot
-from far import far_subsidy
+from far import far_subsidy, DISCOUNT_RATE
 from figuras_dissertacao import render_figure, render_index, build_figure
 
 ASSET=Path(__file__).parent/'assets/mapa_dissertacao.html'
@@ -21,7 +21,7 @@ def render_inicio(navigate):
     deficit=pd.read_csv(DATA/'deficit_fjp_total.csv')
     n=int(deficit.loc[(deficit.ano==2024)&(deficit.territorio=='Brasil'),'deficit_domicilios'].iloc[0])
     gross=p['far_unitario_rs']; net=far_subsidy(gross)
-    st.caption('FGV EPGE · ARTHUR MESSER · MAPA DA DISSERTAÇÃO · REVISÃO FAR · CONFERÊNCIA 28/10/2026')
+    st.caption('FGV EPGE · ARTHUR MESSER · MAPA DA DISSERTAÇÃO · REVISÃO FAR · DESCONTO DI 30/10/2026')
     st.title('Da necessidade de moradia à capacidade de financiar')
     st.write('Literatura, déficit habitacional, custo por modalidade e liquidez do FGTS: veja como cada resultado sustenta o argumento e quais ligações ainda precisam ser completadas.')
     labels=['Déficit habitacional · 2024','FAR líquido · referência','Subsídio registrado · FGTS F1','Caixa inicial do FGTS']
@@ -58,11 +58,12 @@ def render_inicio(navigate):
         a,b,c=st.columns(3)
         e=a.slider('Famílias FAR isentas (%)',0,100,0,5,key='home_exempt')/100
         loss=b.slider('Perda dos recebimentos de pagantes (%)',0,100,0,5,key='home_loss')/100
-        rate=c.slider('Desconto real anual (%)',0,12,6,key='home_rate')/100
+        rate=c.number_input('Desconto nominal anual (%)',min_value=0.,max_value=30.,value=DISCOUNT_RATE*100,step=.1,format='%.4f',key='home_rate')/100
         a,b,c=st.columns(3)
         share=a.slider('Participação FAR no atendimento (%)',0,100,50,5,key='home_share')/100
         q=b.slider('Atendimentos que resolvem o déficit (%)',25,100,100,5,key='home_q')/100
         years=c.selectbox('Horizonte de implantação (anos)',[5,10,15],index=1,key='home_horizon')
+        st.caption(f'Referência: média DI até 60 meses, pregão de 29/10/2026 ({br(DISCOUNT_RATE*100,4)}% a.a.). 60 parcelas nominais fixas, sem reajuste/TR e sem carência. Não são parcelas reais constantes. A memória de cálculo e os vértices estão na Figura 1A.')
         unit=far_subsidy(gross,e,loss,rate);count=n/q
         for col,label,val in zip(st.columns(3),['Subsídio líquido por unidade','Custo da parcela FAR','Compromisso bruto FAR médio / ano'],['R$ '+br(unit),'R$ '+br(count*share*unit/1e9)+' bi','R$ '+br(count*share*gross/years/1e9)+' bi']):col.metric(label,val)
         points=pd.DataFrame({'Isenção (%)':range(0,101,5)})
@@ -76,4 +77,4 @@ def render_inicio(navigate):
     for col,target,label in zip(st.columns(4),[1,4,2,6],['Programa e subsídios','Déficit habitacional','FGTS','Sustentabilidade e simulações']):col.button(label,on_click=navigate,args=(target,),key=f'home_go_{target}',use_container_width=True)
     with st.expander('Fontes e atualização da árvore'):
         st.markdown('[SECAP (2020), p. 27](https://www.gov.br/cgu/pt-br/assuntos/noticias/2021/04/cgu-divulga-prestacao-de-contas-do-presidente-da-republica-de-2020/relatorio-de-avaliacao-pmcmv.pdf) · [Ministério das Cidades: participação familiar](https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/caravana-federativa/habitacao)')
-        st.write('Os gráficos nativos leem as bases processadas do dashboard. As 15 figuras foram conferidas com Dissertacao_FAR_Revisada.docx em 28/10/2026. A árvore mantém os parâmetros FAR dessa revisão. A cada nova versão da dissertação ou apresentação, conferir todos os gráficos e tabelas e avaliar mudanças no argumento, parâmetros e resultados.')
+        st.write('Os gráficos nativos leem as bases processadas do dashboard. As 15 figuras foram conferidas com Dissertacao_FAR_Revisada.docx em 28/10/2026. A árvore incorpora a revisão de desconto nominal DI de 30/10/2026; a hipótese original de 6% reais permanece identificada na memória de cálculo da Figura 1A. A cada nova versão da dissertação ou apresentação, conferir todos os gráficos e tabelas e avaliar mudanças no argumento, parâmetros e resultados.')

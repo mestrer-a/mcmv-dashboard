@@ -287,3 +287,49 @@ verificou uma barra FAR com eixo a partir de zero, o valor de R$ 159.257,41,
 o complemento histórico preservado (quatro séries/partes e 14 anos com
 registros) e a independência da síntese em relação aos controles do histórico.
 O download principal contém uma linha, correspondente à média da figura.
+
+
+## Revisão de 30/10/2026 — referência DI nominal
+
+Por solicitação do autor, a Figura 1A (síntese e histórico), a abertura, a
+árvore e os dois simuladores FAR passam a compartilhar taxa única de
+14,530882352941177% nominal a.a. Média aritmética dos 34 vértices DI1 publicados
+entre novembro/2026 e outubro/2031, pregão de 29/10/2026. Sem interpolação ou
+casamento individual das parcelas. Cada vértice tem peso igual; a densidade
+é desigual e não se trata de média ponderada por meses, volume ou duration.
+Cotações reproduzidas pelo Taxas do Tesouro, atribuídas à B3, sem conferência
+independente do boletim B3. Snapshot e seleção no CSV/JSON `di_vertices_20261029`.
+
+A mudança explicita **60 parcelas nominais fixas**, sem reajuste/TR e sem
+carência, primeiro pagamento no fim do mês 1. Não se aplica taxa nominal às
+antigas parcelas reais. A normalização do valor inicial e do VP em preços de
+dezembro de 2025 é um fator de escala comum; não equivale a corrigir parcelas
+futuras pelo IPCA. Usar cotação atual em todas as safras é cenário homogêneo,
+não reconstrução de taxas históricas. A TR corrige obrigações contratuais
+quando aplicável; não é automaticamente a taxa de oportunidade.
+
+Referência FAR 2024–2025: 131.181 unidades, valor bruto médio R$ 174.345,19;
+contribuição hipotética total R$ 17.434,52, em 60 parcelas de R$ 290,58
+(antes do arredondamento). Recebimentos em VP R$ 12.587,56; subsídio líquido
+R$ 161.757,63, ou 92,7801% do bruto. Isenção e perda zero são hipóteses.
+O cenário misto de 50% FAR no déficit total implica R$ 466,99 bilhões de
+custo unitário agregado, sem calendário de obras. Figura 14 e os exercícios
+de escala bruta/caixa não foram convertidos em custo líquido silenciosamente.
+
+**Documento versus revisão:** o DOCX original usa parcelas reais e 6% reais.
+Seus quatro cenários continuam na memória de cálculo da Figura 1A, identificados
+como originais; os valores documentais nas conferências anteriores deste
+inventário são referências da versão antiga, não resultados atuais. O DOCX
+não foi editado. A mudança de hipótese exige atualização na próxima versão.
+
+**Abrangência:** a lógica de VP vale também para FDS. A IN 28 consolidada
+em 2026, seção 9, define participação conforme renda, 60 prestações, correção
+anual pela TR e dispensa conforme normas específicas. Não autoriza copiar
+10% do preço ou o custo FAR como estimativa observada FDS. Pendente: mensuração
+específica com custo, distribuição de renda, isenções e recebimentos por safra.
+OGU é fonte orçamentária, com modalidades distintas; não deve aparecer como
+uma terceira parcela que replique os aportes FAR/FDS. Transferência sem retorno
+tem custo igual ao aporte neste exercício, sem fluxos adicionais inventados.
+
+Fontes normativas: [Portaria 1.248 compilada, arts. 7–9](https://www.gov.br/cidades/pt-br/acesso-a-informacao/institucional/base-juridica/portarias/2026/PortariaMCID124820231.pdf),
+[IN 28 consolidada, seção 9](https://www.gov.br/cidades/pt-br/acesso-a-informacao/institucional/base-juridica/instrucoes-normativas/20260203_IN28_MCMVE_consolidada1.pdf).

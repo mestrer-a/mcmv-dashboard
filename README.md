@@ -50,8 +50,9 @@ Os gráficos nativos leem as bases processadas do projeto. A árvore acompanha
 a revisão FAR de 23/10/2026; ao receber versões posteriores, revisar suas
 conexões conforme `AGENTS.md`.
 
-O FAR de referência supõe contribuição total de 10% em 60 parcelas reais,
-desconto real de 6% a.a., sem isenção ou perda. É um cenário de alta recuperação,
+O FAR de referência supõe contribuição total de 10% em 60 parcelas nominais
+fixas, desconto nominal de 14,5309% a.a. (média exata dos 34 vértices DI até
+60 meses no pregão de 29/10/2026), sem reajuste/TR, carência, isenção ou perda. É um cenário de alta recuperação,
 não uma média nacional observada das condições atuais.
 
 Testes: `python -m unittest discover -s tests -v`.
@@ -80,3 +81,16 @@ Em 29/10/2026, a Figura 1A ganhou uma síntese principal na linguagem da Figura
 1: barra vertical com o subsídio líquido médio FAR de 2024–2025. O gráfico
 histórico e a decomposição anteriores permanecem no complemento expansível,
 com seus controles e download, sem alterar a síntese fixa.
+
+Em 30/10/2026, a referência passou a usar uma taxa única de oportunidade DI,
+com parcelas **nominais fixas**, em vez de parcelas reais constantes. Retorno
+em VP: R$ 12.587,56; subsídio líquido: R$ 161.757,63 (92,78% de R$ 174.345,19).
+O valor na aquisição continua normalizado em preços de dez./2025. Os quatro
+cenários originais a 6% reais permanecem identificados na memória de cálculo;
+o DOCX original não foi alterado. A curva congelada, os critérios de seleção
+e a proveniência secundária estão em `data/processed/di_vertices_20261029.*`.
+A densidade de vértices é desigual; a média atribui o mesmo peso a cada cotação.
+
+A lógica de VP também vale para o FDS, mas sua estimativa específica está
+pendente de custo por unidade e fluxos coerentes com renda, TR e isenções.
+OGU é fonte orçamentária; não somar novamente os mesmos aportes FAR/FDS.

@@ -7,8 +7,11 @@ fixas: `dashboard/figuras_dissertacao.py`. Atualizar ambos quando mudar a versã
 
 Antes de declarar uma figura concluída, conferir seus valores e a renderização
 no navegador. Distinguir o que a fonte efetivamente calcula de hipóteses
-acrescentadas pela dissertação. Na Figura 1A, os 60 meses e o desconto de 6%
-são hipóteses próprias; a SECAP descreve participação de até 10% e contabiliza
+acrescentadas pela dissertação. Na Figura 1A, a revisão de 30/10/2026 usa média DI nominal até 60 meses
+(pregão de 29/10/2026) e parcelas nominais fixas, sem reajuste/TR ou carência.
+A hipótese original de parcelas reais e 6% reais fica preservada e identificada
+na memória de cálculo. Nunca aplicar taxa nominal a parcelas reais sem conversão.
+A contribuição uniforme de 10% é hipótese própria; a SECAP descreve participação de até 10% e contabiliza
 os aportes FAR/FDS integralmente como subsídio na sua análise econômica.
 
 A página inicial conecta o mapa visual (`dashboard/assets/mapa_dissertacao.html`)
@@ -27,3 +30,7 @@ Custo em valor presente não substitui liquidez anual ou mensal.
 
 Verificação: testes de fórmula, controles e navegação da página inicial.
 Comando: `python -m unittest discover -s tests -v`.
+
+DI é referência de oportunidade do cenário, não remuneração contratual do FAR/FDS.
+FDS exige custo e recebimentos próprios; estimativa específica segue pendente de
+renda, isenções e fluxos por safra. OGU é fonte: não somar novamente FAR/FDS.

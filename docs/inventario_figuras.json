@@ -23,7 +23,8 @@
       "pagina": "Programa e subsídios",
       "titulo_dashboard": "Subsídio líquido estimado por unidade FAR · média 2024–2025",
       "nota_fonte": "SECAP 2020, p. 27: prestações tendem a cobrir até 10%; p. 29: convenção de contabilizar aportes FAR/FDS integralmente como subsídio, desconsiderando retornos. 60 parcelas reais e desconto de 6% são hipóteses da dissertação, não método da SECAP.",
-      "revisao_dashboard": "2026-10-29"
+      "revisao_dashboard": "2026-10-29",
+      "revisao_desconto_dashboard": "30/10/2026: média DI nominal de 14,530882352941177% a.a. em 60 parcelas nominais fixas, sem reajuste/TR ou carência. Retorno VP 12587,56; subsídio 161757,63. Documento original e seus cenários a 6% reais preservados e identificados na memória. FDS específico pendente; OGU é fonte, sem dupla contagem."
     },
     {
       "numero": "2",

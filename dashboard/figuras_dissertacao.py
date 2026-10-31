@@ -86,6 +86,17 @@ FIGURES = {
         'Comparação dos dois recortes: total e sem ônus com aluguel. 50% FAR/50% FGTS; focalização 100%. Três medidas separadas: FAR bruto, crédito reembolsável e subsídio registrado. Divisão aritmética não é cronograma de caixa nem VP; custo líquido FAR fica na Figura 1A e no simulador. Custo econômico integrado da financiada permanece pendente.'),
 }
 
+DISPLAY_NUMBER={'1':'1','1A':'2',**{str(i):str(i+1) for i in range(2,11)},'custo':'12','13':'13'}
+ARCHIVED_FIGURES={k:FIGURES.pop(k) for k in ['11','12','14']}
+FIGURES['custo']=spec('Custo do déficit com e sem ônus excessivo com aluguel',6,
+ 'Déficit 2024; parâmetros 2023–2025 / FAR 2024–2025','R$ bilhões de dezembro de 2025',
+ 'Cenário estático conservador','revisao_custo_deficit',
+ 'Σ unidades por faixa × [explícito + máximo(0, benefício de juros − equilíbrio)]; FAR líquido separado.',
+ 'SAC 360 por hipótese; juros calculados por mês e fonte. Dedução integral do equilíbrio: apoio administrativo não separado. Composição 2022 por componente aplicada a 2024; FAR 22,4265% da Faixa 1. Grupo acima F3 usa F4 como aproximação, sem presumir elegibilidade.')
+FIGURES=dict(sorted(FIGURES.items(),key=lambda item:int(DISPLAY_NUMBER[item[0]])))
+FIGURES['9']['assumptions']='Componentes observados em cada edição. A simulação de 4.4 usa, separadamente, composição de renda 2022 por componente aplicada a 2024; não é distribuição observada em 2024.'
+FIGURES['13']['kind']='Cenários anuais de manutenção do FGTS'
+
 
 def read(name):
     return pd.read_csv(DATA / f'{name}.csv')
@@ -97,6 +108,8 @@ def parameters():
 
 def figure_data(number):
     """Dados exatos usados no gráfico e no download, sem depender da sessão UI."""
+    if number == 'custo':
+        return read('revisao_custo_deficit')
     if number == '1A':
         return summary_data()
     if number == '2':
@@ -159,6 +172,9 @@ def figure_data(number):
 
 
 def build_figure(number, d=None):
+    if number=='custo':
+        from revisao_objetivos import cost_figure
+        return cost_figure()
     d=figure_data(number) if d is None else d
     if number == '1A':
         return summary_figure(d)
@@ -237,7 +253,7 @@ def source_links(number):
     if number == '2':
         return [('Ministério das Cidades · tabela normativa de 2026',FONTE)]
     links=[]
-    for name in FIGURES[number]['bases']:
+    for name in (FIGURES.get(number) or ARCHIVED_FIGURES[number])['bases']:
         meta=json.loads((DATA/f'{name}.meta.json').read_text(encoding='utf-8'))
         for base in meta.get('bases',[]):
             if number=='1A' and name=='far_anual' and 'Subsidiado' not in base['nome']:
@@ -264,7 +280,7 @@ def source_links(number):
 
 def render_figure(number, key_prefix='dissertation'):
     s=FIGURES[number];key=f'{key_prefix}_figure_{number}'
-    st.subheader(f'Figura {number} — {s["title"]}')
+    st.subheader(f'Figura {DISPLAY_NUMBER.get(number,number)} — {s["title"]}')
     st.caption(f'{s["kind"]} · Período: {s["period"]} · Unidade: {s["unit"]}')
     if number=='1A':
         d=render_detail(key)
@@ -275,19 +291,19 @@ def render_figure(number, key_prefix='dissertation'):
     st.caption('Hipóteses e limites: '+s['assumptions'])
     st.markdown('**Fonte:** '+' · '.join(f'[{name}]({url})' for name,url in source_links(number)))
     table(d,key)
-    st.caption('Referência: Dissertacao_FAR_Revisada.docx · inventário completo e ressalvas em docs/graficos_dissertacao.md.')
+    st.caption('Referência: Dissertacao_Revisao_Objetivos.docx · inventário completo e ressalvas em docs/graficos_dissertacao.md.')
 
 
 def render_index(navigate):
     st.header('Gráficos da dissertação')
-    st.write('15 figuras da revisão FAR, com fontes, hipóteses e dados para download. A Figura 1A apresenta a média FAR de 2024–2025, complementando a Figura 1. O histórico 2009–2026 e os quatro cenários permanecem disponíveis no complemento. Selecione uma figura para abrir sua reprodução na seção correspondente.')
+    st.write('13 figuras da revisão de 31/10/2026. Numeração conforme o Word revisado. A Figura 12 responde ao custo estático do déficit; a Figura 13 mostra o ajuste anual do FGTS. Cenários antigos permanecem nas páginas exploratórias.')
     for page,title in SECTIONS.items():
         with st.expander(title,expanded=True):
             for number,s in FIGURES.items():
                 if s['page']==page:
-                    st.button(f'Figura {number} — {s["title"]}',key=f'figure_open_{number}',
+                    st.button(f'Figura {DISPLAY_NUMBER.get(number,number)} — {s["title"]}',key=f'figure_open_{number}',
                         on_click=navigate,args=(page,number),use_container_width=True)
-    st.caption('Conferência: nenhuma figura pendente de reprodução. A Figura 4 não tem imagem embutida no DOCX; foi reproduzida pela legenda e base citadas. Custo integrado da linha financiada permanece sem mensuração, como no documento.')
+    st.caption('Parâmetros e limites de cada figura disponíveis com os dados para download.')
 
 
 def render_section(page):
@@ -295,8 +311,8 @@ def render_section(page):
     if not choices:
         return
     st.header('Gráficos da dissertação · reprodução de referência')
-    st.caption('Referências do documento. A Figura 1A mostra a média FAR de 2024–2025; o histórico e as alternativas de cálculo ficam no complemento. Os controles exploratórios abaixo continuam disponíveis.')
+    st.caption('Referências do documento. A Figura 2 mostra a média FAR de 2024–2025; o histórico e as alternativas de cálculo ficam no complemento. Os controles exploratórios abaixo continuam disponíveis.')
     number=st.selectbox('Figura do documento',choices,
-        format_func=lambda n:f'Figura {n} — {FIGURES[n]["title"]}',key=f'dissertation_selection_{page}')
+        format_func=lambda n:f'Figura {DISPLAY_NUMBER.get(n,n)} — {FIGURES[n]["title"]}',key=f'dissertation_selection_{page}')
     render_figure(number)
     st.divider()

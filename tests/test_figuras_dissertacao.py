@@ -20,7 +20,7 @@ class DissertationDataTests(unittest.TestCase):
     def test_inventory_covers_every_document_caption(self):
         inventory=json.loads((ROOT/'docs/inventario_figuras.json').read_text())
         self.assertEqual(list(FIGURES),[f['numero'] for f in inventory['figuras']])
-        self.assertEqual(len(FIGURES),15)
+        self.assertEqual(len(FIGURES),13)
         for n,s in FIGURES.items():
             with self.subTest(figure=n):
                 self.assertFalse(figure_data(n).empty)

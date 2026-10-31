@@ -1,0 +1,18 @@
+{
+  "bases": [
+    {
+      "nome": "SNH — dicionário v2.4",
+      "url": "https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/habitacao/arquivos-1/Dicionarios_SNH_2025_10_09.pdf"
+    },
+    {
+      "nome": "BCB SGS 20772",
+      "url": "https://dadosabertos.bcb.gov.br/dataset/20772-taxa-media-de-juros-das-operacoes-de-credito-com-recursos-direcionados---pessoas-fisicas---fi"
+    },
+    {
+      "nome": "FJP — déficit 2022 e 2024",
+      "url": "https://fjp.mg.gov.br/deficit-habitacional-no-brasil/"
+    }
+  ],
+  "script": "scripts/calcular_revisao_objetivos.py",
+  "data_verificacao": "2026-10-31"
+}

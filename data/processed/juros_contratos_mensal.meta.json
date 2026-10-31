@@ -22,9 +22,9 @@
     "Mesmos filtros de programas das bases existentes: exclui Pró-Cotista e Faixa Estendida. Agregados mensais, sem publicar microdados.",
     "Taxas iniciais observadas nos contratos históricos; não são a tabela normativa de junho de 2026. 2026 parcial.",
     "Ponderação pelo principal dos contratos com financiamento positivo e taxa entre 0 e 100; cobertura exibida. Não imputar taxa ausente.",
-    "BCB 20772 indisponível na consulta de 19/10/2026: arquivo de referência contém somente cabeçalho; nenhum valor foi imputado. Dashboard exibe apenas taxas contratadas.",
     "O dicionário SNH não confirma convenção anual nominal/efetiva. Controle permite valor informado ou hipótese nominal anual capitalizada mensalmente; comparação exploratória, não harmonização comprovada.",
     "SGS reúne indexadores e perfis distintos. Não controla TR, risco, prazo, seguros ou tarifas; diferença não é CET, subsídio implícito ou receita perdida pelo FGTS.",
-    "Códigos de faixa mantêm a interpretação exploratória existente, sem assumir que as regras de renda ficaram constantes."
+    "Códigos de faixa mantêm a interpretação exploratória existente, sem assumir que as regras de renda ficaram constantes.",
+    "Atualização 30/10/2026: SGS 20772 recuperada para 2023–2025, resposta original preservada. Comparação modelada em calcular_revisao_objetivos.py; hipóteses não harmonizam risco e indexador."
   ]
 }

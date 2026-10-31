@@ -1,0 +1,32 @@
+{
+  "far_share": 0.22426479387559023,
+  "far_unidades_observadas": 131181,
+  "fgts_f1_observados": 453757,
+  "far_liquido": 161757.62716084564,
+  "taxa_far": 0.14530882352941177,
+  "totais": {
+    "Sem ônus de aluguel": {
+      "far_custo": 48096776944.38253,
+      "explicito": 50919289215.85742,
+      "implicito": 84378649350.17113,
+      "total": 183394715510.41107,
+      "total_sem_deducao": 210240063352.15796,
+      "equilibrio": 26845347841.74687,
+      "principal": 310180640922.4603
+    },
+    "Total": {
+      "far_custo": 159007368119.99103,
+      "explicito": 166164531682.15125,
+      "implicito": 198150181120.65475,
+      "total": 523322080922.79706,
+      "total_sem_deducao": 610526578750.7855,
+      "equilibrio": 87204497827.9885,
+      "principal": 707835847694.4482
+    }
+  },
+  "sustentabilidade": {
+    "margem": 1.4595760007493335,
+    "queda_arrecadacao_limite_pct": 0.7104384334606221,
+    "retorno_cobre_credito_pct": 72.07713088760218
+  }
+}

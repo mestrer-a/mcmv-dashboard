@@ -333,3 +333,7 @@ tem custo igual ao aporte neste exercício, sem fluxos adicionais inventados.
 
 Fontes normativas: [Portaria 1.248 compilada, arts. 7–9](https://www.gov.br/cidades/pt-br/acesso-a-informacao/institucional/base-juridica/portarias/2026/PortariaMCID124820231.pdf),
 [IN 28 consolidada, seção 9](https://www.gov.br/cidades/pt-br/acesso-a-informacao/institucional/base-juridica/instrucoes-normativas/20260203_IN28_MCMVE_consolidada1.pdf).
+
+## Versão vigente 31/10/2026
+
+O catálogo vigente tem 13 figuras, conforme `Dissertacao_Revisao_Objetivos.docx`. A antiga Figura 1A é a Figura 2; as antigas 2–10 passam a 3–11. A nova Figura 12 mostra o custo estático conservador (R$ 523,3 bi / R$ 183,4 bi). A Figura 13 mantém o ajuste anual necessário do FGTS. Figuras de trajetórias e escala decenal foram retiradas da dissertação e preservadas apenas como explorações adicionais. O inventário JSON e a interface usam a correspondência `DISPLAY_NUMBER`, preservando IDs antigos para links internos. Ver `revisao_objetivos.md` para hipóteses, limitações e reprodução.
